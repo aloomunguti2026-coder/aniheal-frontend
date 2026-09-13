@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
+import api, { API_BASE_URL } from '../../services/api';
 
 export default function AdminMedia() {
   const [mediaList, setMediaList] = useState([]);
@@ -36,7 +36,7 @@ export default function AdminMedia() {
     setUploading(true);
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/media/upload', {
+      const response = await fetch(`${API_BASE_URL}/media/upload`, {
         method: 'POST',
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
