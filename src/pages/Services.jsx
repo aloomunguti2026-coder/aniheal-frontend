@@ -5,10 +5,32 @@ import Footer from '../components/navigation/Footer';
 import { useContent } from '../hooks/useContent';
 
 export default function Services() {
-  const { services: dbServices, pricing: dbPricing, settings } = useContent();
+  const { blocks, services: dbServices, pricing: dbPricing, settings } = useContent();
   const [activeFilter, setActiveFilter] = useState('all');
 
-  const emergencyPhone = settings?.emergencyHotline || '+254 700 264 432';
+  const emergencyPhone = settings?.emergencyPhone || settings?.hotlinePhone || settings?.primaryPhone || '+254 700 264 432';
+
+  // Dynamic Content Blocks with robust fallbacks
+  const heroBlock = blocks?.services_hero;
+  const heroMeta = heroBlock?.metadata || {};
+  const insuranceBlock = blocks?.services_insurance_header;
+  const labBlock = blocks?.services_lab_precision;
+  const labMeta = labBlock?.metadata || {};
+  const ctaBlock = blocks?.services_cta_banner;
+  const ctaMeta = ctaBlock?.metadata || {};
+
+  const heroBadge = heroBlock?.badge || 'KENYA VETERINARY BOARD REGISTERED';
+  const heroComplianceSubtext = heroMeta.complianceSubtext || 'CAP 366 STATUTORY COMPLIANCE';
+  const heroSubtitle = heroBlock?.subtitle || 'Diagnostic, Ambulatory & Genetic Infrastructure';
+  const heroTitle = heroBlock?.title || 'Specialized Agro-Pastoral & Veterinary Services';
+  const heroBody =
+    heroBlock?.body ||
+    'Merging molecular epidemiological rigour with sustainable livestock management under Kenya’s One Health mandate. Our mobile units, cold-chain ambulatory units, and senior field surgeons serve progressive dairy estates, ranches, and smallholder agrarian clusters nationwide.';
+  const stat1Title = heroMeta.stat1Title || 'Average Triage Dispatch';
+  const stat1Value = heroMeta.stat1Value || '38 Minutes';
+  const stat1Subtitle = heroMeta.stat1Subtitle || '(Central/Rift)';
+  const stat2Title = heroMeta.stat2Title || 'Rapid Field Diagnostic Kits';
+  const stat2Value = heroMeta.stat2Value || '99.2% PCR Accuracy';
 
   const filterTabs = [
     { id: 'all', label: 'All Disciplines' },
@@ -16,206 +38,14 @@ export default function Services() {
     { id: 'therapeutic', label: 'Therapeutic & Diagnostics' },
     { id: 'reproductive', label: 'Reproductive Tech & Breeding' },
     { id: 'insurance', label: 'Insurance & Feeds' },
+    { id: 'diagnostics', label: 'Laboratory & Diagnostics' },
+    { id: 'surgery', label: 'Field Surgery & Triage' },
   ];
 
-  const defaultServices = [
-    {
-      _id: 'one-health-consultancy',
-      id: 'one-health-consultancy',
-      category: 'one-health',
-      protocol: 'Service Protocol 01',
-      badgeText: 'Zoonoses & Bio-Risk',
-      badgeIcon: 'public',
-      statusTag: 'KVB Standard Audit',
-      title: 'Consultancy – One Health Infrastructure',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuD8GMqS-s8oinLCAa3VcL8Xl7AQBM1TSOEF9XkmOobmDNuBcrYO1BnJzDYY41T8p8D9N9DXAJZ5xXcXs62AY48PxF50eFEK4mvnrlAmyiiDgMPdtr-U4_r1YfvJTd93s_r1lRgit73FS86IaEBFaO558hGseYNlXJUuDUeHj2wgYr0-fWtJ7mG4UE5sfCVkqHFhtPTMjJYKvI4veFlKgjAORdXijb34IbWE4OAS4B7gmYQXrKE4mb-6',
-      description:
-        'Direct integration of animal wellness, farm-hand occupational safety, and water-table containment. We conduct rigorous epidemiological tracking to intercept zoonotic transmissions (Brucellosis, Anthrax, Q-Fever) before contamination spreads to distribution lines.',
-      features: [
-        {
-          icon: 'coronavirus',
-          title: 'Zoonotic Surveillance',
-          desc: 'Serum banking, PCR cross-testing, and human-livestock barrier analysis.',
-        },
-        {
-          icon: 'sanitizer',
-          title: 'Bio-Security Auditing',
-          desc: 'Footbath integrity, disinfection gates, visitor telemetry protocols.',
-        },
-        {
-          icon: 'water_drop',
-          title: 'Effluent Management',
-          desc: 'Runoff bio-filtration, manure pathogen decay monitoring.',
-        },
-      ],
-      compliance: 'Formal WHO & WOAH One Health Guidelines Adherent',
-    },
-    {
-      _id: 'disease-control',
-      id: 'disease-control',
-      category: 'one-health',
-      protocol: 'Service Protocol 02',
-      badgeText: 'Prophylaxis & Isolation',
-      badgeIcon: 'vaccines',
-      statusTag: 'Certified Cold-Chain Biologics',
-      title: 'Disease Control & Prophylactic Treatment',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBgnhlSjZh6a_oC4v7hYvCuMI9VsqHpex3EdPZPLUzhyy570fhrW6SIPBaIrSEcUFUmg07n-4pAVj_BhwZtM19s8akn86fGPdra5hoBc9pm6zfqA4GubUB72rcakr5i2vzrYLAp6Yo279jWmOk5oLWefblAWC5DZBd5Jq3O2zt97mR5v5BEDu0JPTwX6_6YnYp7NSuo_HPQ_iYf17s7DDx6utqnr2aVzP0YQM-mzxyFUTedu_6OoiDF',
-      description:
-        'Systematic herd immunity programs designed to eliminate Foot & Mouth Disease (FMD), Contagious Bovine Pleuropneumonia (CBPP), and East Coast Fever (ECF). We oversee ring-vaccination corridors and statutory quarantine release procedures.',
-      features: [
-        {
-          icon: 'calendar_month',
-          title: 'Herd Vaccination Rosters',
-          desc: 'Predictive seasonal immunization schedules tailored to regional epidemiology.',
-        },
-        {
-          icon: 'security',
-          title: 'Vector Suppression',
-          desc: 'Acaricide resistance assays and precision dip-tank management.',
-        },
-        {
-          icon: 'fence',
-          title: 'Outbreak Containment',
-          desc: 'Rapid physical quarantine cordon, sentinel animal tagging, and reporting.',
-        },
-      ],
-      compliance: 'Full Veterinary Movement Permits (VMP) Documentation',
-    },
-    {
-      _id: 'livestock-treatment',
-      id: 'livestock-treatment',
-      category: 'therapeutic',
-      protocol: 'Service Protocol 03',
-      badgeText: '24/7 Mobile Ambulatory',
-      badgeIcon: 'medical_services',
-      statusTag: 'On-Farm Lab Results in 20 Mins',
-      title: 'Livestock Treatment & On-Farm Diagnostics',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDh5jaUFBmHwqIryyhXOLCyM_SF4fmmOIZXVxsg_bOyqhV031U28QBWBI-lloxbLb461c7qh5Wxra5XBRp1gvhADzm1p3Fm5s3knm7MuRw7FnAwdIg3oz99cOyoGYVrtm75ibJwefv0-DUnUmK0wEmq_e8py1Osc6QY6_EyW9OXuIzn2j9xZiqLTvOxLyM03ruryocUYinIHMW600l2e449l2-sMjohLy9wj2wfFJ-O-gYsbbJQLCyU',
-      description:
-        'Mobile surgical suites equipped for emergency c-sections, rumenotomy, abomasal displacements, and acute trauma. Supported by field blood analyzers, California Mastitis Testing (CMT), and tick-borne blood smear staining right at your crush pen.',
-      features: [
-        {
-          icon: 'smb_share',
-          title: 'Hemoparasite Scans',
-          desc: 'Anaplasmosis, Babesiosis, and Theileriosis stain assays.',
-        },
-        {
-          icon: 'precision_manufacturing',
-          title: 'Field Laparotomy',
-          desc: 'Aseptic abdominal interventions with continuous sedation monitoring.',
-        },
-        {
-          icon: 'science',
-          title: 'Subclinical Mastitis',
-          desc: 'Quarter somatic cell counts and pathogen-targeted therapy.',
-        },
-      ],
-      compliance: 'Priority Triage dispatched via Ambulatory Hotline',
-    },
-    {
-      _id: 'reproductive-health',
-      id: 'reproductive-health',
-      category: 'reproductive',
-      protocol: 'Service Protocol 04',
-      badgeText: 'Genomics & Reproduction',
-      badgeIcon: 'genetics',
-      statusTag: 'Liquid Nitrogen Cold Chain Verified',
-      title: 'Reproductive Health & Genetic Breeding',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuB_9EiuR-JPwOcWNoWj0W_UeeLanbTS5rR1me9ItLQcTrmoh4237VWg-7VMsCk1ODyaO6o-YGEmS0TmAK6VylXQwCHJuru32pFMcA4UOJsdGgTtxeGdVHzrJ2cllA-w6nC_A-aTKXHcqi2yOLZXVxjHV0KBZ5wM-Oh7Ts_hkOd4Mg4x1QQGDK1PNIbfefM1fDWWXSq-hUcKD7xfEwqw6tOTBmAQB0-b3Y1Lq04PCO_5iySgjZaKBMka',
-      description:
-        'Accelerating dairy milk output and beef carcass conformation through high-index international and acclimatized sires. We handle hormonal oestrus synchronization for batch calving, early ultrasound gestation scans at day 28, and repeat-breeder therapy.',
-      features: [
-        {
-          icon: 'sync_alt',
-          title: 'Fixed-Time AI (FTAI)',
-          desc: 'Progesterone/GnRH hormonal protocols for clustered conception.',
-        },
-        {
-          icon: 'monitor_heart',
-          title: 'Doppler Ultrasonography',
-          desc: 'Ovarian follicle dynamics and fetal viability evaluations.',
-        },
-        {
-          icon: 'grade',
-          title: 'Sexed Semen Programs',
-          desc: '90%+ female heifer generation from tested pedigree bulls.',
-        },
-      ],
-      compliance: 'Authorized Distributor of Certified ABS & World Wide Sires genetics',
-    },
-    {
-      _id: 'nutritional-assessment',
-      id: 'nutritional-assessment',
-      category: 'insurance',
-      protocol: 'Service Protocol 05',
-      badgeText: 'Agronomic Nutrition',
-      badgeIcon: 'grass',
-      statusTag: 'NIR Forage Spectroscopy',
-      title: 'Nutritional Assessment & Feeding Programs',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDzBmA1iUjjVdHf22mm8riFhRv4ez8Tygqa7mf6CrigA6apjigthuM23h0-YOvCXA2Q36LY4KziiH-G7r1rFEsp4qEkaek1-7jBSn2oWwKlD6JnCcYUPKmXDvBvayzz7RktYyZXCav0gVjYlqs2uDVCDizDM91FKEHh5nwkLLP7zQoSd3YPhGc05beY2PYX-z-cFjMdBKKw5bub_Px0ZXRtJb5y8M1bIlnzkpn--XTeACyOjL_QWABX',
-      description:
-        'Feed represents up to 70% of livestock operational overhead. We formulate scientifically balanced Total Mixed Rations (TMR), calibrate mineral premixes to combat postpartum hypocalcemia (milk fever), and optimize silage fermentation to minimize dry-matter loss.',
-      features: [
-        {
-          icon: 'pie_chart',
-          title: 'TMR Formulation',
-          desc: 'Computerized least-cost ration balancing using local agro-byproducts.',
-        },
-        {
-          icon: 'grain',
-          title: 'Silage Bio-Additives',
-          desc: 'Inoculant regimens that slash aerobic spoilage and mycotoxin build-up.',
-        },
-        {
-          icon: 'analytics',
-          title: 'Metabolic Profiling',
-          desc: 'Ketosis testing, ruminal pH sampling, and body condition scoring (BCS).',
-        },
-      ],
-      compliance: 'Reduces Enteric Methane While Boosting Daily Milk Yield',
-    },
-    {
-      _id: 'animal-insurance',
-      id: 'animal-insurance',
-      category: 'insurance',
-      protocol: 'Service Protocol 06',
-      badgeText: 'Risk Management',
-      badgeIcon: 'verified_user',
-      statusTag: 'Underwritten by Top East African Insurers',
-      title: 'Animal Insurance Underwriting & Retainer Subscription',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDc4LFTEGrQ_28rCuyAwiOYBtku6XcBb2e7c0faLJPvLPQLYQZCHWDVrHvYuTtkLqFjIET2wDlb_3o9SI8RZKGrxUk9dvhw3akQm5ZpZ0-mZmqL9qdxovEEtnPQZkIioh5hh1aNhRpkWoUbmetRv6_mIdYFF2VYGkjhVLv59ovcSlM6eZw9vUzf-cOGXcmE3QW3eUJLoXu-pcXQsAAroF_YJyLymPK_WZzUjbJR8dLKP7JtnIGruJ5I',
-      description:
-        'Safeguard biological equity against catastrophic herd loss, calving fatalities, and epidemic diseases. AniHeal provides certified pre-underwriting valuation, biometric RFID tagging, routine compliance audits, and expedited claims post-mortems.',
-      features: [
-        {
-          icon: 'tag',
-          title: 'Biometric Tagging',
-          desc: 'Tamper-proof RFID tagging integrated with national livestock registries.',
-        },
-        {
-          icon: 'assignment_turned_in',
-          title: 'Underwriting Valuation',
-          desc: 'Accurate asset valuation based on pedigree, production, and parity.',
-        },
-        {
-          icon: 'history_edu',
-          title: 'Rapid Claims Autopsy',
-          desc: 'KVB-certified mortality reporting completed within 24 hours of demise.',
-        },
-      ],
-      compliance: 'Low-loss ratio protocols rewarded with annual premium discounts',
-    },
-  ];
+  const servicesList = Array.isArray(dbServices) ? dbServices : [];
+  const publishedServices = servicesList.filter((s) => s.isPublished !== false);
 
-  const servicesList = dbServices && dbServices.length > 0 ? dbServices : defaultServices;
-
-  const filteredServices = servicesList.filter((item) => {
+  const filteredServices = publishedServices.filter((item) => {
     if (activeFilter === 'all') return true;
     const cat = Array.isArray(item.category)
       ? item.category.join(' ').toLowerCase()
@@ -299,26 +129,27 @@ export default function Services() {
               <div className="flex items-center gap-2 mb-4">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
-                  KENYA VETERINARY BOARD REGISTERED
+                  {heroBadge}
                 </span>
-                <span className="text-on-surface-variant font-label-sm text-label-sm hidden sm:inline">
-                  • CAP 366 STATUTORY COMPLIANCE
-                </span>
+                {heroComplianceSubtext && (
+                  <span className="text-on-surface-variant font-label-sm text-label-sm hidden sm:inline">
+                    • {heroComplianceSubtext}
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-end">
                 <div className="lg:col-span-8">
-                  <p className="font-label-lg text-label-lg uppercase tracking-wider text-secondary mb-2 font-semibold">
-                    Diagnostic, Ambulatory &amp; Genetic Infrastructure
-                  </p>
+                  {heroSubtitle && (
+                    <p className="font-label-lg text-label-lg uppercase tracking-wider text-secondary mb-2 font-semibold">
+                      {heroSubtitle}
+                    </p>
+                  )}
                   <h1 className="font-display-lg text-display-lg text-on-surface tracking-tight leading-tight font-extrabold">
-                    Specialized Agro-Pastoral &amp; Veterinary Services
+                    {heroTitle}
                   </h1>
                   <p className="font-body-lg text-body-lg text-on-surface-variant mt-4 max-w-3xl">
-                    Merging molecular epidemiological rigour with sustainable livestock management under
-                    Kenya’s One Health mandate. Our mobile units, cold-chain ambulatory units, and senior
-                    field surgeons serve progressive dairy estates, ranches, and smallholder agrarian
-                    clusters nationwide.
+                    {heroBody}
                   </p>
                 </div>
                 <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
@@ -328,13 +159,15 @@ export default function Services() {
                     </span>
                     <div>
                       <p className="font-label-md text-label-md text-primary uppercase font-bold">
-                        Average Triage Dispatch
+                        {stat1Title}
                       </p>
                       <p className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                        38 Minutes{' '}
-                        <span className="font-body-sm text-body-sm text-on-surface-variant font-normal">
-                          (Central/Rift)
-                        </span>
+                        {stat1Value}{' '}
+                        {stat1Subtitle && (
+                          <span className="font-body-sm text-body-sm text-on-surface-variant font-normal">
+                            {stat1Subtitle}
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -342,10 +175,10 @@ export default function Services() {
                     <span className="material-symbols-outlined text-secondary text-[28px]">biotech</span>
                     <div>
                       <p className="font-label-md text-label-md text-secondary uppercase font-bold">
-                        Rapid Field Diagnostic Kits
+                        {stat2Title}
                       </p>
                       <p className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                        99.2% PCR Accuracy
+                        {stat2Value}
                       </p>
                     </div>
                   </div>
@@ -380,7 +213,37 @@ export default function Services() {
           {/* SECTION: SERVICES DEEP-DIVE CARDS */}
           <section className="w-full bg-surface py-space-xl">
             <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin space-y-space-xl">
-              {filteredServices.map((srv) => (
+              {filteredServices.length === 0 ? (
+                <div className="py-16 text-center text-on-surface-variant bg-surface-clinical rounded-2xl border border-dashed border-border-hairline space-y-3">
+                  <span className="material-symbols-outlined text-[48px] text-outline">
+                    medical_information
+                  </span>
+                  <h3 className="font-headline-sm font-bold text-on-surface">No Clinical Protocols Found</h3>
+                  <p className="text-body-sm text-on-surface-variant max-w-md mx-auto">
+                    {activeFilter !== 'all'
+                      ? 'There are currently no active protocols in this discipline. Try selecting "All Disciplines".'
+                      : 'There are currently no clinical service protocols published in the catalog. Please contact our triage desk for direct assistance.'}
+                  </p>
+                  <div className="pt-2 flex items-center justify-center gap-3">
+                    {activeFilter !== 'all' && (
+                      <button
+                        onClick={() => setActiveFilter('all')}
+                        className="px-5 py-2.5 rounded-full bg-surface-tinted text-primary font-label-md font-semibold hover:bg-primary hover:text-on-primary transition-colors cursor-pointer"
+                      >
+                        View All Disciplines
+                      </button>
+                    )}
+                    <Link
+                      to="/appointment-booking"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary font-label-md font-semibold shadow-sm"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">emergency</span>
+                      <span>Contact Triage Desk</span>
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                filteredServices.map((srv) => (
                 <article
                   key={srv._id || srv.title}
                   id={srv._id || srv.title}
@@ -390,7 +253,7 @@ export default function Services() {
                     <div className="lg:col-span-5 relative min-h-[280px]">
                       <img
                         className="w-full h-full object-cover"
-                        alt={srv.title}
+                        alt={srv.title || srv.name}
                         src={
                           srv.image ||
                           'https://lh3.googleusercontent.com/aida-public/AB6AXuD8GMqS-s8oinLCAa3VcL8Xl7AQBM1TSOEF9XkmOobmDNuBcrYO1BnJzDYY41T8p8D9N9DXAJZ5xXcXs62AY48PxF50eFEK4mvnrlAmyiiDgMPdtr-U4_r1YfvJTd93s_r1lRgit73FS86IaEBFaO558hGseYNlXJUuDUeHj2wgYr0-fWtJ7mG4UE5sfCVkqHFhtPTMjJYKvI4veFlKgjAORdXijb34IbWE4OAS4B7gmYQXrKE4mb-6'
@@ -410,14 +273,14 @@ export default function Services() {
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <span className="font-label-sm text-label-sm uppercase tracking-wider text-secondary font-semibold">
-                            {srv.protocol || 'Service Protocol'}
+                            {srv.protocolNumber || srv.protocol || 'Service Protocol'}
                           </span>
                           <span className="px-2.5 py-0.5 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-semibold">
                             {srv.statusTag || 'Certified One Health'}
                           </span>
                         </div>
                         <h2 className="font-headline-xl text-headline-xl text-on-surface tracking-tight mb-3 font-bold">
-                          {srv.title}
+                          {srv.title || srv.name}
                         </h2>
                         <p className="font-body-lg text-body-lg text-on-surface-variant mb-6 leading-relaxed">
                           {srv.description}
@@ -464,7 +327,7 @@ export default function Services() {
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-colors shadow-sm"
                             to="/appointment-booking"
                           >
-                            <span>Book Triage</span>
+                            <span>{srv.bookingCTA || 'Book Triage'}</span>
                             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                           </Link>
                         </div>
@@ -472,7 +335,7 @@ export default function Services() {
                     </div>
                   </div>
                 </article>
-              ))}
+              )))}
             </div>
           </section>
 
@@ -481,13 +344,14 @@ export default function Services() {
             <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
               <div className="text-center max-w-2xl mx-auto mb-space-xl">
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
-                  Predictable Clinical Protection
+                  {insuranceBlock?.subtitle || 'Predictable Clinical Protection'}
                 </span>
                 <h2 className="font-display-lg text-display-lg text-on-surface tracking-tight mt-1 font-bold">
-                  Animal Insurance &amp; Health Subscriptions
+                  {insuranceBlock?.title || 'Animal Insurance & Health Subscriptions'}
                 </h2>
                 <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                  Underwritten clinical healthcare plans tailored for Dairy Herds, Beef Cattle, Companion Pets, and Working Equine across Kenya.
+                  {insuranceBlock?.body ||
+                    'Underwritten clinical healthcare plans tailored for Dairy Herds, Beef Cattle, Companion Pets, and Working Equine across Kenya.'}
                 </p>
               </div>
 
@@ -634,54 +498,55 @@ export default function Services() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                   <div className="lg:col-span-6">
                     <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
-                      Laboratory Precision
+                      {labBlock?.subtitle || 'Laboratory Precision'}
                     </span>
                     <h2 className="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1 mb-4 font-bold">
-                      Diagnostics Built on Evidence, Not Guesswork
+                      {labBlock?.title || 'Diagnostics Built on Evidence, Not Guesswork'}
                     </h2>
                     <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-6">
-                      Our clinicians use mobile diagnostic benches calibrated against international WOAH
-                      reference limits. We preserve therapeutic efficacy by conducting antimicrobial
-                      sensitivity testing (AST) before prescribing broad-spectrum antibiotics, curbing
-                      local antimicrobial resistance.
+                      {labBlock?.body ||
+                        'Our clinicians use mobile diagnostic benches calibrated against international WOAH reference limits. We preserve therapeutic efficacy by conducting antimicrobial sensitivity testing (AST) before prescribing broad-spectrum antibiotics, curbing local antimicrobial resistance.'}
                     </p>
                     <div className="space-y-4">
                       <div>
                         <div className="flex justify-between font-label-md text-label-md mb-1">
                           <span className="text-on-surface font-semibold">
-                            Reproductive First-Service Conception Rate (FTAI)
+                            {labMeta.metric1Label || 'Reproductive First-Service Conception Rate (FTAI)'}
                           </span>
-                          <span className="text-primary font-bold">68.4%</span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                          <div className="h-full bg-primary rounded-full" style={{ width: '68.4%' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between font-label-md text-label-md mb-1">
-                          <span className="text-on-surface font-semibold">
-                            Mastitis Recovery without Quarter Blindness
-                          </span>
-                          <span className="text-primary font-bold">94.1%</span>
+                          <span className="text-primary font-bold">{labMeta.metric1Value || '68.4%'}</span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
                           <div
-                            className="h-full bg-secondary rounded-full"
-                            style={{ width: '94.1%' }}
+                            className="h-full bg-primary rounded-full transition-all duration-500"
+                            style={{ width: labMeta.metric1Value || '68.4%' }}
                           ></div>
                         </div>
                       </div>
                       <div>
                         <div className="flex justify-between font-label-md text-label-md mb-1">
                           <span className="text-on-surface font-semibold">
-                            Cold Chain Vaccine Viability Score
+                            {labMeta.metric2Label || 'Mastitis Recovery without Quarter Blindness'}
                           </span>
-                          <span className="text-primary font-bold">99.8%</span>
+                          <span className="text-primary font-bold">{labMeta.metric2Value || '94.1%'}</span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
                           <div
-                            className="h-full bg-primary-container rounded-full"
-                            style={{ width: '99.8%' }}
+                            className="h-full bg-secondary rounded-full transition-all duration-500"
+                            style={{ width: labMeta.metric2Value || '94.1%' }}
+                          ></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex justify-between font-label-md text-label-md mb-1">
+                          <span className="text-on-surface font-semibold">
+                            {labMeta.metric3Label || 'Cold Chain Vaccine Viability Score'}
+                          </span>
+                          <span className="text-primary font-bold">{labMeta.metric3Value || '99.8%'}</span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+                          <div
+                            className="h-full bg-primary-container rounded-full transition-all duration-500"
+                            style={{ width: labMeta.metric3Value || '99.8%' }}
                           ></div>
                         </div>
                       </div>
@@ -694,14 +559,14 @@ export default function Services() {
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            Herd Somatic Cell Curve (SCC)
+                            {labMeta.chartTitle || 'Herd Somatic Cell Curve (SCC)'}
                           </h3>
                           <p className="font-body-sm text-body-sm text-on-surface-variant">
-                            Post AniHeal Nutrition &amp; Sanitization Protocol (cells/mL × 1,000)
+                            {labMeta.chartSubtitle || 'Post AniHeal Nutrition & Sanitization Protocol (cells/mL × 1,000)'}
                           </p>
                         </div>
                         <span className="px-2.5 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold border border-border-accent">
-                          -48% Drop
+                          {labMeta.chartBadge || '-48% Drop'}
                         </span>
                       </div>
                       {/* Bar Chart Representation */}
@@ -773,14 +638,14 @@ export default function Services() {
               <div className="rounded-3xl bg-gradient-to-r from-primary to-secondary p-8 sm:p-12 text-on-primary flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
                 <div className="max-w-xl">
                   <span className="inline-block px-3 py-1 rounded-full bg-on-primary/15 font-label-sm text-label-sm uppercase tracking-wider mb-3 font-semibold">
-                    Custom Farm Protocol Scheduling
+                    {ctaBlock?.subtitle || 'Custom Farm Protocol Scheduling'}
                   </span>
                   <h2 className="font-display-lg text-display-lg font-bold leading-tight">
-                    Ready to fortify your herd’s productivity?
+                    {ctaBlock?.title || 'Ready to fortify your herd’s productivity?'}
                   </h2>
                   <p className="font-body-lg text-body-lg opacity-90 mt-2">
-                    Speak directly with a Kenya Veterinary Board registered practitioner or schedule your
-                    initial comprehensive farm diagnostic survey.
+                    {ctaBlock?.body ||
+                      'Speak directly with a Kenya Veterinary Board registered practitioner or schedule your initial comprehensive farm diagnostic survey.'}
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
@@ -788,7 +653,7 @@ export default function Services() {
                     className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-full bg-surface-clinical text-primary font-label-lg text-label-lg font-bold hover:bg-surface-subtle transition-all shadow-sm"
                     to="/appointment-booking"
                   >
-                    Book Appointment Now
+                    {ctaMeta.buttonText || 'Book Appointment Now'}
                   </Link>
                   <a
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-on-primary/20 text-on-primary font-label-lg text-label-lg hover:bg-on-primary/30 transition-all font-semibold"

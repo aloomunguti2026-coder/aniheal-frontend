@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import collaborationService from '../../services/collaborationService';
+import { notifyContentUpdated } from '../../services/eventBus';
 
 export default function AdminCollaborations() {
   const [collaborations, setCollaborations] = useState([]);
@@ -61,13 +62,21 @@ export default function AdminCollaborations() {
       if (selectedStatus !== 'All') params.status = selectedStatus;
 
       const res = await collaborationService.getAdminCollaborations(params);
-      if (res.success) {
-        setCollaborations(res.data || []);
-        if (res.metrics) setMetrics(res.metrics);
+      if (res && res.data) {
+        setCollaborations(res.data);
+        if (res.metrics) {
+          setMetrics(res.metrics);
+        } else {
+          setMetrics({
+            total: res.data.length,
+            published: res.data.filter((i) => i.status === 'published').length,
+            totalComments: res.data.reduce((acc, curr) => acc + (curr.comments?.length || 0), 0),
+          });
+        }
       }
     } catch (err) {
-      console.error('Failed to fetch collaborations:', err);
-      setError('Failed to load collaborations data.');
+      console.error('Failed to load collaborations:', err);
+      setError('Unable to load collaborations. Please verify network or login.');
     } finally {
       setLoading(false);
     }
@@ -90,13 +99,13 @@ export default function AdminCollaborations() {
       header: item.header || '',
       slug: item.slug || '',
       partnerName: item.partnerName || '',
-      category: item.category || 'General Partnership',
+      category: item.category || 'One Health Research',
       imageUrl: item.imageUrl || '',
       summary: item.summary || '',
       content: item.content || '',
       externalUrl: item.externalUrl || '',
       status: item.status || 'published',
-      featured: !!item.featured,
+      featured: item.featured || false,
       tags: Array.isArray(item.tags) ? item.tags.join(', ') : '',
     });
     setFormError(null);
@@ -128,6 +137,7 @@ export default function AdminCollaborations() {
         setActionSuccess('New collaboration story published successfully.');
       }
 
+      notifyContentUpdated({ entity: 'collaborations' });
       setIsModalOpen(false);
       fetchCollaborations();
       setTimeout(() => setActionSuccess(null), 4000);
@@ -141,6 +151,7 @@ export default function AdminCollaborations() {
   const handleDelete = async (id) => {
     try {
       await collaborationService.deleteCollaboration(id);
+      notifyContentUpdated({ entity: 'collaborations' });
       setDeleteConfirmId(null);
       setActionSuccess('Collaboration story removed.');
       fetchCollaborations();

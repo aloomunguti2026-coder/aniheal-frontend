@@ -190,8 +190,11 @@ export default function AdminAppointments() {
                       <div className="text-xs text-outline">{app.phone}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="capitalize font-semibold text-on-surface">{app.county}</div>
-                      <div className="text-xs text-outline truncate max-w-[120px]">{app.farmName}</div>
+                      <div className="capitalize font-semibold text-on-surface flex items-center gap-1">
+                        <span>{app.appointmentType === 'office_visit' ? '🏥 Office Visit' : '🚜 Farm Visit'}</span>
+                      </div>
+                      <div className="text-xs text-outline">{app.county}</div>
+                      <div className="text-xs text-on-surface-variant font-medium truncate max-w-[140px]">{app.assignedHub || app.farmName}</div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="capitalize font-semibold">{app.speciesType}</div>
@@ -286,6 +289,18 @@ export default function AdminAppointments() {
                     {selectedTicket.speciesType} ({selectedTicket.totalHeadcount} total)
                   </span>
                 </div>
+                <div>
+                  <span className="text-outline text-xs block">Appointment Type:</span>
+                  <span className="font-bold text-primary capitalize">
+                    {selectedTicket.appointmentType === 'office_visit' ? '🏥 Office / Clinic Visit' : '🚜 Farm Gate Visit'}
+                  </span>
+                </div>
+                {selectedTicket.assignedHub && (
+                  <div>
+                    <span className="text-outline text-xs block">Assigned Hub / Office:</span>
+                    <span className="font-semibold text-on-surface">{selectedTicket.assignedHub}</span>
+                  </div>
+                )}
                 <div>
                   <span className="text-outline text-xs block">Urgency Tier:</span>
                   <span className="font-bold text-error uppercase">{selectedTicket.dispatchTier}</span>

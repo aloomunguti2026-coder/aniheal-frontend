@@ -24,6 +24,7 @@ const AdminProductSales = lazy(() => import('../admin/pages/AdminProductSales'))
 const AdminInsurance = lazy(() => import('../admin/pages/AdminInsurance'));
 const AdminInsurancePolicies = lazy(() => import('../admin/pages/AdminInsurancePolicies'));
 const AdminSubscribedAnimals = lazy(() => import('../admin/pages/AdminSubscribedAnimals'));
+const AdminHubs = lazy(() => import('../admin/pages/AdminHubs'));
 const AdminVetDashboard = lazy(() => import('../admin/pages/AdminVetDashboard'));
 const AdminCollaborations = lazy(() => import('../admin/pages/AdminCollaborations'));
 const AdminTeam = lazy(() => import('../admin/pages/AdminTeam'));
@@ -83,7 +84,8 @@ export default function AppRoutes() {
           <Route path="pricing" element={<AdminInsurance />} />
           <Route path="insurance/policies" element={<AdminInsurancePolicies />} />
           <Route path="animals" element={<AdminSubscribedAnimals />} />
-          <Route path="hubs" element={<AdminSubscribedAnimals />} />
+          <Route path="hubs" element={<AdminHubs />} />
+          <Route path="locations" element={<AdminHubs />} />
           <Route path="vet/dashboard" element={<AdminVetDashboard />} />
           <Route path="vet" element={<AdminVetDashboard />} />
           <Route path="collaborations" element={<AdminCollaborations />} />

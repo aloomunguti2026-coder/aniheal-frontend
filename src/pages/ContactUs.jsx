@@ -22,9 +22,9 @@ export default function ContactUs() {
   const [errorMsg, setErrorMsg] = useState('');
   const [openFaq, setOpenFaq] = useState(null);
 
-  const email = settings?.contactEmail || 'clinical@aniheal.co.ke';
-  const phone = settings?.contactPhone || '+254 700 264 432';
-  const emergencyPhone = settings?.emergencyHotline || '+254 700 264 432';
+  const email = settings?.primaryEmail || settings?.infoEmail || 'clinical@aniheal.co.ke';
+  const phone = settings?.primaryPhone || '+254 700 264 432';
+  const emergencyPhone = settings?.emergencyPhone || settings?.hotlinePhone || settings?.primaryPhone || '+254 700 264 432';
 
   const defaultFaqs = [
     {
@@ -526,100 +526,58 @@ export default function ContactUs() {
                     </span>
                   </div>
 
-                  {(dbHubs && dbHubs.length > 0 ? dbHubs : [
-                    {
-                      _id: 'hub-hq',
-                      name: 'Headquarters & Kabete Central Clinic',
-                      subtitle: 'Tier-1 Surgical & Pathological Lab',
-                      stationType: 'headquarters',
-                      address: 'Veterinary Complex, Kabete Road, Nairobi, Kenya',
-                      phone: phone,
-                      leadOfficer: 'Dr. M. Gatheca, DVM',
-                    },
-                    {
-                      _id: 'hub-nakuru',
-                      name: 'Nakuru & Rift Valley Ambulatory Hub',
-                      subtitle: 'Dairy, Feedlot & Commercial Pasture Unit',
-                      stationType: 'hub',
-                      address: 'George Morara Rd, Central Industrial Area, Nakuru',
-                      phone: emergencyPhone,
-                      leadOfficer: 'Dr. Eleanor Vance',
-                      coverageAreas: ['Naivasha', 'Rongai', 'Njoro']
-                    },
-                    {
-                      _id: 'hub-eldoret',
-                      name: 'Eldoret Dairy Basin Station',
-                      subtitle: 'Genetics & Synchronization Station',
-                      stationType: 'station',
-                      address: 'Uganda Rd, Agri-Business Mile, Eldoret',
-                      phone: phone,
-                      leadOfficer: 'Dr. Dennis Kipchumba',
-                      coverageAreas: ['Uasin Gishu', 'Trans Nzoia']
-                    },
-                    {
-                      _id: 'hub-nyeri',
-                      name: 'Nyeri Mount Kenya Regional Station',
-                      subtitle: 'Smallholder Agro-Vet Outreach',
-                      stationType: 'station',
-                      address: "Ruring'u Agricultural Hub, Nyeri County",
-                      phone: phone,
-                      leadOfficer: 'Dr. Grace Wanjiku',
-                      coverageAreas: ['Nyeri', 'Kirinyaga', 'Muranga']
-                    },
-                    {
-                      _id: 'hub-kilifi',
-                      name: 'Kilifi Coastal & Livestock Unit',
-                      subtitle: 'Tropical Disease & Vector Control',
-                      stationType: 'outpost',
-                      address: 'Mnarani Agricultural Outpost, Kilifi Coastal Strip',
-                      phone: phone,
-                      leadOfficer: 'Dr. Tariq Al-Mansoor',
-                      coverageAreas: ['Kilifi', 'Mombasa', 'Kwale']
-                    }
-                  ]).map((hub, idx) => (
-                    <div
-                      key={hub._id || idx}
-                      className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2.5">
-                          <div className={`p-2 rounded-lg ${hub.stationType === 'headquarters' ? 'bg-primary-container text-on-primary' : hub.stationType === 'hub' ? 'bg-secondary text-on-secondary' : 'bg-surface-container-high text-primary'}`}>
-                            <span className="material-symbols-outlined text-[20px]">
-                              {hub.stationType === 'headquarters' ? 'domain' : hub.stationType === 'hub' ? 'agriculture' : 'location_on'}
+                  {Array.isArray(dbHubs) && dbHubs.filter((h) => h.isPublished !== false).length > 0 ? (
+                    dbHubs
+                      .filter((h) => h.isPublished !== false)
+                      .map((hub, idx) => (
+                        <div
+                          key={hub._id || idx}
+                          className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2.5">
+                              <div className={`p-2 rounded-lg ${hub.stationType === 'headquarters' ? 'bg-primary-container text-on-primary' : hub.stationType === 'hub' ? 'bg-secondary text-on-secondary' : 'bg-surface-container-high text-primary'}`}>
+                                <span className="material-symbols-outlined text-[20px]">
+                                  {hub.stationType === 'headquarters' ? 'domain' : hub.stationType === 'hub' ? 'agriculture' : 'location_on'}
+                                </span>
+                              </div>
+                              <div>
+                                <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                                  {hub.name}
+                                </h3>
+                                <span className="font-label-sm text-label-sm text-primary font-semibold">
+                                  {hub.subtitle || (hub.zone ? `Zone: ${hub.zone}` : 'Regional Support Depot')}
+                                </span>
+                              </div>
+                            </div>
+                            <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-tinted text-primary font-bold uppercase">
+                              {hub.stationType === 'headquarters' ? 'Main Hub' : hub.stationType || 'Station'}
                             </span>
                           </div>
-                          <div>
-                            <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                              {hub.name}
-                            </h3>
-                            <span className="font-label-sm text-label-sm text-primary font-semibold">
-                              {hub.subtitle || (hub.zone ? `Zone: ${hub.zone}` : 'Regional Support Depot')}
+                          <p className="mt-3 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
+                            <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
+                              pin_drop
+                            </span>
+                            <span>{hub.address}</span>
+                          </p>
+                          <div className="mt-3 pt-3 flex flex-wrap items-center justify-between gap-2 text-label-md font-label-md bg-surface-subtle p-2.5 rounded-lg border border-border-hairline">
+                            <a
+                              className="text-primary hover:underline font-bold flex items-center gap-1"
+                              href={`tel:${(hub.phone || phone).replace(/\s+/g, '')}`}
+                            >
+                              <span className="material-symbols-outlined text-[16px]">call</span> {hub.phone || phone}
+                            </a>
+                            <span className="text-outline text-[13px]">
+                              {hub.leadOfficer ? `Station Lead: ${hub.leadOfficer}` : (Array.isArray(hub.coverageAreas) && hub.coverageAreas.length > 0 ? `Covers: ${hub.coverageAreas.join(', ')}` : 'Ambulatory Dispatch Ready')}
                             </span>
                           </div>
                         </div>
-                        <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-tinted text-primary font-bold uppercase">
-                          {hub.stationType === 'headquarters' ? 'Main Hub' : hub.stationType || 'Station'}
-                        </span>
-                      </div>
-                      <p className="mt-3 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
-                        <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
-                          pin_drop
-                        </span>
-                        <span>{hub.address}</span>
-                      </p>
-                      <div className="mt-3 pt-3 flex flex-wrap items-center justify-between gap-2 text-label-md font-label-md bg-surface-subtle p-2.5 rounded-lg border border-border-hairline">
-                        <a
-                          className="text-primary hover:underline font-bold flex items-center gap-1"
-                          href={`tel:${(hub.phone || phone).replace(/\s+/g, '')}`}
-                        >
-                          <span className="material-symbols-outlined text-[16px]">call</span> {hub.phone || phone}
-                        </a>
-                        <span className="text-outline text-[13px]">
-                          {hub.leadOfficer ? `Station Lead: ${hub.leadOfficer}` : (Array.isArray(hub.coverageAreas) && hub.coverageAreas.length > 0 ? `Covers: ${hub.coverageAreas.join(', ')}` : 'Ambulatory Dispatch Ready')}
-                        </span>
-                      </div>
+                      ))
+                  ) : (
+                    <div className="p-6 rounded-xl bg-surface-clinical border border-border-hairline text-center text-on-surface-variant text-sm">
+                      No ambulatory stations currently published.
                     </div>
-                  ))}
+                  )}
 
                   {/* Interactive Static Map View */}
                   <div className="rounded-xl overflow-hidden shadow-sm mt-4 bg-surface-subtle border border-border-hairline">

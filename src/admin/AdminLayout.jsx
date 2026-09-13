@@ -40,6 +40,7 @@ export default function AdminLayout() {
       group: 'Services & Content',
       items: [
         { label: 'Clinical Services', to: '/admin/services', icon: 'medical_services' },
+        { label: 'Office Locations & Hubs', to: '/admin/hubs', icon: 'location_on' },
         { label: 'Collaborations & Stories', to: '/admin/collaborations', icon: 'handshake' },
         { label: 'Veterinary Team', to: '/admin/team', icon: 'group' },
         { label: 'Homepage Copy', to: '/admin/content/home', icon: 'home' },

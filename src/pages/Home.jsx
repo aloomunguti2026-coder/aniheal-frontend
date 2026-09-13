@@ -6,7 +6,16 @@ import { useContent } from '../hooks/useContent';
 import { API_BASE_URL } from '../services/api';
 
 export default function Home() {
-  const { blocks, services, settings } = useContent();
+  const { blocks, services, collaborations, settings } = useContent();
+
+  const topBarBlock = blocks['home_top_bar'] || {
+    badge: 'KENYA VETERINARY BOARD ACCREDITED',
+    metadata: {
+      licenseText: 'Practice License KVB/PR/2025/0842',
+      oneHealthText: 'One Health Alliance Member',
+      dispatchText: '24/7 Mobile Triage Response',
+    },
+  };
 
   const heroBlock = blocks['home_hero'] || {
     badge: 'KENYA VETERINARY BOARD ACCREDITED',
@@ -21,7 +30,17 @@ export default function Home() {
         { label: 'Counties Covered', value: '14+' },
       ],
       primaryCtaText: 'Get Help from Us',
+      primaryCtaLink: '#booking-dispatch',
       secondaryCtaText: 'Explore Services & Solutions',
+      secondaryCtaLink: '/services',
+      heroImage:
+        'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w',
+      heroTagline: 'Healthy Animals • Healthy People • Healthy Planet',
+      fieldTriageStatus: 'Active Mobile Units',
+      fieldTriageSquads: 'Central & Rift Valley Squads',
+      fieldTriageDesc: 'Diagnostics, Ultrasound & Vaccine Dispensary',
+      kvbVerifiedText: 'KVB Verified Clinical Practice',
+      kvbLicenseTag: 'ACC/2025',
     },
   };
 
@@ -56,12 +75,32 @@ export default function Home() {
     },
   };
 
+  const servicesHeaderBlock = blocks['home_services_header'] || {
+    subtitle: 'Specialized Veterinary Practice',
+    title: 'AniHeal Clinical Services',
+    body: 'Structured agro-veterinary interventions engineered for sustainable animal productivity, preventative health, and community safety.',
+  };
+
+  const bookingHeaderBlock = blocks['home_booking_header'] || {
+    badge: 'FIELD CLINICAL APPOINTMENT',
+    title: 'Schedule Farm Visit or Clinical Triage',
+    body: 'Direct dispatch to commercial farms, smallholder dairy units, ranches, and companion animal households throughout Kenya.',
+    metadata: {
+      emergencyTitle: 'Acute Animal Emergency?',
+      emergencyBody: 'Do not wait for form confirmation. Call our 24/7 Field Ambulatory Hotline directly at',
+      whatsappTitle: 'WhatsApp Photo/Tele-Triage',
+      whatsappSubtitle: 'Send photos/video of symptoms',
+    },
+  };
+
   const missionVisionBlock = blocks['home_mission_vision'] || {
     metadata: {
       mission:
         'To deliver long-lasting, affordable and sustainable animal health solutions that empower farmers, veterinarians and communities across Africa - integrating one-health principles, climate smart practices and innovation to combat diseases, strengthen food systems and advance animal welfare.',
+      missionTags: ['Climate-Smart', 'Community-Empowered'],
       vision:
         'A world where animal life matters, every farmer thrives and every community is protected.',
+      visionTags: ['Animal Welfare First', 'Thriving Agribusiness'],
     },
   };
 
@@ -69,74 +108,45 @@ export default function Home() {
     subtitle: 'Institutional Network',
     title: 'Collaborations & Partnerships',
     body: 'Partnering across government entities, pharmaceutical manufacturers, and research bodies to advance One Health across East Africa.',
+    metadata: {
+      partnerCards: [
+        {
+          icon: 'account_balance',
+          title: 'Government & Veterinary Authorities',
+          desc: 'Collaborating with the Directorate of Veterinary Services (DVS), Kenya Veterinary Board (KVB), and County Agriculture departments on statutory disease surveillance and vaccination.',
+          badge: 'Statutory Compliance',
+        },
+        {
+          icon: 'medication',
+          title: 'Pharmaceutical & Biological Suppliers',
+          desc: 'Sourcing accredited high-stability cold chain vaccines, high-potency veterinary therapeutics, and certified antiparasitics with strict traceability.',
+          badge: 'Cold-Chain Assurance',
+        },
+        {
+          icon: 'school',
+          title: 'Academic & Research Institutions',
+          desc: 'Conducting field validation trials, antimicrobial resistance (AMR) monitoring, and livestock disease transmission mapping with universities and research consortia.',
+          badge: 'Applied One Health Research',
+        },
+      ],
+    },
   };
 
   const ctaBannerBlock = blocks['home_cta_banner'] || {
     subtitle: 'Rapid Response Service',
     title: 'Need Immediate Clinical Assistance on Your Farm?',
     body: 'Our field veterinary team provides real-time WhatsApp visual triage, emergency ambulatory dispatch, and immediate drug dosage guidance.',
+    metadata: {
+      whatsappButtonText: 'WhatsApp Vet Now',
+      hotlineButtonText: 'Hotline:',
+    },
   };
 
-  const emergencyPhone = settings?.emergencyHotline || settings?.emergencyPhone || '+254 700 264 432';
+  const emergencyPhone = settings?.emergencyPhone || settings?.hotlinePhone || settings?.primaryPhone || '+254 700 264 432';
 
-  const defaultServices = [
-    {
-      _id: '1',
-      title: 'Consultancy – One Health',
-      badgeText: 'Core Focus',
-      badgeIcon: 'public',
-      statusTag: 'Zoonosis & Biosafety',
-      description:
-        'Integrating human, animal, and environmental ecosystems for zoonotic disease prevention, biosafety audits, and climate-resilient animal agriculture.',
-    },
-    {
-      _id: '2',
-      title: 'Disease Control & Treatment',
-      badgeText: 'Epidemiology',
-      badgeIcon: 'vaccines',
-      statusTag: 'Vaccines & Protocols',
-      description:
-        'Systematic herd vaccination regimes, biosecurity barriers, transboundary livestock disease alerts, and acute clinical therapeutic interventions.',
-    },
-    {
-      _id: '3',
-      title: 'Livestock Treatment & Diagnostics',
-      badgeText: 'Ambulatory',
-      badgeIcon: 'medical_services',
-      statusTag: 'On-Farm Lab Diagnostics',
-      description:
-        'Ambulatory farm-gate diagnosis, hematology profiles, tick-borne pathogen screenings, mastitis diagnostic milk cultures, and surgical procedures.',
-    },
-    {
-      _id: '4',
-      title: 'Animal Insurance & Subscription',
-      badgeText: 'Herd Security',
-      badgeIcon: 'shield',
-      statusTag: 'Commercial & Dairy Plans',
-      description:
-        'Comprehensive livestock insurance verification, scheduled preventive audits, mortality mitigation coverage, and affordable monthly veterinary retainers.',
-    },
-    {
-      _id: '5',
-      title: 'Reproductive Health & Breeding Management',
-      badgeText: 'Genetics',
-      badgeIcon: 'rebase_edit',
-      statusTag: 'AI & Pregnancy Scanning',
-      description:
-        'Artificial insemination (AI) programs, high-yield sire genetics selection, heat synchronization, ultrasound pregnancy checks, and dystocia intervention.',
-    },
-    {
-      _id: '6',
-      title: 'Nutritional Assessment & Feeding Programs',
-      badgeText: 'Productivity',
-      badgeIcon: 'grain',
-      statusTag: 'Ration Balancing',
-      description:
-        'Total mixed ration (TMR) optimization, fodder analysis, mycotoxin binding protocols, body condition scoring, and drought-hardy silages.',
-    },
-  ];
-
-  const displayedServices = services && services.length > 0 ? services : defaultServices;
+  const displayedServices = Array.isArray(services)
+    ? services.filter((s) => s.isPublished !== false)
+    : [];
 
   const [formData, setFormData] = React.useState({
     producerName: '',
@@ -214,24 +224,26 @@ export default function Home() {
       <main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]">
         <div className="flex flex-col w-full">
           {/* Top Accreditation & Regulatory Status Bar */}
-          <section className="w-full bg-surface-container-low py-space-sm px-margin-mobile lg:px-gutter">
+          <section className="w-full bg-surface-container-low py-space-sm px-margin-mobile lg:px-gutter border-b border-border-hairline">
             <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-space-sm text-label-sm font-label-sm">
               <div className="flex items-center gap-space-sm">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-tinted text-primary font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
-                  KENYA VETERINARY BOARD ACCREDITED
+                  {topBarBlock.badge || 'KENYA VETERINARY BOARD ACCREDITED'}
                 </span>
                 <span className="text-on-surface-variant hidden sm:inline">
-                  • Practice License KVB/PR/2025/0842
+                  • {topBarBlock.metadata?.licenseText || 'Practice License KVB/PR/2025/0842'}
                 </span>
               </div>
               <div className="flex items-center gap-space-md text-on-surface-variant">
                 <span className="inline-flex items-center gap-1">
                   <span className="material-symbols-outlined text-[15px] text-primary">verified</span>
-                  One Health Alliance Member
+                  {topBarBlock.metadata?.oneHealthText || 'One Health Alliance Member'}
                 </span>
                 <span className="hidden md:inline text-on-surface-variant/40">|</span>
-                <span className="hidden md:inline">24/7 Mobile Triage Response</span>
+                <span className="hidden md:inline">
+                  {topBarBlock.metadata?.dispatchText || '24/7 Mobile Triage Response'}
+                </span>
               </div>
             </div>
           </section>
@@ -243,11 +255,11 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center relative z-10">
               {/* Left Column: Copy & CTAs */}
               <div className="lg:col-span-7 flex flex-col items-start gap-space-lg">
-                <div className="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm uppercase tracking-wider">
+                <div className="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm uppercase tracking-wider font-bold">
                   <span className="material-symbols-outlined text-[16px]">health_and_safety</span>
                   {heroBlock.badge || heroBlock.subtitle || 'ACCREDITED KENYA VETERINARY CONSULTANCY'}
                 </div>
-                <h1 className="font-display-lg text-display-lg text-primary tracking-tight">
+                <h1 className="font-display-lg text-display-lg text-primary tracking-tight font-extrabold">
                   {heroBlock.title || 'Professional Consultancy You Can Trust'}
                 </h1>
                 <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-2xl">
@@ -257,14 +269,14 @@ export default function Home() {
                 {/* Dual CTA Row */}
                 <div className="flex flex-wrap items-center gap-space-md w-full sm:w-auto">
                   <a
-                    className="inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-secondary transition-all transform hover:-translate-y-0.5"
+                    className="inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-md hover:bg-secondary transition-all transform hover:-translate-y-0.5 font-semibold"
                     href={heroBlock.metadata?.primaryCtaLink || '#booking-dispatch'}
                   >
                     <span>{heroBlock.metadata?.primaryCtaText || heroBlock.ctaPrimaryText || 'Get Help from Us'}</span>
                     <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                   </a>
                   <Link
-                    className="inline-flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-tinted text-primary font-label-lg text-label-lg hover:bg-secondary-container/50 transition-all"
+                    className="inline-flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-tinted text-primary font-label-lg text-label-lg hover:bg-secondary-container/50 transition-all font-semibold"
                     to={heroBlock.metadata?.secondaryCtaLink || '/services'}
                   >
                     <span>{heroBlock.metadata?.secondaryCtaText || heroBlock.ctaSecondaryText || 'Explore Services & Solutions'}</span>
@@ -274,7 +286,7 @@ export default function Home() {
 
                 {/* Social Presence & Quick Connect */}
                 <div className="flex items-center gap-space-sm pt-space-xs">
-                  <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                  <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">
                     Follow Clinical Updates:
                   </span>
                   <div className="flex items-center gap-2">
@@ -313,9 +325,9 @@ export default function Home() {
                         { label: 'Counties Covered', value: '14+' },
                       ]
                   ).map((m, mi) => (
-                    <div key={mi} className="p-space-sm rounded-lg bg-surface-subtle flex flex-col">
+                    <div key={mi} className="p-space-sm rounded-lg bg-surface-subtle flex flex-col border border-border-hairline">
                       <span className="font-headline-sm text-headline-sm text-primary font-bold">{m.value}</span>
-                      <span className="font-label-sm text-label-sm text-on-surface-variant">
+                      <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
                         {m.label}
                       </span>
                     </div>
@@ -331,22 +343,30 @@ export default function Home() {
                     <img
                       alt="AniHeal Veterinary Solutions Official Emblem"
                       className="w-full max-w-[280px] h-auto object-contain"
-                      src="https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w"
+                      src={
+                        heroBlock.metadata?.heroImage ||
+                        'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w'
+                      }
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src =
+                          'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w';
+                      }}
                     />
-                    <div className="mt-space-sm inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-tinted text-secondary font-label-sm text-label-sm">
+                    <div className="mt-space-sm inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-tinted text-secondary font-label-sm text-label-sm font-semibold">
                       <span className="w-2 h-2 rounded-full bg-primary"></span>
-                      Healthy Animals • Healthy People • Healthy Planet
+                      {heroBlock.metadata?.heroTagline || 'Healthy Animals • Healthy People • Healthy Planet'}
                     </div>
                   </div>
 
                   {/* Clinical Diagnostic Snapshot Card */}
-                  <div className="mt-space-md bg-surface-clinical rounded-xl p-space-md shadow-sm">
+                  <div className="mt-space-md bg-surface-clinical rounded-xl p-space-md shadow-sm border border-border-hairline">
                     <div className="flex items-center justify-between mb-space-xs">
                       <span className="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">
                         Field Triage Status
                       </span>
-                      <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary-container text-on-secondary-fixed-variant">
-                        Active Mobile Units
+                      <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary-container text-on-secondary-fixed-variant font-semibold">
+                        {heroBlock.metadata?.fieldTriageStatus || 'Active Mobile Units'}
                       </span>
                     </div>
                     <div className="flex items-center gap-space-md">
@@ -357,27 +377,28 @@ export default function Home() {
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="font-label-md text-label-md text-on-surface font-semibold truncate">
-                          Central &amp; Rift Valley Squads
+                          {heroBlock.metadata?.fieldTriageSquads || 'Central & Rift Valley Squads'}
                         </span>
                         <span className="font-body-sm text-body-sm text-on-surface-variant">
-                          Diagnostics, Ultrasound &amp; Vaccine Dispensary
+                          {heroBlock.metadata?.fieldTriageDesc || 'Diagnostics, Ultrasound & Vaccine Dispensary'}
                         </span>
                       </div>
                     </div>
                   </div>
 
                   {/* KVB Official Certification Seal Strip */}
-                  <div className="mt-space-sm p-space-sm rounded-lg bg-surface-tinted flex items-center justify-between">
+                  <div className="mt-space-sm p-space-sm rounded-lg bg-surface-tinted flex items-center justify-between border border-border-hairline">
                     <div className="flex items-center gap-space-xs">
                       <span className="material-symbols-outlined text-kvb-gold text-[20px]">
                         military_tech
                       </span>
                       <span className="font-label-sm text-label-sm text-on-surface font-bold">
-                        KVB Verified Clinical Practice
+                        {heroBlock.metadata?.kvbVerifiedText || 'KVB Verified Clinical Practice'}
                       </span>
                     </div>
                     <span className="font-label-sm text-label-sm text-primary font-bold">
-                      {settings?.licenseNumber ? settings.licenseNumber.split('/').pop() : 'ACC/2025'}
+                      {heroBlock.metadata?.kvbLicenseTag ||
+                        (settings?.licenseNumber ? settings.licenseNumber.split('/').pop() : 'ACC/2025')}
                     </span>
                   </div>
                 </div>
@@ -386,7 +407,7 @@ export default function Home() {
           </section>
 
           {/* Why Choose Us Section */}
-          <section id="why-choose-us" className="w-full bg-surface-subtle py-space-2xl">
+          <section id="why-choose-us" className="w-full bg-surface-subtle py-space-2xl border-t border-border-hairline">
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter flex flex-col gap-space-xl">
               <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
                 <span className="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold mb-space-xs">
@@ -396,7 +417,8 @@ export default function Home() {
                   {whyChooseUsBlock.title || 'Why Choose us'}
                 </h2>
                 <p className="font-body-md text-body-md text-on-surface-variant mt-space-xs">
-                  {whyChooseUsBlock.body || 'Built on surgical rigor, preventive epidemiological discipline, and certified regulatory compliance.'}
+                  {whyChooseUsBlock.body ||
+                    'Built on surgical rigor, preventive epidemiological discipline, and certified regulatory compliance.'}
                 </p>
               </div>
 
@@ -453,7 +475,7 @@ export default function Home() {
                         {pillar.desc}
                       </p>
                     </div>
-                    <div className="mt-space-lg pt-space-md bg-surface-subtle rounded-lg p-space-md flex items-center justify-between">
+                    <div className="mt-space-lg pt-space-md bg-surface-subtle rounded-lg p-space-md flex items-center justify-between border border-border-hairline">
                       <div className="flex items-center gap-space-xs">
                         <span className="material-symbols-outlined text-primary text-[20px]">
                           verified_user
@@ -473,67 +495,82 @@ export default function Home() {
           </section>
 
           {/* Core Services Showcase */}
-          <section className="w-full bg-surface-clinical py-space-2xl" id="clinical-services">
+          <section className="w-full bg-surface-clinical py-space-2xl border-t border-border-hairline" id="clinical-services">
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter flex flex-col gap-space-xl">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
                 <div>
                   <span className="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold">
-                    Specialized Veterinary Practice
+                    {servicesHeaderBlock.subtitle || 'Specialized Veterinary Practice'}
                   </span>
                   <h2 className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
-                    AniHeal Clinical Services
+                    {servicesHeaderBlock.title || 'AniHeal Clinical Services'}
                   </h2>
                 </div>
                 <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
-                  Structured agro-veterinary interventions engineered for sustainable animal
-                  productivity, preventative health, and community safety.
+                  {servicesHeaderBlock.body ||
+                    'Structured agro-veterinary interventions engineered for sustainable animal productivity, preventative health, and community safety.'}
                 </p>
               </div>
 
               {/* Dynamic Service Units Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
-                {displayedServices.slice(0, 6).map((srv) => (
-                  <div
-                    key={srv._id || srv.title}
-                    className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-space-md">
-                        <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                          <span className="material-symbols-outlined text-[22px]">
-                            {srv.badgeIcon || srv.icon || 'medical_services'}
+                {displayedServices.length === 0 ? (
+                  <div className="col-span-full py-12 text-center text-on-surface-variant bg-surface-subtle rounded-xl border border-dashed border-border-hairline space-y-2">
+                    <span className="material-symbols-outlined text-[36px] text-outline">
+                      medical_information
+                    </span>
+                    <p className="font-headline-sm font-bold text-on-surface">No Clinical Services Currently Listed</p>
+                    <p className="text-body-sm text-on-surface-variant max-w-sm mx-auto">
+                      Please check back soon or explore our appointment dispatch for on-farm assistance.
+                    </p>
+                  </div>
+                ) : (
+                  displayedServices.slice(0, 6).map((srv) => (
+                    <div
+                      key={srv._id || srv.title}
+                      className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-space-md">
+                          <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
+                            <span className="material-symbols-outlined text-[22px]">
+                              {srv.badgeIcon || srv.icon || 'medical_services'}
+                            </span>
+                          </div>
+                          <span className="font-label-sm text-label-sm text-primary font-bold px-2 py-0.5 rounded bg-surface-tinted">
+                            {srv.badgeText ||
+                              srv.badge ||
+                              (Array.isArray(srv.category) ? srv.category[0] : srv.category) ||
+                              'Core Focus'}
                           </span>
                         </div>
-                        <span className="font-label-sm text-label-sm text-primary font-bold px-2 py-0.5 rounded bg-surface-tinted">
-                          {srv.badgeText || srv.badge || (Array.isArray(srv.category) ? srv.category[0] : srv.category) || 'Core Focus'}
-                        </span>
+                        <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
+                          {srv.title}
+                        </h3>
+                        <p className="font-body-md text-body-md text-on-surface-variant">
+                          {srv.description}
+                        </p>
                       </div>
-                      <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
-                        {srv.title}
-                      </h3>
-                      <p className="font-body-md text-body-md text-on-surface-variant">
-                        {srv.description}
-                      </p>
+                      <div className="mt-space-md pt-space-sm flex items-center justify-between border-t border-border-hairline/50">
+                        <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
+                          {srv.statusTag || srv.tag || 'One Health Certified'}
+                        </span>
+                        <Link
+                          className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
+                          to="/appointment-booking"
+                        >
+                          Consult <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                        </Link>
+                      </div>
                     </div>
-                    <div className="mt-space-md pt-space-sm flex items-center justify-between border-t border-border-hairline/50">
-                      <span className="font-label-sm text-label-sm text-on-surface-variant">
-                        {srv.statusTag || srv.tag || 'One Health Certified'}
-                      </span>
-                      <Link
-                        className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
-                        to="/appointment-booking"
-                      >
-                        Consult <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </section>
 
           {/* Interactive Rapid Farm Dispatch & Appointment Booking Form */}
-          <section className="w-full bg-surface-subtle py-space-2xl" id="booking-dispatch">
+          <section className="w-full bg-surface-subtle py-space-2xl border-t border-border-hairline" id="booking-dispatch">
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter">
               <div className="bg-surface-clinical rounded-2xl shadow-sm p-space-lg lg:p-space-xl border border-border-hairline">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
@@ -542,26 +579,26 @@ export default function Home() {
                     <div className="flex flex-col gap-space-md">
                       <div className="inline-flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold w-fit">
                         <span className="material-symbols-outlined text-[16px]">schedule</span>
-                        FIELD CLINICAL APPOINTMENT
+                        {bookingHeaderBlock.badge || 'FIELD CLINICAL APPOINTMENT'}
                       </div>
                       <h2 className="font-headline-lg text-headline-lg text-on-surface font-bold">
-                        Schedule Farm Visit or Clinical Triage
+                        {bookingHeaderBlock.title || 'Schedule Farm Visit or Clinical Triage'}
                       </h2>
-                      <p className="font-body-md text-body-md text-on-surface-variant">
-                        Direct dispatch to commercial farms, smallholder dairy units, ranches, and
-                        companion animal households throughout Kenya.
+                      <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        {bookingHeaderBlock.body ||
+                          'Direct dispatch to commercial farms, smallholder dairy units, ranches, and companion animal households throughout Kenya.'}
                       </p>
                       {/* Urgent Triage Box */}
-                      <div className="p-space-md rounded-xl bg-error-container text-on-error-container flex flex-col gap-space-xs">
+                      <div className="p-space-md rounded-xl bg-error-container text-on-error-container flex flex-col gap-space-xs border border-error/20">
                         <div className="flex items-center gap-space-xs font-bold text-label-md font-label-md text-kvb-red">
                           <span className="material-symbols-outlined text-[20px]">
                             e911_emergency
                           </span>
-                          Acute Animal Emergency?
+                          {bookingHeaderBlock.metadata?.emergencyTitle || 'Acute Animal Emergency?'}
                         </div>
                         <p className="font-body-sm text-body-sm">
-                          Do not wait for form confirmation. Call our 24/7 Field Ambulatory Hotline
-                          directly at{' '}
+                          {bookingHeaderBlock.metadata?.emergencyBody ||
+                            'Do not wait for form confirmation. Call our 24/7 Field Ambulatory Hotline directly at'}{' '}
                           <a href={`tel:${emergencyPhone.replace(/\s+/g, '')}`} className="font-bold underline">
                             {emergencyPhone}
                           </a>
@@ -573,7 +610,7 @@ export default function Home() {
                     {/* WhatsApp Live Triage Shortcut */}
                     <div className="mt-space-lg pt-space-md">
                       <a
-                        className="w-full flex items-center justify-between p-space-md rounded-xl bg-surface-tinted hover:bg-secondary-container transition-colors text-primary"
+                        className="w-full flex items-center justify-between p-space-md rounded-xl bg-surface-tinted hover:bg-secondary-container transition-colors text-primary border border-border-hairline"
                         href={`https://wa.me/${emergencyPhone.replace(/[^0-9]/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -582,10 +619,10 @@ export default function Home() {
                           <span className="material-symbols-outlined text-[24px]">chat</span>
                           <div className="flex flex-col text-left">
                             <span className="font-label-md text-label-md font-bold text-on-surface">
-                              WhatsApp Photo/Tele-Triage
+                              {bookingHeaderBlock.metadata?.whatsappTitle || 'WhatsApp Photo/Tele-Triage'}
                             </span>
                             <span className="font-body-sm text-body-sm text-on-surface-variant">
-                              Send photos/video of symptoms
+                              {bookingHeaderBlock.metadata?.whatsappSubtitle || 'Send photos/video of symptoms'}
                             </span>
                           </div>
                         </div>
@@ -775,14 +812,14 @@ export default function Home() {
 
                       {/* Submit Action */}
                       <div className="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-xs">
-                        <div className="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
+                        <div className="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm font-medium">
                           <span className="material-symbols-outlined text-primary text-[18px]">
                             verified
                           </span>
                           <span>Direct triage review by licensed KVB veterinary officer</span>
                         </div>
                         <button
-                          className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-secondary transition-all cursor-pointer disabled:opacity-50"
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-secondary transition-all cursor-pointer disabled:opacity-50 font-bold"
                           type="submit"
                           disabled={submitting}
                         >
@@ -850,7 +887,7 @@ export default function Home() {
           </section>
 
           {/* Verbatim Mission & Vision Section */}
-          <section className="w-full bg-surface-clinical py-space-2xl">
+          <section className="w-full bg-surface-clinical py-space-2xl border-t border-border-hairline">
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-space-lg items-stretch">
                 {/* Our Mission Card */}
@@ -874,11 +911,12 @@ export default function Home() {
                   </div>
                   <div className="mt-space-lg pt-space-md flex items-center gap-space-md text-label-sm font-label-sm text-secondary font-semibold">
                     <span className="flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px]">eco</span> Climate-Smart
+                      <span className="material-symbols-outlined text-[16px]">eco</span>{' '}
+                      {missionVisionBlock.metadata?.missionTags?.[0] || 'Climate-Smart'}
                     </span>
                     <span className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px]">diversity_1</span>{' '}
-                      Community-Empowered
+                      {missionVisionBlock.metadata?.missionTags?.[1] || 'Community-Empowered'}
                     </span>
                   </div>
                 </div>
@@ -902,16 +940,16 @@ export default function Home() {
                         'A world where animal life matters, every farmer thrives and every community is protected.'}
                     </p>
                   </div>
-                  <div className="mt-space-lg pt-space-md flex items-center gap-space-md text-label-sm font-label-sm text-on-surface-variant">
+                  <div className="mt-space-lg pt-space-md flex items-center gap-space-md text-label-sm font-label-sm text-on-surface-variant font-medium">
                     <span className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-primary text-[16px]">pets</span>{' '}
-                      Animal Welfare First
+                      {missionVisionBlock.metadata?.visionTags?.[0] || 'Animal Welfare First'}
                     </span>
                     <span className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-primary text-[16px]">
                         agriculture
                       </span>{' '}
-                      Thriving Agribusiness
+                      {missionVisionBlock.metadata?.visionTags?.[1] || 'Thriving Agribusiness'}
                     </span>
                   </div>
                 </div>
@@ -919,12 +957,12 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Strategic Collaborations Section */}
-          <section id="collaborations" className="w-full bg-surface-subtle py-space-2xl">
+          {/* Strategic Collaborations Section (Dynamic CMS Collaborations) */}
+          <section id="collaborations" className="w-full bg-surface-subtle py-space-2xl border-t border-border-hairline">
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter flex flex-col gap-space-xl">
               <div className="text-center max-w-2xl mx-auto flex flex-col gap-space-xs">
                 <span className="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest">
-                  {partnershipsBlock.subtitle || 'Institutional Network'}
+                  {partnershipsBlock.subtitle || 'Institutional Network & CMS'}
                 </span>
                 <h2 className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
                   {partnershipsBlock.title || 'Collaborations & Partnerships'}
@@ -935,60 +973,132 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* 3 Tier Partner Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-                {/* Government & Regulators */}
-                <div className="bg-surface-clinical rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm border border-border-hairline">
-                  <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-[22px]">account_balance</span>
-                  </div>
-                  <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                    Government &amp; Veterinary Authorities
-                  </h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant">
-                    Collaborating with the Directorate of Veterinary Services (DVS), Kenya Veterinary
-                    Board (KVB), and County Agriculture departments on statutory disease surveillance
-                    and vaccination.
-                  </p>
-                  <span className="mt-auto font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">
-                    Statutory Compliance
-                  </span>
-                </div>
+              {/* Dynamic CMS Collaborations Grid */}
+              {Array.isArray(collaborations) && collaborations.filter((c) => c.status === 'published').length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
+                  {collaborations
+                    .filter((c) => c.status === 'published')
+                    .slice(0, 6)
+                    .map((item) => (
+                      <article
+                        key={item._id || item.slug}
+                        className="bg-surface-clinical rounded-2xl overflow-hidden shadow-sm flex flex-col border border-border-hairline hover:shadow-md hover:border-primary/40 transition-all duration-300 group"
+                      >
+                        {item.imageUrl && (
+                          <div className="relative aspect-video w-full overflow-hidden bg-surface-tinted">
+                            <img
+                              src={item.imageUrl}
+                              alt={item.header}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
+                            />
+                            {item.featured && (
+                              <span className="absolute top-3 left-3 bg-primary text-on-primary text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[14px]">star</span>
+                                Featured
+                              </span>
+                            )}
+                            {item.partnerName && (
+                              <span className="absolute bottom-3 left-3 bg-surface-dark/85 backdrop-blur-md text-on-surface-dark text-xs font-semibold px-2.5 py-1 rounded-lg border border-white/10">
+                                {item.partnerName}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        <div className="p-space-lg flex flex-col flex-1 gap-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="px-2.5 py-0.5 rounded-md bg-surface-tinted text-primary text-[11px] font-bold uppercase tracking-wider">
+                              {item.category || 'One Health'}
+                            </span>
+                            {item.publishedAt && (
+                              <span className="text-[11px] text-outline">
+                                {new Date(item.publishedAt).toLocaleDateString('en-KE', {
+                                  month: 'short',
+                                  year: 'numeric',
+                                })}
+                              </span>
+                            )}
+                          </div>
 
-                {/* Pharmaceuticals & Cold Chain */}
-                <div className="bg-surface-clinical rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm border border-border-hairline">
-                  <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-[22px]">medication</span>
-                  </div>
-                  <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                    Pharmaceutical &amp; Biological Suppliers
-                  </h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant">
-                    Sourcing accredited high-stability cold chain vaccines, high-potency veterinary
-                    therapeutics, and certified antiparasitics with strict traceability.
-                  </p>
-                  <span className="mt-auto font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">
-                    Cold-Chain Assurance
-                  </span>
-                </div>
+                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold line-clamp-2 group-hover:text-primary transition-colors">
+                            {item.header}
+                          </h3>
 
-                {/* Research & Academic Institutions */}
-                <div className="bg-surface-clinical rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm border border-border-hairline">
-                  <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-[22px]">school</span>
-                  </div>
-                  <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                    Academic &amp; Research Institutions
-                  </h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant">
-                    Conducting field validation trials, antimicrobial resistance (AMR) monitoring, and
-                    livestock disease transmission mapping with universities and research consortia.
-                  </p>
-                  <span className="mt-auto font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">
-                    Applied One Health Research
-                  </span>
+                          <p className="font-body-md text-body-md text-on-surface-variant line-clamp-3">
+                            {item.summary || item.content?.substring(0, 150)}
+                          </p>
+
+                          {Array.isArray(item.tags) && item.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
+                              {item.tags.slice(0, 3).map((tag, tIdx) => (
+                                <span
+                                  key={tIdx}
+                                  className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-subtle text-outline border border-border-hairline"
+                                >
+                                  #{tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="pt-3 border-t border-border-hairline flex items-center justify-between mt-2">
+                            <Link
+                              to="/collaborations"
+                              className="text-xs font-bold text-primary hover:text-primary-dark inline-flex items-center gap-1 group-hover:underline"
+                            >
+                              <span>Read Full Initiative</span>
+                              <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                            </Link>
+                            {item.externalUrl && (
+                              <a
+                                href={item.externalUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-outline hover:text-primary transition-colors"
+                                title="External Partner Link"
+                              >
+                                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </article>
+                    ))}
                 </div>
-              </div>
+              ) : (
+                <div className="bg-surface-clinical rounded-2xl p-10 text-center border border-border-hairline max-w-xl mx-auto space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-surface-tinted text-primary mx-auto flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[32px]">handshake</span>
+                  </div>
+                  <h3 className="font-headline-sm font-bold text-on-surface">
+                    No Public Collaborations Listed Yet
+                  </h3>
+                  <p className="text-body-md text-on-surface-variant">
+                    Collaborations and One Health partnerships published by our veterinary directors will appear directly here.
+                  </p>
+                  <Link
+                    to="/collaborations"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-bold text-sm hover:bg-primary-dark transition-all"
+                  >
+                    <span>View All Partner Initiatives</span>
+                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </Link>
+                </div>
+              )}
+
+              {/* View All Collaborations CTA */}
+              {Array.isArray(collaborations) && collaborations.filter((c) => c.status === 'published').length > 0 && (
+                <div className="flex justify-center pt-2">
+                  <Link
+                    to="/collaborations"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-surface-clinical border border-border-hairline text-primary font-bold text-sm hover:bg-surface-tinted hover:border-primary/40 transition-all shadow-sm"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">hub</span>
+                    <span>Explore All Collaborations &amp; Alliances</span>
+                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </Link>
+                </div>
+              )}
             </div>
           </section>
 
@@ -1009,20 +1119,22 @@ export default function Home() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-space-sm shrink-0">
                 <a
-                  className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-clinical text-primary font-label-lg text-label-lg shadow-sm hover:bg-surface-tinted transition-all"
+                  className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-clinical text-primary font-label-lg text-label-lg shadow-sm hover:bg-surface-tinted transition-all font-semibold"
                   href={`https://wa.me/${emergencyPhone.replace(/[^0-9]/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <span className="material-symbols-outlined text-[20px]">chat</span>
-                  <span>WhatsApp Vet Now</span>
+                  <span>{ctaBannerBlock.metadata?.whatsappButtonText || 'WhatsApp Vet Now'}</span>
                 </a>
                 <a
-                  className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-error text-on-error font-label-lg text-label-lg shadow-sm hover:bg-kvb-red transition-all"
+                  className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-error text-on-error font-label-lg text-label-lg shadow-sm hover:bg-kvb-red transition-all font-semibold"
                   href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
                 >
                   <span className="material-symbols-outlined text-[20px]">call</span>
-                  <span>Hotline: {emergencyPhone}</span>
+                  <span>
+                    {ctaBannerBlock.metadata?.hotlineButtonText || 'Hotline:'} {emergencyPhone}
+                  </span>
                 </a>
               </div>
             </div>

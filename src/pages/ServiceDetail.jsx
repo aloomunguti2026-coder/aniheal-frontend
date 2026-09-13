@@ -24,10 +24,33 @@ export default function ServiceDetail() {
       if (res.success && res.data) {
         setService(res.data);
       } else {
+        // Fallback to persisted cache if backend returned error
+        const cache = localStorage.getItem('aniheal_persisted_content_v2');
+        if (cache) {
+          const parsed = JSON.parse(cache);
+          const found = (parsed.services || []).find((s) => s.slug === slug || s._id === slug || s.id === slug);
+          if (found) {
+            setService(found);
+            return;
+          }
+        }
         setError('Clinical service protocol not found.');
       }
     } catch (err) {
-      console.error('Failed to load service details:', err);
+      console.error('Failed to load service details from network, trying cache:', err);
+      const cache = localStorage.getItem('aniheal_persisted_content_v2');
+      if (cache) {
+        try {
+          const parsed = JSON.parse(cache);
+          const found = (parsed.services || []).find((s) => s.slug === slug || s._id === slug || s.id === slug);
+          if (found) {
+            setService(found);
+            return;
+          }
+        } catch (e) {
+          console.warn('Failed to parse cache:', e);
+        }
+      }
       setError('Unable to load clinical service protocol details.');
     } finally {
       setLoading(false);

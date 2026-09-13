@@ -3,18 +3,51 @@ import { Link } from 'react-router-dom';
 import { useContent } from '../../hooks/useContent';
 
 export default function Footer() {
-  const { settings } = useContent();
+  const { settings, services: dbServices, hubs: dbHubs } = useContent();
 
-  const email = settings?.contactEmail || 'clinical@aniheal.co.ke';
-  const phone = settings?.contactPhone || '+254 700 264 432';
-  const emergencyPhone = settings?.emergencyHotline || '+254 700 264 432';
-  const address = settings?.officeAddress || 'Veterinary Complex, Kabete Rd\nNairobi, Kenya';
+  const siteName = settings?.siteName || 'AniHeal Veterinary Solutions';
+  const licenseNumber = settings?.licenseNumber || 'KVB/PR/2025/0842';
+  const licenseDescription =
+    settings?.licenseDescription ||
+    `Regulated Veterinary Practice License No. ${licenseNumber}. Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.`;
+  const aboutText =
+    settings?.metaDescription ||
+    'AniHeal is an accredited agro-veterinary enterprise advancing clinical diagnostics, preventative medicine, and precision livestock production across Kenya. Guided by the One Health framework, we safeguard animal welfare, human wellbeing, and ecosystem sustainability.';
+
+  const email = settings?.primaryEmail || settings?.contactEmail || 'clinical@aniheal.co.ke';
+  const phone = settings?.primaryPhone || settings?.contactPhone || '+254 700 264 432';
+  const emergencyPhone =
+    settings?.emergencyPhone ||
+    settings?.emergencyHotline ||
+    settings?.hotlinePhone ||
+    '+254 700 264 432';
+  const address =
+    settings?.headquartersAddress ||
+    settings?.officeAddress ||
+    'Veterinary Complex, Kabete Rd\nNairobi, Kenya';
+
   const hours =
     typeof settings?.operatingHours === 'string'
       ? settings.operatingHours
       : settings?.operatingHours?.emergency
       ? `${settings.operatingHours.weekday || 'Mon–Sat 07:00–18:00'} | ${settings.operatingHours.emergency}`
       : '24/7 Emergency Response';
+
+  const publishedServices = Array.isArray(dbServices)
+    ? dbServices.filter((s) => s.isPublished !== false)
+    : [];
+
+  const publishedHubs = Array.isArray(dbHubs)
+    ? dbHubs.filter((h) => h.isPublished !== false)
+    : [];
+
+  const hubsSummary =
+    publishedHubs.length > 0
+      ? publishedHubs
+          .map((h) => h.name.replace(/Ambulatory|Hub|Station|Depot|Center/gi, '').trim())
+          .filter(Boolean)
+          .join(' • ')
+      : settings?.regionalHubsSummary || 'Nakuru • Eldoret • Nyeri • Kilifi';
 
   return (
     <footer id="contact-info" className="w-full bg-surface-container-low text-on-surface pt-space-2xl pb-space-xl">
@@ -28,14 +61,11 @@ export default function Footer() {
               src="https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w"
             />
             <span className="font-headline-sm text-headline-sm text-primary font-bold">
-              AniHeal Veterinary Solutions
+              {siteName}
             </span>
           </div>
           <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-            AniHeal is an accredited agro-veterinary enterprise advancing clinical diagnostics,
-            preventative medicine, and precision livestock production across Kenya. Guided by the One
-            Health framework, we safeguard animal welfare, human wellbeing, and ecosystem
-            sustainability.
+            {aboutText}
           </p>
           <div className="p-space-md rounded-xl bg-surface-tinted">
             <div className="flex items-center gap-space-xs mb-1">
@@ -45,58 +75,37 @@ export default function Footer() {
               </span>
             </div>
             <p className="font-body-sm text-body-sm text-on-surface-variant">
-              Regulated Veterinary Practice License No. KVB/PR/2025/0842. Authorized for Mobile &amp;
-              Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.
+              {licenseDescription}
             </p>
           </div>
         </div>
 
-        {/* Veterinary Services Links */}
+        {/* Dynamic Veterinary Services Links from Admin CMS */}
         <div className="flex flex-col gap-space-sm">
           <span className="font-label-lg text-label-lg text-primary font-bold tracking-wide uppercase">
             Veterinary Services
           </span>
+          {publishedServices.length > 0 ? (
+            publishedServices.slice(0, 6).map((service, idx) => (
+              <Link
+                key={service._id || idx}
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5"
+                to={`/services/${service.slug || service._id}`}
+              >
+                <span className="truncate">{service.title || service.name}</span>
+              </Link>
+            ))
+          ) : (
+            <p className="font-body-sm text-xs text-outline">
+              Clinical protocols synced live from CMS.
+            </p>
+          )}
           <Link
-            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+            className="font-body-sm text-body-sm text-primary font-bold hover:underline flex items-center gap-1 pt-1"
             to="/services"
           >
-            Consultancy – One Health
-          </Link>
-          <Link
-            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            to="/services"
-          >
-            Disease Control &amp; Treatment
-          </Link>
-          <Link
-            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            to="/services"
-          >
-            Livestock Treatment
-          </Link>
-          <Link
-            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            to="/services"
-          >
-            Insurance &amp; Herd Plans
-          </Link>
-          <Link
-            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            to="/services"
-          >
-            Breeding &amp; Reproductive
-          </Link>
-          <Link
-            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            to="/services"
-          >
-            Nutritional Feeds Program
-          </Link>
-          <Link
-            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            to="/services"
-          >
-            Vaccines &amp; Biologicals
+            <span>All Clinical Services</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
           </Link>
         </div>
 
@@ -119,15 +128,27 @@ export default function Footer() {
           </Link>
           <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            to="/services"
+            to="/products"
           >
-            Research &amp; Institutional
+            Products &amp; Feeds
+          </Link>
+          <Link
+            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+            to="/animal-insurance"
+          >
+            Animal Insurance Plans
+          </Link>
+          <Link
+            className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+            to="/collaborations"
+          >
+            Collaborations &amp; Alliances
           </Link>
           <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
             to="/our-team"
           >
-            Veterinary Surgeons &amp; Faculty
+            Our Team &amp; Faculty
           </Link>
           <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
@@ -136,26 +157,27 @@ export default function Footer() {
             Regional Clinic Contacts
           </Link>
           <a
-            className="font-body-sm text-body-sm text-kvb-red font-bold hover:underline"
+            className="font-body-sm text-body-sm text-error font-bold hover:underline inline-flex items-center gap-1"
             href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
           >
-            24/7 Field Ambulatory
+            <span className="material-symbols-outlined text-[16px]">call</span>
+            <span>24/7 Field Ambulatory</span>
           </a>
         </div>
 
-        {/* Headquarters & Hubs */}
+        {/* Dynamic Headquarters & Regional Offices */}
         <div className="flex flex-col gap-space-sm">
           <span className="font-label-lg text-label-lg text-primary font-bold tracking-wide uppercase">
-            Headquarters &amp; Hubs
+            Headquarters &amp; Offices
           </span>
           <p className="font-body-sm text-body-sm text-on-surface-variant whitespace-pre-line">
             {address}
           </p>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
-            <strong className="text-on-surface">Regional Ambulatory Stations:</strong><br />
-            Nakuru • Eldoret • Nyeri • Kilifi
+            <strong className="text-on-surface">Regional Stations:</strong><br />
+            {hubsSummary}
           </p>
-          <div className="pt-space-xs">
+          <div className="pt-space-xs space-y-1">
             <p className="font-body-sm text-body-sm text-on-surface-variant">
               <strong className="text-on-surface">Email:</strong> {email}
             </p>
@@ -166,14 +188,21 @@ export default function Footer() {
               <strong className="text-on-surface">Hours:</strong> {hours}
             </p>
           </div>
+          <Link
+            to="/our-team"
+            className="font-body-sm text-body-sm text-primary font-bold hover:underline flex items-center gap-1 pt-1"
+          >
+            <span>View Office Locations</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </Link>
         </div>
       </div>
 
       {/* Sub-footer bottom bar */}
       <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter mt-space-xl pt-space-md flex flex-col md:flex-row items-center justify-between text-on-surface-variant font-label-md text-label-md gap-space-md border-t border-border-hairline">
-        <p>© 2025 AniHeal Veterinary Solutions (aniheal.co.ke). All rights reserved.</p>
+        <p>© {new Date().getFullYear()} {siteName} (aniheal.co.ke). All rights reserved.</p>
         <div className="flex items-center gap-space-md flex-wrap justify-center">
-          <span className="text-kvb-gold font-bold">KVB Accredited Facility</span>
+          <span className="text-primary font-bold">KVB Accredited Practice</span>
           <span className="text-on-surface-variant/40">|</span>
           <span>Ministry of Agriculture &amp; Livestock Standards</span>
           <span className="text-on-surface-variant/40">|</span>

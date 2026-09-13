@@ -151,7 +151,24 @@ export default function AdminSettings() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="block font-label-md text-label-md text-on-surface font-semibold mb-1">
+                Animal Emergency Triage Hotline *
+              </label>
+              <input
+                type="text"
+                name="emergencyPhone"
+                value={settings.emergencyPhone}
+                onChange={handleChange}
+                placeholder="+254 700 264 432"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md font-bold text-error focus:bg-surface-clinical focus:border-primary"
+              />
+              <span className="text-[11px] text-outline mt-1 block">
+                Dialed across triage banners &amp; emergency footers
+              </span>
+            </div>
+
             <div>
               <label className="block font-label-md text-label-md text-on-surface font-semibold mb-1">
                 24/7 Field Hotline Display
@@ -161,21 +178,29 @@ export default function AdminSettings() {
                 name="hotlinePhone"
                 value={settings.hotlinePhone}
                 onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md font-bold text-error focus:bg-surface-clinical focus:border-primary"
+                placeholder="+254 700 ANIHEAL"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md font-semibold text-on-surface focus:bg-surface-clinical focus:border-primary"
               />
+              <span className="text-[11px] text-outline mt-1 block">
+                Branded vanity display number
+              </span>
             </div>
 
             <div>
               <label className="block font-label-md text-label-md text-on-surface font-semibold mb-1">
-                Direct Telephone Number
+                Direct Office Telephone
               </label>
               <input
                 type="text"
                 name="primaryPhone"
                 value={settings.primaryPhone}
                 onChange={handleChange}
+                placeholder="+254 700 264 432"
                 className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
               />
+              <span className="text-[11px] text-outline mt-1 block">
+                Official landline / HQ reception
+              </span>
             </div>
 
             <div>
@@ -187,8 +212,12 @@ export default function AdminSettings() {
                 name="whatsappNumber"
                 value={settings.whatsappNumber}
                 onChange={handleChange}
+                placeholder="254700264432"
                 className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md font-mono focus:bg-surface-clinical focus:border-primary"
               />
+              <span className="text-[11px] text-outline mt-1 block">
+                International format without '+' for wa.me links
+              </span>
             </div>
 
             <div>
