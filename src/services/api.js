@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 export async function request(endpoint, options = {}) {
   const token = localStorage.getItem('auth_token');
@@ -8,7 +8,12 @@ export async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  // If endpoint is a full URL, use it directly; otherwise prepend API_BASE_URL
+  const url = endpoint.startsWith('http://') || endpoint.startsWith('https://')
+    ? endpoint
+    : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+
+  const response = await fetch(url, {
     ...options,
     headers,
   });
@@ -25,9 +30,12 @@ export async function request(endpoint, options = {}) {
   return data;
 }
 
-export default {
+export const api = {
   get: (url, options) => request(url, { ...options, method: 'GET' }),
   post: (url, body, options) => request(url, { ...options, method: 'POST', body: JSON.stringify(body) }),
   put: (url, body, options) => request(url, { ...options, method: 'PUT', body: JSON.stringify(body) }),
+  patch: (url, body, options) => request(url, { ...options, method: 'PATCH', body: JSON.stringify(body) }),
   delete: (url, options) => request(url, { ...options, method: 'DELETE' }),
 };
+
+export default api;

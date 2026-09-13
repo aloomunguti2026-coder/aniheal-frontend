@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
+import { useContent } from '../hooks/useContent';
+import { API_BASE_URL } from '../services/api';
 
 export default function BookAppointment() {
+  const { settings, services: dbServices, hubs: dbHubs } = useContent();
+
   const [speciesType, setSpeciesType] = useState('dairy');
   const [headcountTotal, setHeadcountTotal] = useState('48');
   const [affectedCount, setAffectedCount] = useState('3');
@@ -19,6 +23,10 @@ export default function BookAppointment() {
   const [filesCount, setFilesCount] = useState(0);
   const [ticketRef, setTicketRef] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const emergencyPhone = settings?.emergencyHotline || '+254 700 264 432';
 
   const handleGPS = () => {
     if (navigator.geolocation) {
@@ -45,12 +53,56 @@ export default function BookAppointment() {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    setTicketRef(`ANH-2025-${randomNum}`);
-    setIsSubmitted(true);
-    window.scrollTo({ top: 120, behavior: 'smooth' });
+  const handleSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setSubmitting(true);
+    setErrorMsg('');
+    try {
+      const payload = {
+        farmerName: farmName || 'Valued Farmer',
+        farmName: farmName || `${contactPhone}'s Farm`,
+        phone: contactPhone,
+        county: farmCounty || 'Central Region',
+        speciesType,
+        totalHeadcount: Number(headcountTotal) || 1,
+        affectedCount: Number(affectedCount) || 1,
+        clinicalService,
+        dispatchTier,
+        preferredDate: visitDate,
+        landmarks: farmLandmarks,
+        symptomsDescription: symptomsDescription || 'Clinical triage inspection requested',
+      };
+
+      const res = await fetch(`${API_BASE_URL}/appointments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success && data?.data?.ticketRef) {
+        setTicketRef(data.data.ticketRef);
+        setIsSubmitted(true);
+        setErrorMsg('');
+        window.scrollTo({ top: 120, behavior: 'smooth' });
+      } else {
+        setIsSubmitted(false);
+        setTicketRef('');
+        if (res.status >= 500) {
+          setErrorMsg(data?.message || 'Server error encountered while processing your triage ticket. Please try again or call our hotline.');
+        } else {
+          setErrorMsg(data?.message || 'Failed to submit triage ticket. Please verify all required fields and try again.');
+        }
+      }
+    } catch (err) {
+      console.error('Triage submission network error:', err);
+      setIsSubmitted(false);
+      setTicketRef('');
+      setErrorMsg('Unable to submit your triage request. The server is currently unavailable. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const speciesOptions = [
@@ -61,53 +113,63 @@ export default function BookAppointment() {
     { id: 'swine', label: 'Swine / Piggery', sub: 'Commercial sows', icon: 'shelves' },
     { id: 'camel', label: 'Camelids', sub: 'Dromedary', icon: 'flare' },
     { id: 'canine', label: 'Working Dogs', sub: 'Pastoral canines', icon: 'sound_detection_dog_barking' },
-    { id: 'equine', label: 'Equine / Asses', sub: 'Draft & Riding', icon: 'pest_control_rodent' }
+    { id: 'equine', label: 'Equine / Asses', sub: 'Draft & Riding', icon: 'pest_control_rodent' },
   ];
 
-  const serviceOptions = [
+  const defaultServices = [
     {
       id: 'acute_treatment',
       title: 'Sick Animal / Acute Treatment',
       desc: 'High fever, bloat, downer cow, dystocia, or respiratory distress.',
       icon: 'vital_signs',
-      iconColor: 'text-error'
+      iconColor: 'text-error',
     },
     {
       id: 'vaccination',
       title: 'Routine Herd Vaccination',
       desc: 'FMD, Anthrax, Blackquarter, Lumpy Skin, Newcastle disease.',
       icon: 'vaccines',
-      iconColor: 'text-primary'
+      iconColor: 'text-primary',
     },
     {
       id: 'ultrasound_breeding',
       title: 'Ultrasound / Fertility Check',
       desc: 'Early pregnancy diagnosis (30d+), ovary profiling, sync protocols.',
       icon: 'female',
-      iconColor: 'text-secondary'
+      iconColor: 'text-secondary',
     },
     {
       id: 'surgery',
       title: 'Surgical Intervention',
       desc: 'Field caesarean, dehorning, wound revision, rumenotomy.',
       icon: 'chips',
-      iconColor: 'text-primary'
+      iconColor: 'text-primary',
     },
     {
       id: 'nutrition_audit',
       title: 'Feed & Nutrition Audit',
       desc: 'Silage testing, mineral deficieny analysis, TMR ration balancing.',
       icon: 'nutrition',
-      iconColor: 'text-primary'
+      iconColor: 'text-primary',
     },
     {
       id: 'post_mortem',
       title: 'Post-Mortem / Pathology',
       desc: 'Rapid herd mortality investigation & lab histology sampling.',
       icon: 'deceased',
-      iconColor: 'text-error'
-    }
+      iconColor: 'text-error',
+    },
   ];
+
+  const serviceOptions = dbServices && dbServices.length > 0
+    ? dbServices.map(s => ({
+        id: s.slug || s._id || s.title?.toLowerCase().replace(/\s+/g, '_'),
+        title: s.title,
+        desc: s.description || s.summary || '',
+        icon: s.icon || 'medical_services',
+        iconColor: s.category === 'emergency' ? 'text-error' : s.category === 'reproduction' ? 'text-secondary' : 'text-primary'
+      }))
+    : defaultServices;
 
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased">
@@ -134,10 +196,10 @@ export default function BookAppointment() {
               <div className="flex items-center gap-2">
                 <a
                   className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm uppercase tracking-wider font-bold shadow-sm hover:brightness-95 transition-all"
-                  href="tel:+254700264432"
+                  href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
                 >
                   <span className="material-symbols-outlined text-[16px]">phone_forwarded</span>
-                  <span>Call Ambulatory Squad: +254 700 264 432</span>
+                  <span>Call Ambulatory Squad: {emergencyPhone}</span>
                 </a>
               </div>
             </div>
@@ -232,6 +294,49 @@ export default function BookAppointment() {
 
                 {!isSubmitted ? (
                   <form className="space-y-space-lg" id="triageBookingForm" onSubmit={handleSubmit}>
+                    {errorMsg && (
+                      <div
+                        className="p-5 rounded-2xl bg-error-container text-on-error-container text-body-sm font-semibold border-2 border-error/40 shadow-sm animate-fade-in space-y-3"
+                        id="triageSubmissionError"
+                        role="alert"
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="material-symbols-outlined text-[28px] text-error shrink-0 mt-0.5">
+                            cloud_off
+                          </span>
+                          <div className="flex-1">
+                            <strong className="block font-headline-sm text-headline-sm text-error font-bold mb-1">
+                              Triage Submission Failed
+                            </strong>
+                            <p className="font-body-md text-body-md text-on-error-container">
+                              {errorMsg}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-error/20">
+                          <button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={submitting}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-error text-on-error font-label-md text-label-md font-bold shadow hover:brightness-95 transition-all cursor-pointer disabled:opacity-50"
+                            id="retrySubmissionBtn"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">
+                              {submitting ? 'sync' : 'refresh'}
+                            </span>
+                            <span>{submitting ? 'Retrying Transmission...' : 'Retry Submission'}</span>
+                          </button>
+                          <a
+                            href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-clinical text-error font-label-md text-label-md font-semibold hover:bg-surface-tinted transition-colors border border-error/30"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">call</span>
+                            <span>Direct Hotline: {emergencyPhone}</span>
+                          </a>
+                        </div>
+                      </div>
+                    )}
                     {/* STEP 1: Livestock Classification & Herd Size */}
                     <div className="p-space-lg rounded-xl bg-surface-clinical shadow-sm space-y-space-md border border-border-hairline">
                       <div className="flex items-center justify-between">
@@ -240,7 +345,7 @@ export default function BookAppointment() {
                             <span className="material-symbols-outlined text-[20px]">pets</span>
                           </div>
                           <div>
-                            <h2 className="font-headline-sm text-headline-sm text-on-surface">
+                            <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">
                               1. Livestock Classification &amp; Population
                             </h2>
                             <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -351,7 +456,7 @@ export default function BookAppointment() {
                           </span>
                         </div>
                         <div>
-                          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+                          <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">
                             2. Clinical Service Required
                           </h2>
                           <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -407,7 +512,7 @@ export default function BookAppointment() {
                           <span className="material-symbols-outlined text-[20px]">pin_drop</span>
                         </div>
                         <div>
-                          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+                          <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">
                             3. Farm Location &amp; Physical Access
                           </h2>
                           <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -434,15 +539,15 @@ export default function BookAppointment() {
                             <option disabled value="">
                               Select Primary Administrative County
                             </option>
-                            <option value="nakuru">Nakuru County (Naivasha, Rongai, Njoro, Gilgil)</option>
-                            <option value="kiambu">Kiambu County (Limuru, Kikuyu, Githunguri, Thika)</option>
-                            <option value="muranga">Murang'a County (Karatina border, Maragua)</option>
-                            <option value="nyandarua">Nyandarua County (Ol Kalou, Kinangop)</option>
-                            <option value="uasin_gishu">Uasin Gishu (Eldoret, Turbo, Moiben)</option>
-                            <option value="nandi">Nandi County (Kapsabet, Nandi Hills)</option>
-                            <option value="kajiado">Kajiado (Kitengela, Isinya, Kajiado Central)</option>
-                            <option value="machakos">Machakos (Kathiani, Athi River, Kangundo)</option>
-                            <option value="nairobi">Nairobi Metropolitan Area</option>
+                            <option value="Nakuru County (Naivasha, Rongai, Njoro, Gilgil)">Nakuru County (Naivasha, Rongai, Njoro, Gilgil)</option>
+                            <option value="Kiambu County (Limuru, Kikuyu, Githunguri, Thika)">Kiambu County (Limuru, Kikuyu, Githunguri, Thika)</option>
+                            <option value="Murang'a County (Karatina border, Maragua)">Murang'a County (Karatina border, Maragua)</option>
+                            <option value="Nyandarua County (Ol Kalou, Kinangop)">Nyandarua County (Ol Kalou, Kinangop)</option>
+                            <option value="Uasin Gishu (Eldoret, Turbo, Moiben)">Uasin Gishu (Eldoret, Turbo, Moiben)</option>
+                            <option value="Nandi County (Kapsabet, Nandi Hills)">Nandi County (Kapsabet, Nandi Hills)</option>
+                            <option value="Kajiado (Kitengela, Isinya, Kajiado Central)">Kajiado (Kitengela, Isinya, Kajiado Central)</option>
+                            <option value="Machakos (Kathiani, Athi River, Kangundo)">Machakos (Kathiani, Athi River, Kangundo)</option>
+                            <option value="Nairobi Metropolitan Area">Nairobi Metropolitan Area</option>
                           </select>
                         </div>
                         <div className="space-y-1.5">
@@ -502,7 +607,7 @@ export default function BookAppointment() {
                           <span className="material-symbols-outlined text-[20px]">schedule</span>
                         </div>
                         <div>
-                          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+                          <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">
                             4. Schedule &amp; Triage Priority Tier
                           </h2>
                           <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -645,7 +750,7 @@ export default function BookAppointment() {
                           </span>
                         </div>
                         <div>
-                          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+                          <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">
                             5. Clinical Symptoms &amp; Prior Interventions
                           </h2>
                           <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -714,6 +819,25 @@ export default function BookAppointment() {
                       </div>
                     </div>
 
+                    {errorMsg && (
+                      <div className="p-4 rounded-xl bg-error-container text-on-error-container text-body-sm font-semibold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-error/30 animate-fade-in">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-error text-[22px] shrink-0">
+                            error
+                          </span>
+                          <span>{errorMsg}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleSubmit}
+                          disabled={submitting}
+                          className="px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm font-bold shadow hover:brightness-95 transition-all cursor-pointer whitespace-nowrap shrink-0 disabled:opacity-50"
+                        >
+                          {submitting ? 'Retrying...' : 'Retry Submission'}
+                        </button>
+                      </div>
+                    )}
+
                     {/* Submission Action Bar */}
                     <div className="p-space-md rounded-xl bg-surface-tinted flex flex-col sm:flex-row items-center justify-between gap-4 border border-border-accent">
                       <div className="flex items-center gap-2 text-on-surface-variant">
@@ -726,10 +850,11 @@ export default function BookAppointment() {
                         </span>
                       </div>
                       <button
-                        className="w-full sm:w-auto px-8 h-12 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 cursor-pointer"
+                        className="w-full sm:w-auto px-8 h-12 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 cursor-pointer disabled:opacity-50"
                         type="submit"
+                        disabled={submitting}
                       >
-                        <span>Submit &amp; Dispatch Squad</span>
+                        <span>{submitting ? 'Transmitting...' : 'Submit & Dispatch Squad'}</span>
                         <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                       </button>
                     </div>
@@ -751,12 +876,12 @@ export default function BookAppointment() {
                     <div className="inline-flex items-center gap-3 p-3 rounded-lg bg-surface-subtle font-label-md text-label-md text-primary font-bold border border-border-hairline">
                       <span>Ticket Ref: #{ticketRef}</span>
                       <span>•</span>
-                      <span>Assigned: Central Ambulance Unit 2</span>
+                      <span>Assigned: Central Ambulance Unit</span>
                     </div>
                     <div className="pt-3 flex flex-wrap items-center justify-center gap-3">
                       <a
                         className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#25D366] text-white font-label-lg text-label-lg font-semibold shadow-sm hover:brightness-95 transition-all"
-                        href={`https://wa.me/254700264432?text=Hello%20AniHeal,%20I%20have%20submitted%20triage%20ticket%20%23${ticketRef}%20for%20${encodeURIComponent(
+                        href={`https://wa.me/${emergencyPhone.replace(/[^0-9]/g, '')}?text=Hello%20AniHeal,%20I%20have%20submitted%20triage%20ticket%20%23${ticketRef}%20for%20${encodeURIComponent(
                           farmName || 'my farm'
                         )}.`}
                         target="_blank"
@@ -794,7 +919,7 @@ export default function BookAppointment() {
                   </p>
                   <a
                     className="w-full h-11 rounded-full bg-[#25D366] text-white font-label-md text-label-md font-bold flex items-center justify-center gap-2 shadow-sm hover:brightness-95 transition-all"
-                    href="https://wa.me/254700264432?text=Hello%20AniHeal%20Vet%20Triage,%20I%20have%20an%20urgent%20animal%20case%20to%20review."
+                    href={`https://wa.me/${emergencyPhone.replace(/[^0-9]/g, '')}?text=Hello%20AniHeal%20Vet%20Triage,%20I%20have%20an%20urgent%20animal%20case%20to%20review.`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -976,10 +1101,10 @@ export default function BookAppointment() {
               </div>
               <a
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm uppercase tracking-wider font-semibold hover:bg-[#991B1B] transition-colors"
-                href="tel:+254700264432"
+                href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
               >
                 <span className="material-symbols-outlined text-[16px]">phone_in_talk</span>
-                <span>Call +254 700 ANIHEAL</span>
+                <span>Call {emergencyPhone}</span>
               </a>
             </div>
           </section>

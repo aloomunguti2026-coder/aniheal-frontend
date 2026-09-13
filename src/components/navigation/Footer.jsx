@@ -1,7 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useContent } from '../../hooks/useContent';
 
 export default function Footer() {
+  const { settings } = useContent();
+
+  const email = settings?.contactEmail || 'clinical@aniheal.co.ke';
+  const phone = settings?.contactPhone || '+254 700 264 432';
+  const emergencyPhone = settings?.emergencyHotline || '+254 700 264 432';
+  const address = settings?.officeAddress || 'Veterinary Complex, Kabete Rd\nNairobi, Kenya';
+  const hours =
+    typeof settings?.operatingHours === 'string'
+      ? settings.operatingHours
+      : settings?.operatingHours?.emergency
+      ? `${settings.operatingHours.weekday || 'Mon–Sat 07:00–18:00'} | ${settings.operatingHours.emergency}`
+      : '24/7 Emergency Response';
+
   return (
     <footer id="contact-info" className="w-full bg-surface-container-low text-on-surface pt-space-2xl pb-space-xl">
       <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl">
@@ -42,48 +56,48 @@ export default function Footer() {
           <span className="font-label-lg text-label-lg text-primary font-bold tracking-wide uppercase">
             Veterinary Services
           </span>
-          <a
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#clinical-services"
+            to="/services"
           >
             Consultancy – One Health
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#clinical-services"
+            to="/services"
           >
             Disease Control &amp; Treatment
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#clinical-services"
+            to="/services"
           >
             Livestock Treatment
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#clinical-services"
+            to="/services"
           >
             Insurance &amp; Herd Plans
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#clinical-services"
+            to="/services"
           >
             Breeding &amp; Reproductive
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#clinical-services"
+            to="/services"
           >
             Nutritional Feeds Program
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#clinical-services"
+            to="/services"
           >
             Vaccines &amp; Biologicals
-          </a>
+          </Link>
         </div>
 
         {/* Quick Access Links */}
@@ -97,33 +111,33 @@ export default function Footer() {
           >
             Home Overview
           </Link>
-          <a
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#booking-dispatch"
+            to="/appointment-booking"
           >
             Book Farm Visit
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#collaborations"
+            to="/services"
           >
             Research &amp; Institutional
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#why-choose-us"
+            to="/our-team"
           >
             Veterinary Surgeons &amp; Faculty
-          </a>
-          <a
+          </Link>
+          <Link
             className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-            href="#contact-info"
+            to="/contact-us"
           >
             Regional Clinic Contacts
-          </a>
+          </Link>
           <a
             className="font-body-sm text-body-sm text-kvb-red font-bold hover:underline"
-            href="tel:+254700264432"
+            href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
           >
             24/7 Field Ambulatory
           </a>
@@ -134,9 +148,8 @@ export default function Footer() {
           <span className="font-label-lg text-label-lg text-primary font-bold tracking-wide uppercase">
             Headquarters &amp; Hubs
           </span>
-          <p className="font-body-sm text-body-sm text-on-surface-variant">
-            Veterinary Complex, Kabete Rd<br />
-            Nairobi, Kenya
+          <p className="font-body-sm text-body-sm text-on-surface-variant whitespace-pre-line">
+            {address}
           </p>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             <strong className="text-on-surface">Regional Ambulatory Stations:</strong><br />
@@ -144,13 +157,13 @@ export default function Footer() {
           </p>
           <div className="pt-space-xs">
             <p className="font-body-sm text-body-sm text-on-surface-variant">
-              <strong className="text-on-surface">Email:</strong> clinical@aniheal.co.ke
+              <strong className="text-on-surface">Email:</strong> {email}
             </p>
             <p className="font-body-sm text-body-sm text-on-surface-variant">
-              <strong className="text-on-surface">Direct Call:</strong> +254 700 ANIHEAL
+              <strong className="text-on-surface">Direct Call:</strong> {phone}
             </p>
             <p className="font-body-sm text-body-sm text-on-surface-variant">
-              <strong className="text-on-surface">Hours:</strong> 24/7 Emergency Response
+              <strong className="text-on-surface">Hours:</strong> {hours}
             </p>
           </div>
         </div>
@@ -165,6 +178,10 @@ export default function Footer() {
           <span>Ministry of Agriculture &amp; Livestock Standards</span>
           <span className="text-on-surface-variant/40">|</span>
           <span>One Health Alliance Member</span>
+          <span className="text-on-surface-variant/40">|</span>
+          <Link to="/admin" className="text-primary hover:underline font-bold">
+            Staff Portal
+          </Link>
         </div>
       </div>
     </footer>

@@ -2,86 +2,123 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
+import { useContent } from '../hooks/useContent';
 
 export default function OurTeam() {
+  const { team: dbTeam, hubs: dbHubs, research: dbResearch, settings } = useContent();
   const [activeFilter, setActiveFilter] = useState('all');
 
+  const emergencyPhone = settings?.emergencyHotline || settings?.emergencyPhone || '+254 700 264 432';
+
   const filterTabs = [
-    { id: 'all', label: 'All Specialists (14)' },
+    { id: 'all', label: 'All Specialists' },
     { id: 'leadership', label: 'Clinical Leadership' },
     { id: 'field-surgery', label: 'Surgery & Triage' },
     { id: 'one-health', label: 'One Health & Lab' },
-    { id: 'theriogenology', label: 'Genomics & Breeding' }
+    { id: 'theriogenology', label: 'Genomics & Breeding' },
   ];
 
-  const specialists = [
+  const defaultDirector = {
+    _id: 'dr-eleanor-vance',
+    name: 'Dr. Eleanor Vance',
+    title: 'BVM, MSc Large Animal Medicine, Fellow KVB',
+    category: 'leadership',
+    roleTag: 'Clinical Director',
+    specialtyTag: 'Lead Large-Herd Clinician',
+    kvbLicense: 'KVB: 0842-VS',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuC6uHQ0mK1vEbJJ7r5iSwnI6VManp47wrpdFR4a4mQLfZ0VYyHuIioZ1ZYRruHuVt8eQqLj__ff8hRhsBEr-q4e0TFGggcPtmt_aNgCSXUDsUPTESJ-lz7tlx2NYVgwg6QjXgdPDrLPBcksTPOcwTzk6nkcojhVyDG4W113V_weBBx5fonyW9aVoVIvNUYfPMkloDK2TY204SXrKlpf5ZFX9CqcoTK9u1KGJZiQFMFov3KNI1vK564J',
+    bio: 'Serving as Senior Veterinary Director at AniHeal, Dr. Vance steers commercial herd health programs across Kenya, specializing in bovine metabolic integrity, epidemic containment, and intensive dairy health protocols. She oversees our regional clinical hubs and acts as principal advisor for One Health livestock biosecurity.',
+    location: 'Naivasha & Central Rift Diagnostic Core',
+    experience: '18+ Years Field Experience',
+    actionLabel: 'Request Specialist Consult',
+    isDirector: true,
+    directorSpecialty: 'Herd Theriogenology & Metabolic Care',
+    directorAccreditation: 'Licensed Surgeon (KVB/SRG/2006)',
+    directorDutyHub: 'Naivasha & Central Rift Diagnostic Core',
+    email: 'e.vance@aniheal.co.ke',
+  };
+
+  const defaultSpecialists = [
     {
-      id: 'dr-dennis-kipchumba',
+      _id: 'dr-dennis-kipchumba',
       name: 'Dr. Dennis Kipchumba',
       title: 'BVM, MSc Veterinary Surgery (UoN)',
-      category: ['field-surgery'],
+      category: 'field-surgery',
       roleTag: 'Surgical Lead',
       specialtyTag: 'Field Surgery',
-      kvbLic: 'KVB: 1248-VS',
+      kvbLicense: 'KVB: 1248-VS',
       image:
         'https://lh3.googleusercontent.com/aida-public/AB6AXuAwEQECb8OurVoi2GFDxSPomx5mCzT1SPE2x6JKkK4uwMPyk36iit-a7RG1-Qt28yyNu-iiQqN-C7zWmf3jnNf0ERgucQupyrUKISH80Ov4HXHZIZ1n_zBZ-92rZqr7TzQ8xM7i9pZ5pwvilXPSndralMnY9aBrtKJpQj5YltnY8A1pq5x4ghVeQtwzFyr516MZ_UDD5uXEpxDhp_g8eq4EK23Ye7UCLLacU8LqbbPAq2La-_VWujuo',
       bio: 'Chief Field Surgeon and Emergency Triage Lead. Directs rapid response ambulatory interventions for equine abdominal crises, cesarean livestock emergencies, and orthopedic stabilization.',
       location: 'Eldoret Mobile Lab',
-      exp: '12 Yrs Active',
-      actionLabel: 'Dispatch Surgical Unit'
+      experience: '12 Yrs Active',
+      actionLabel: 'Dispatch Surgical Unit',
+      isDirector: false,
     },
     {
-      id: 'dr-grace-wanjiku',
+      _id: 'dr-grace-wanjiku',
       name: 'Dr. Grace Wanjiku',
       title: 'BVM, PhD Vet Epidemiology (Edinburgh)',
-      category: ['one-health', 'leadership'],
+      category: 'one-health',
       roleTag: 'Biosecurity',
       specialtyTag: 'One Health Surveillance',
-      kvbLic: 'KVB: 0917-EP',
+      kvbLicense: 'KVB: 0917-EP',
       image:
         'https://lh3.googleusercontent.com/aida-public/AB6AXuDJS382Pd1JFmwtNrnYPt2c6NXrHF5v5CpMpmMi9PSnogKWH-XPwzspoKM-mM0xLeZYdh1U8PT0rEeYzTOLomHEHKTDTe_LEXaGfxrnSB_-eehc5w_VtsdlOrTCV8bDVvVV9FTh8uNcaTPTD4edOyoeiJslLn8YB6H8gTOKhWLmKWNCmWjgC_X-Nc3-WJBPgFPozvcLubGhggI5xxv3LJqLSq3k7GcjVz837Da_zXlEMDgEaNRFiYA0',
       bio: 'One Health & Biosecurity Director. Specialist in zoonotic spillover control, antimicrobial resistance (AMR) mitigation, and cross-border disease surveillance in commercial herds.',
       location: 'Nairobi Central HQ',
-      exp: 'WOAH Contributor',
-      actionLabel: 'Epidemiology Audit'
+      experience: 'WOAH Contributor',
+      actionLabel: 'Epidemiology Audit',
+      isDirector: false,
     },
     {
-      id: 'dr-tariq-al-mansoor',
+      _id: 'dr-tariq-al-mansoor',
       name: 'Dr. Tariq Al-Mansoor',
       title: 'MVSc Theriogenology',
-      category: ['theriogenology'],
+      category: 'theriogenology',
       roleTag: 'Genomics',
       specialtyTag: 'Reproductive Health',
-      kvbLic: 'KVB: 1512-TR',
+      kvbLicense: 'KVB: 1512-TR',
       image:
         'https://lh3.googleusercontent.com/aida-public/AB6AXuB7CgHXSSzQIsuq94XF-7j_g3-QLLNmYJ2NKq4Azzia2cQBlVIzPlW296KfRAWaOUZP6R0_HzmN_1NR_E2DRbrRPIB2jkFoSmkcSLb-bsA-BM1OFyZndFWT4QQq0J03vsR8z4dO6ZZFLY81K7cjqaa1iaTUNl76QLsOzQ7ZbxzEDR97avPRl_hT53YHs3mB04SMd7QF3vAYpbKnrNjydV7jkqudpq0-P__rhQs3SNzQaa8KNOhxen8s',
       bio: "Reproductive Biology & Embryo Transfer Specialist. Leads AniHeal's advanced assisted reproduction protocols, artificial insemination synchronization, and genomics yield mapping.",
       location: 'Nakuru Cryo-Station',
-      exp: 'IVF / ET Lead',
-      actionLabel: 'Schedule Breeding Plan'
+      experience: 'IVF / ET Lead',
+      actionLabel: 'Schedule Breeding Plan',
+      isDirector: false,
     },
     {
-      id: 'dr-mercy-chebet',
+      _id: 'dr-mercy-chebet',
       name: 'Dr. Mercy Chebet',
       title: 'BVM, MSc Veterinary Pathology',
-      category: ['one-health'],
+      category: 'one-health',
       roleTag: 'Diagnostics',
       specialtyTag: 'Pathology & Toxicology',
-      kvbLic: 'KVB: 1804-PT',
+      kvbLicense: 'KVB: 1804-PT',
       image:
         'https://lh3.googleusercontent.com/aida-public/AB6AXuBt5Ugp7zvHZCSUK9UgBJh9A7OHl0kRC-tnyY_eapNi8WqYNANRXJPe3pdjAQgFD-ZkBOChDomWhrhJzsc4yIUBSxhI8UQCqoV4W9TTRm35WNmslpBhOrkNIdVzNhqrdLg6hA05R-TrmnK1_ZRJhYHyxgEnVLTABbvfqeajQGCX7oDTwGRaleyl4qHjYp0_iBchEYjU2YzpWtkTSER2JzGzCjzhPLARP0_e0-ElWk4iPxUm1jyrzJUn',
       bio: 'Diagnostic Laboratory & Toxicology Lead. Manages biosafety PCR tests, hematological profiling, post-mortem histopathology, and pasture toxicology verification assays.',
       location: 'Kabete Reference Lab',
-      exp: '24h Turnaround',
-      actionLabel: 'Submit Lab Sample'
-    }
+      experience: '24h Turnaround',
+      actionLabel: 'Submit Lab Sample',
+      isDirector: false,
+    },
   ];
+
+  const teamList = dbTeam && dbTeam.length > 0 ? dbTeam : [defaultDirector, ...defaultSpecialists];
+  const directorMember = teamList.find((m) => m.isDirector) || defaultDirector;
+  const specialistsOnly = teamList.filter((m) => !m.isDirector);
 
   const showDirector = activeFilter === 'all' || activeFilter === 'leadership';
 
-  const filteredSpecialists = specialists.filter(
-    (spec) => activeFilter === 'all' || spec.category.includes(activeFilter)
-  );
+  const filteredSpecialists = specialistsOnly.filter((spec) => {
+    if (activeFilter === 'all') return true;
+    const cat = Array.isArray(spec.category)
+      ? spec.category.join(' ').toLowerCase()
+      : (spec.category || spec.specialtyTag || '').toLowerCase();
+    return cat.includes(activeFilter.replace('-', '')) || cat.includes(activeFilter);
+  });
 
   return (
     <div className="bg-surface font-body-md text-body-md text-on-surface antialiased">
@@ -166,24 +203,27 @@ export default function OurTeam() {
           <section className="w-full bg-surface py-space-xl px-margin-mobile lg:px-margin">
             <div className="max-w-[1280px] mx-auto space-y-space-xl">
               {/* Primary Feature Card: Senior Director (Dr. Eleanor Vance) */}
-              {showDirector && (
+              {showDirector && directorMember && (
                 <div className="team-card leadership all bg-surface-clinical rounded-xl shadow-md p-space-lg lg:p-space-xl overflow-hidden relative border border-border-hairline">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
                     <div className="lg:col-span-5 relative group">
                       <div className="overflow-hidden rounded-xl aspect-[4/5] shadow-inner bg-surface-container-high relative">
                         <img
                           className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                          alt="Senior Veterinary Director Dr. Eleanor Vance"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6uHQ0mK1vEbJJ7r5iSwnI6VManp47wrpdFR4a4mQLfZ0VYyHuIioZ1ZYRruHuVt8eQqLj__ff8hRhsBEr-q4e0TFGggcPtmt_aNgCSXUDsUPTESJ-lz7tlx2NYVgwg6QjXgdPDrLPBcksTPOcwTzk6nkcojhVyDG4W113V_weBBx5fonyW9aVoVIvNUYfPMkloDK2TY204SXrKlpf5ZFX9CqcoTK9u1KGJZiQFMFov3KNI1vK564J"
+                          alt={`Senior Veterinary Director ${directorMember.name}`}
+                          src={
+                            directorMember.image ||
+                            'https://lh3.googleusercontent.com/aida-public/AB6AXuC6uHQ0mK1vEbJJ7r5iSwnI6VManp47wrpdFR4a4mQLfZ0VYyHuIioZ1ZYRruHuVt8eQqLj__ff8hRhsBEr-q4e0TFGggcPtmt_aNgCSXUDsUPTESJ-lz7tlx2NYVgwg6QjXgdPDrLPBcksTPOcwTzk6nkcojhVyDG4W113V_weBBx5fonyW9aVoVIvNUYfPMkloDK2TY204SXrKlpf5ZFX9CqcoTK9u1KGJZiQFMFov3KNI1vK564J'
+                          }
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-60"></div>
                         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-on-primary">
                           <span className="font-label-sm text-label-sm bg-primary/80 backdrop-blur-sm px-2.5 py-1 rounded-full uppercase tracking-wider font-semibold">
-                            Clinical Director
+                            {directorMember.roleTag || 'Clinical Director'}
                           </span>
                           <span className="font-label-sm text-label-sm flex items-center gap-1 font-semibold">
                             <span className="material-symbols-outlined text-[16px]">verified</span> KVB Lic:
-                            0842-VS
+                            {directorMember.kvbLicense || directorMember.kvbLic || '0842-VS'}
                           </span>
                         </div>
                       </div>
@@ -192,29 +232,25 @@ export default function OurTeam() {
                     <div className="lg:col-span-7 flex flex-col justify-center space-y-4">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-semibold border border-border-accent">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary"></span> Lead Large-Herd
-                          Clinician
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>{' '}
+                          {directorMember.specialtyTag || directorMember.directorSpecialty || 'Lead Large-Herd Clinician'}
                         </span>
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-medium">
-                          18+ Years Field Experience
+                          {directorMember.experience || directorMember.exp || '18+ Years Field Experience'}
                         </span>
                       </div>
 
                       <div>
                         <h2 className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
-                          Dr. Eleanor Vance
+                          {directorMember.name}
                         </h2>
                         <p className="font-headline-sm text-headline-sm text-secondary mt-1 font-semibold">
-                          BVM, MSc Large Animal Medicine, Fellow KVB
+                          {directorMember.title}
                         </p>
                       </div>
 
                       <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                        Serving as Senior Veterinary Director at AniHeal, Dr. Vance steers commercial
-                        herd health programs across Kenya, specializing in bovine metabolic integrity,
-                        epidemic containment, and intensive dairy health protocols. She oversees our
-                        regional clinical hubs and acts as principal advisor for One Health livestock
-                        biosecurity.
+                        {directorMember.bio}
                       </p>
 
                       {/* Diagnostics Focus Tags */}
@@ -224,7 +260,7 @@ export default function OurTeam() {
                             Specialty
                           </span>
                           <span className="font-body-sm text-body-sm text-on-surface">
-                            Herd Theriogenology &amp; Metabolic Care
+                            {directorMember.directorSpecialty || directorMember.specialtyTag || 'Herd Theriogenology & Metabolic Care'}
                           </span>
                         </div>
                         <div className="bg-surface-tinted p-3 rounded-lg border border-border-hairline">
@@ -232,7 +268,7 @@ export default function OurTeam() {
                             Accreditation
                           </span>
                           <span className="font-body-sm text-body-sm text-on-surface">
-                            Licensed Surgeon (KVB/SRG/2006)
+                            {directorMember.directorAccreditation || directorMember.kvbLicense || 'Licensed Surgeon (KVB/SRG/2006)'}
                           </span>
                         </div>
                         <div className="bg-surface-tinted p-3 rounded-lg border border-border-hairline">
@@ -240,7 +276,7 @@ export default function OurTeam() {
                             Duty Hub
                           </span>
                           <span className="font-body-sm text-body-sm text-on-surface">
-                            Naivasha &amp; Central Rift Diagnostic Core
+                            {directorMember.directorDutyHub || directorMember.location || 'Naivasha & Central Rift Diagnostic Core'}
                           </span>
                         </div>
                       </div>
@@ -251,15 +287,17 @@ export default function OurTeam() {
                           to="/appointment-booking"
                         >
                           <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                          <span>Request Specialist Consult</span>
+                          <span>{directorMember.actionLabel || 'Request Specialist Consult'}</span>
                         </Link>
-                        <a
-                          className="inline-flex items-center gap-2 h-11 px-5 rounded-full bg-surface-container-high text-on-surface font-label-lg text-label-lg hover:bg-surface-tinted hover:text-primary transition-colors font-semibold"
-                          href="mailto:e.vance@aniheal.co.ke"
-                        >
-                          <span className="material-symbols-outlined text-[18px]">mail</span>
-                          <span>Direct Dispatch Inquiries</span>
-                        </a>
+                        {directorMember.email && (
+                          <a
+                            className="inline-flex items-center gap-2 h-11 px-5 rounded-full bg-surface-container-high text-on-surface font-label-lg text-label-lg hover:bg-surface-tinted hover:text-primary transition-colors font-semibold"
+                            href={`mailto:${directorMember.email}`}
+                          >
+                            <span className="material-symbols-outlined text-[18px]">mail</span>
+                            <span>Direct Dispatch Inquiries</span>
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -270,7 +308,7 @@ export default function OurTeam() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter" id="specialistsGrid">
                 {filteredSpecialists.map((spec) => (
                   <div
-                    key={spec.id}
+                    key={spec._id || spec.name}
                     className="team-card bg-surface-clinical rounded-xl shadow-sm p-space-md flex flex-col justify-between hover:shadow-md transition-shadow group border border-border-hairline"
                   >
                     <div className="space-y-4">
@@ -278,25 +316,28 @@ export default function OurTeam() {
                         <img
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           alt={spec.name}
-                          src={spec.image}
+                          src={
+                            spec.image ||
+                            'https://lh3.googleusercontent.com/aida-public/AB6AXuAwEQECb8OurVoi2GFDxSPomx5mCzT1SPE2x6JKkK4uwMPyk36iit-a7RG1-Qt28yyNu-iiQqN-C7zWmf3jnNf0ERgucQupyrUKISH80Ov4HXHZIZ1n_zBZ-92rZqr7TzQ8xM7i9pZ5pwvilXPSndralMnY9aBrtKJpQj5YltnY8A1pq5x4ghVeQtwzFyr516MZ_UDD5uXEpxDhp_g8eq4EK23Ye7UCLLacU8LqbbPAq2La-_VWujuo'
+                          }
                         />
                         <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-primary/90 text-on-primary font-label-sm text-label-sm font-semibold">
-                          {spec.roleTag}
+                          {spec.roleTag || spec.role || 'Specialist'}
                         </span>
                         <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-surface-clinical/90 text-primary font-label-sm text-label-sm font-semibold">
-                          {spec.kvbLic}
+                          {spec.kvbLicense || spec.kvbLic || 'KVB Certified'}
                         </span>
                       </div>
 
                       <div>
                         <div className="inline-block px-2 py-0.5 rounded bg-surface-tinted text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider mb-1">
-                          {spec.specialtyTag}
+                          {spec.specialtyTag || 'Clinical Specialist'}
                         </div>
                         <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
                           {spec.name}
                         </h3>
                         <p className="font-body-sm text-body-sm text-secondary font-semibold">
-                          {spec.title}
+                          {spec.title || spec.credentials}
                         </p>
                       </div>
 
@@ -311,15 +352,15 @@ export default function OurTeam() {
                           <span className="material-symbols-outlined text-[16px] text-primary">
                             location_on
                           </span>{' '}
-                          {spec.location}
+                          {spec.location || 'Mobile Lab Unit'}
                         </span>
-                        <span className="font-semibold text-primary">{spec.exp}</span>
+                        <span className="font-semibold text-primary">{spec.experience || spec.exp || 'Active Field Vet'}</span>
                       </div>
                       <Link
                         className="w-full inline-flex items-center justify-center py-2 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold hover:bg-primary hover:text-on-primary transition-colors"
                         to="/appointment-booking"
                       >
-                        {spec.actionLabel}
+                        {spec.actionLabel || 'Dispatch Surgical Unit'}
                       </Link>
                     </div>
                   </div>
@@ -355,95 +396,68 @@ export default function OurTeam() {
 
               {/* Regional Pods Bento Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-                <div className="bg-surface-clinical p-space-lg rounded-xl shadow-sm space-y-4 border border-border-hairline">
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
-                      Zone 1: Rift Valley Cluster
-                    </span>
-                    <span className="material-symbols-outlined text-primary">sensors</span>
-                  </div>
-                  <h4 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                    Nakuru, Uasin Gishu &amp; Trans-Nzoia
-                  </h4>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Coordinated by 6 Lead Paravets and 3 Veterinary Surgeons specializing in intensive
-                    dairy cattle, herd synchronization, and Brucellosis quarantine monitoring.
-                  </p>
-                  <div className="space-y-2 pt-2 text-on-surface-variant font-body-sm text-body-sm">
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Station Base</span>
-                      <span className="font-semibold text-on-surface">Nakuru Ambulatory Depot</span>
+                {(dbHubs && dbHubs.length > 0 ? dbHubs : [
+                  {
+                    _id: 'hub-1',
+                    zone: 'Zone 1: Rift Valley Cluster',
+                    name: 'Nakuru, Uasin Gishu & Trans-Nzoia',
+                    zoneDescription: 'Coordinated by 6 Lead Paravets and 3 Veterinary Surgeons specializing in intensive dairy cattle, herd synchronization, and Brucellosis quarantine monitoring.',
+                    subtitle: 'Nakuru Ambulatory Depot',
+                    responseRadiusKm: 120,
+                    fleetEquipment: ['Portable Sonar & Dewormer Gun']
+                  },
+                  {
+                    _id: 'hub-2',
+                    zone: 'Zone 2: Central Highlands',
+                    name: "Kiambu, Nyeri, Murang'a & Kirinyaga",
+                    zoneDescription: 'Specialized smallholder zero-grazing consultation, mastitis control squads, and commercial poultry disease surveillance units operating round the clock.',
+                    subtitle: 'Thika / Sagana Hub',
+                    responseRadiusKm: 85,
+                    fleetEquipment: ['Sub-zero Vaccine Freezers']
+                  },
+                  {
+                    _id: 'hub-3',
+                    zone: 'Zone 3: Western & Lake Basin',
+                    name: 'Kakamega, Bungoma & Kisumu',
+                    zoneDescription: 'Pastoralist herd interventions, trypanosomiasis tick-vector management, and sustainable piggery herd health programs with accredited village scouts.',
+                    subtitle: 'Kakamega Agro-Center',
+                    responseRadiusKm: 140,
+                    fleetEquipment: ['Off-road Mobile Treatment Rig']
+                  }
+                ]).map((hub, idx) => (
+                  <div key={hub._id || idx} className="bg-surface-clinical p-space-lg rounded-xl shadow-sm space-y-4 border border-border-hairline">
+                    <div className="flex items-center justify-between">
+                      <span className="px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
+                        {hub.zone || `Zone ${idx + 1}`}
+                      </span>
+                      <span className="material-symbols-outlined text-primary">sensors</span>
                     </div>
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Response Radius</span>
-                      <span className="font-semibold text-on-surface">120 KM Max</span>
-                    </div>
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Fleet Equipment</span>
-                      <span className="font-semibold text-on-surface">Portable Sonar &amp; Dewormer Gun</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-surface-clinical p-space-lg rounded-xl shadow-sm space-y-4 border border-border-hairline">
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
-                      Zone 2: Central Highlands
-                    </span>
-                    <span className="material-symbols-outlined text-primary">sensors</span>
-                  </div>
-                  <h4 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                    Kiambu, Nyeri, Murang'a &amp; Kirinyaga
-                  </h4>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Specialized smallholder zero-grazing consultation, mastitis control squads, and
-                    commercial poultry disease surveillance units operating round the clock.
-                  </p>
-                  <div className="space-y-2 pt-2 text-on-surface-variant font-body-sm text-body-sm">
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Station Base</span>
-                      <span className="font-semibold text-on-surface">Thika / Sagana Hub</span>
-                    </div>
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Response Radius</span>
-                      <span className="font-semibold text-on-surface">85 KM Max</span>
-                    </div>
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Fleet Equipment</span>
-                      <span className="font-semibold text-on-surface">Sub-zero Vaccine Freezers</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-surface-clinical p-space-lg rounded-xl shadow-sm space-y-4 border border-border-hairline">
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
-                      Zone 3: Western &amp; Lake Basin
-                    </span>
-                    <span className="material-symbols-outlined text-primary">sensors</span>
-                  </div>
-                  <h4 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                    Kakamega, Bungoma &amp; Kisumu
-                  </h4>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Pastoralist herd interventions, trypanosomiasis tick-vector management, and
-                    sustainable piggery herd health programs with accredited village scouts.
-                  </p>
-                  <div className="space-y-2 pt-2 text-on-surface-variant font-body-sm text-body-sm">
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Station Base</span>
-                      <span className="font-semibold text-on-surface">Kakamega Agro-Center</span>
-                    </div>
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Response Radius</span>
-                      <span className="font-semibold text-on-surface">140 KM Max</span>
-                    </div>
-                    <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
-                      <span>Fleet Equipment</span>
-                      <span className="font-semibold text-on-surface">Off-road Mobile Treatment Rig</span>
+                    <h4 className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                      {hub.name}
+                    </h4>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">
+                      {hub.zoneDescription || hub.address || 'Regional veterinary support base and rapid emergency response center.'}
+                    </p>
+                    <div className="space-y-2 pt-2 text-on-surface-variant font-body-sm text-body-sm">
+                      <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
+                        <span>Station Base</span>
+                        <span className="font-semibold text-on-surface">{hub.subtitle || hub.address || 'Regional Depot'}</span>
+                      </div>
+                      <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
+                        <span>Response Radius</span>
+                        <span className="font-semibold text-on-surface">{hub.responseRadiusKm || 100} KM Max</span>
+                      </div>
+                      <div className="flex justify-between py-1 bg-surface-subtle px-2 rounded border border-border-hairline">
+                        <span>Fleet Equipment</span>
+                        <span className="font-semibold text-on-surface">
+                          {Array.isArray(hub.fleetEquipment) && hub.fleetEquipment.length > 0 
+                            ? hub.fleetEquipment.join(', ') 
+                            : (hub.leadOfficer ? `Officer: ${hub.leadOfficer}` : 'Mobile Treatment Rig')}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
           </section>
@@ -495,49 +509,45 @@ export default function OurTeam() {
 
                 {/* Research Publications & CPD Badges */}
                 <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-space-md">
-                  <div className="bg-surface-tinted p-space-md rounded-xl space-y-3 border border-border-accent">
-                    <div className="flex items-center justify-between">
-                      <span className="text-secondary font-label-sm text-label-sm uppercase font-bold tracking-wider">
-                        Research Output
-                      </span>
-                      <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
-                        2024 Peer-Reviewed
-                      </span>
+                  {(dbResearch && dbResearch.length > 0 ? dbResearch : [
+                    {
+                      _id: 'res-1',
+                      tag: 'Research Output',
+                      year: 2024,
+                      title: 'Subclinical Mastitis in Dual-Purpose Cattle: Surveillance Models',
+                      authors: 'Authored by Dr. Eleanor Vance and Dr. Grace Wanjiku in collaboration with KALRO and ILRI.',
+                      journal: 'African Journal of Animal Health, Vol 41'
+                    },
+                    {
+                      _id: 'res-2',
+                      tag: 'Technical Paper',
+                      year: 2023,
+                      title: 'Field Diagnostics for East Coast Fever (Theileriosis) in Rift Valley',
+                      authors: 'Clinical validation and farm-level trial data on rapid lateral flow tests by Dr. Mercy Chebet.',
+                      journal: 'One Health Global Review, Issue 8'
+                    }
+                  ]).map((res, idx) => (
+                    <div key={res._id || idx} className="bg-surface-tinted p-space-md rounded-xl space-y-3 border border-border-accent">
+                      <div className="flex items-center justify-between">
+                        <span className="text-secondary font-label-sm text-label-sm uppercase font-bold tracking-wider">
+                          {res.tag || 'Research Output'}
+                        </span>
+                        <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
+                          {res.year || 2024} Peer-Reviewed
+                        </span>
+                      </div>
+                      <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                        {res.title}
+                      </h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">
+                        {res.authors || res.summary}
+                      </p>
+                      <div className="flex items-center gap-2 text-primary font-label-sm text-label-sm font-semibold">
+                        <span className="material-symbols-outlined text-[16px]">menu_book</span>
+                        <span>{res.journal || 'AniHeal Clinical Bulletin'}</span>
+                      </div>
                     </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                      Subclinical Mastitis in Dual-Purpose Cattle: Surveillance Models
-                    </h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Authored by Dr. Eleanor Vance and Dr. Grace Wanjiku in collaboration with KALRO and
-                      ILRI.
-                    </p>
-                    <div className="flex items-center gap-2 text-primary font-label-sm text-label-sm font-semibold">
-                      <span className="material-symbols-outlined text-[16px]">menu_book</span>
-                      <span>African Journal of Animal Health, Vol 41</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-surface-tinted p-space-md rounded-xl space-y-3 border border-border-accent">
-                    <div className="flex items-center justify-between">
-                      <span className="text-secondary font-label-sm text-label-sm uppercase font-bold tracking-wider">
-                        Research Output
-                      </span>
-                      <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
-                        2023 Technical Paper
-                      </span>
-                    </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                      Field Diagnostics for East Coast Fever (Theileriosis) in Rift Valley
-                    </h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Clinical validation and farm-level trial data on rapid lateral flow tests by Dr.
-                      Mercy Chebet.
-                    </p>
-                    <div className="flex items-center gap-2 text-primary font-label-sm text-label-sm font-semibold">
-                      <span className="material-symbols-outlined text-[16px]">menu_book</span>
-                      <span>One Health Global Review, Issue 8</span>
-                    </div>
-                  </div>
+                  ))}
 
                   <div className="bg-surface-container p-space-md rounded-xl space-y-2 border border-border-hairline">
                     <div className="flex items-center gap-2 text-primary font-headline-sm text-headline-sm font-bold">
@@ -606,7 +616,7 @@ export default function OurTeam() {
                 </a>
                 <a
                   className="inline-flex items-center justify-center h-12 px-6 rounded-full bg-primary/40 text-on-primary font-label-md text-label-md hover:bg-primary/60 transition-colors text-center font-semibold"
-                  href="tel:+254700264432"
+                  href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
                 >
                   Talk to Veterinary Recruiter
                 </a>
@@ -628,10 +638,10 @@ export default function OurTeam() {
               </div>
               <a
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm uppercase tracking-wider font-semibold hover:bg-[#991B1B] transition-colors"
-                href="tel:+254700264432"
+                href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
               >
                 <span className="material-symbols-outlined text-[16px]">phone_in_talk</span>
-                <span>Call +254 700 ANIHEAL</span>
+                <span>Call {emergencyPhone}</span>
               </a>
             </div>
           </section>

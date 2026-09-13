@@ -1,65 +1,118 @@
 import React, { useState } from 'react';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
+import { useContent } from '../hooks/useContent';
+import { API_BASE_URL } from '../services/api';
 
 export default function ContactUs() {
+  const { settings, hubs: dbHubs, faqs: dbFaqs } = useContent();
+
   const [formData, setFormData] = useState({
     fullName: '',
     phoneContact: '',
     emailAddress: '',
     countySelect: '',
     inquiryType: 'clinical',
-    messageText: ''
+    messageText: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [ticketRef, setTicketRef] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [openFaq, setOpenFaq] = useState(null);
+
+  const email = settings?.contactEmail || 'clinical@aniheal.co.ke';
+  const phone = settings?.contactPhone || '+254 700 264 432';
+  const emergencyPhone = settings?.emergencyHotline || '+254 700 264 432';
+
+  const defaultFaqs = [
+    {
+      q: "What are AniHeal's emergency ambulatory response timeframes?",
+      a: 'For critical bovine obstetrics (dystocia), acute bloat, or downer cow emergencies within our 45-kilometer radius hubs (Kabete, Nakuru, Eldoret, Nyeri), our dedicated rapid response units dispatch immediately with an average on-farm arrival time between 25 and 45 minutes. For rural smallholdings beyond active radii, we initiate instant WhatsApp Tele-Triage to guide farm managers through primary intervention steps while our vehicle is en route.',
+    },
+    {
+      q: 'What payment methods are supported for field procedures and diagnostics?',
+      a: 'We accept instant settlement via Safaricom M-Pesa Buy Goods Till 894022 (AniHeal Agro-Vet Ltd) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.',
+    },
+    {
+      q: 'What biosecurity protocols do AniHeal clinicians follow upon entering a farm?',
+      a: 'In strict compliance with the Kenya Veterinary Board (KVB) and One Health antimicrobial stewardship guidelines, our mobile ambulatory vans feature self-contained disinfection gear. Veterinarians deploy virgin disposable overshoes or autoclave-sanitized gumboots with broad-spectrum Virkon-S foot dips prior to crossing farm perimeter gates. All surgical kits, A.I. guns, and ultrasound probes undergo clinical sterilization between client farm visits to prevent horizontal pathogen transmission (e.g., FMD, Brucellosis, Mastitis).',
+    },
+    {
+      q: 'Can AniHeal assist with cross-border animal health documentation and export certification?',
+      a: 'Yes. Our senior consulting veterinarians liaise directly with County Veterinary Directors and the Directorate of Veterinary Services (DVS) at Kabete. We conduct statutory quarantine screening, serological testing, Brucella/TB profiling, and rabies titer verification to facilitate valid international movement permits for breeding stock and companion animals.',
+    },
+  ];
+
+  const faqsList = dbFaqs && dbFaqs.length > 0
+    ? dbFaqs.map(f => ({ q: f.question, a: f.answer }))
+    : defaultFaqs;
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({
-        fullName: '',
-        phoneContact: '',
-        emailAddress: '',
-        countySelect: '',
-        inquiryType: 'clinical',
-        messageText: ''
+    setErrorMsg('');
+    try {
+      const payload = {
+        farmerName: formData.fullName || 'Valued Farmer',
+        farmName: formData.fullName ? `${formData.fullName}'s Farm` : 'Client Holding',
+        phone: formData.phoneContact,
+        email: formData.emailAddress || '',
+        county: formData.countySelect || 'Nairobi Central',
+        speciesType: 'general',
+        clinicalService: formData.inquiryType || 'general_inquiry',
+        dispatchTier: formData.inquiryType === 'clinical' ? 'emergency' : 'standard',
+        symptomsDescription: formData.messageText || 'Inquiry logged via Contact Us portal',
+      };
+
+      const res = await fetch(`${API_BASE_URL}/appointments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-    }, 800);
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success && data?.data?.ticketRef) {
+        setTicketRef(data.data.ticketRef);
+        setIsSubmitted(true);
+        setErrorMsg('');
+        setFormData({
+          fullName: '',
+          phoneContact: '',
+          emailAddress: '',
+          countySelect: '',
+          inquiryType: 'clinical',
+          messageText: '',
+        });
+      } else {
+        setIsSubmitted(false);
+        setTicketRef('');
+        if (res.status >= 500) {
+          setErrorMsg(data?.message || 'Server error encountered while sending message. Please try again.');
+        } else {
+          setErrorMsg(data?.message || 'Failed to submit contact triage ticket. Please verify inputs.');
+        }
+      }
+    } catch (err) {
+      console.error('Contact submit network error:', err);
+      setIsSubmitted(false);
+      setTicketRef('');
+      setErrorMsg('Unable to submit your triage request. The server is currently unavailable. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
-
-  const faqs = [
-    {
-      q: "What are AniHeal's emergency ambulatory response timeframes?",
-      a: 'For critical bovine obstetrics (dystocia), acute bloat, or downer cow emergencies within our 45-kilometer radius hubs (Kabete, Nakuru, Eldoret, Nyeri), our dedicated rapid response units dispatch immediately with an average on-farm arrival time between 25 and 45 minutes. For rural smallholdings beyond active radii, we initiate instant WhatsApp Tele-Triage to guide farm managers through primary intervention steps while our vehicle is en route.'
-    },
-    {
-      q: 'What payment methods are supported for field procedures and diagnostics?',
-      a: 'We accept instant settlement via Safaricom M-Pesa Buy Goods Till 894022 (AniHeal Agro-Vet Ltd) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.'
-    },
-    {
-      q: 'What biosecurity protocols do AniHeal clinicians follow upon entering a farm?',
-      a: 'In strict compliance with the Kenya Veterinary Board (KVB) and One Health antimicrobial stewardship guidelines, our mobile ambulatory vans feature self-contained disinfection gear. Veterinarians deploy virgin disposable overshoes or autoclave-sanitized gumboots with broad-spectrum Virkon-S foot dips prior to crossing farm perimeter gates. All surgical kits, A.I. guns, and ultrasound probes undergo clinical sterilization between client farm visits to prevent horizontal pathogen transmission (e.g., FMD, Brucellosis, Mastitis).'
-    },
-    {
-      q: 'Can AniHeal assist with cross-border animal health documentation and export certification?',
-      a: 'Yes. Our senior consulting veterinarians liaise directly with County Veterinary Directors and the Directorate of Veterinary Services (DVS) at Kabete. We conduct statutory quarantine screening, serological testing, Brucella/TB profiling, and rabies titer verification to facilitate valid international movement permits for breeding stock and companion animals.'
-    }
-  ];
 
   return (
     <div className="bg-surface font-body-md text-body-md text-on-surface antialiased">
@@ -115,7 +168,7 @@ export default function ContactUs() {
                 <div className="flex flex-wrap lg:flex-col items-start lg:items-end gap-3 min-w-[280px]">
                   <a
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#25D366] text-white font-label-lg text-label-lg shadow-md hover:bg-[#1EBE5D] transition-transform hover:-translate-y-0.5 font-semibold"
-                    href="https://wa.me/254700264432?text=EMERGENCY%20TRIAGE%20REQUEST:%20Livestock%20Distress"
+                    href={`https://wa.me/${emergencyPhone.replace(/[^0-9]/g, '')}?text=EMERGENCY%20TRIAGE%20REQUEST:%20Livestock%20Distress`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -141,9 +194,9 @@ export default function ContactUs() {
                     </span>
                     <a
                       className="font-headline-sm text-headline-sm text-primary hover:underline font-bold"
-                      href="tel:+254700264432"
+                      href={`tel:${phone.replace(/\s+/g, '')}`}
                     >
-                      +254 700 ANIHEAL
+                      {phone}
                     </a>
                     <span className="font-body-sm text-body-sm text-on-surface-variant block mt-0.5">
                       Direct link to Mobile Paramedic Desk
@@ -161,9 +214,9 @@ export default function ContactUs() {
                     </span>
                     <a
                       className="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors truncate block font-bold"
-                      href="mailto:clinical@aniheal.co.ke"
+                      href={`mailto:${email}`}
                     >
-                      clinical@aniheal.co.ke
+                      {email}
                     </a>
                     <span className="font-body-sm text-body-sm text-on-surface-variant block mt-0.5">
                       General: info@aniheal.co.ke
@@ -212,6 +265,15 @@ export default function ContactUs() {
                   </div>
 
                   <form className="space-y-5" id="anihealContactForm" onSubmit={handleSubmit}>
+                    {errorMsg && (
+                      <div className="p-4 rounded-xl bg-error-container text-on-error-container text-body-sm font-semibold flex items-center gap-3 border border-error/30 animate-fade-in">
+                        <span className="material-symbols-outlined text-[24px] text-error">error</span>
+                        <div className="flex-1">
+                          <strong className="block font-bold">Contact Submission Notice:</strong>
+                          <span>{errorMsg}</span>
+                        </div>
+                      </div>
+                    )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label
@@ -283,12 +345,12 @@ export default function ContactUs() {
                           <option disabled value="">
                             Select Operational County
                           </option>
-                          <option value="nairobi">Nairobi / Kiambu (Kabete Central)</option>
-                          <option value="nakuru">Nakuru (Rift Valley Hub)</option>
-                          <option value="uasin-gishu">Uasin Gishu / Eldoret Basin</option>
-                          <option value="nyeri">Nyeri / Mt. Kenya Region</option>
-                          <option value="kilifi">Kilifi / Coastal Livestock</option>
-                          <option value="other">Other Agro-Ecological Zone</option>
+                          <option value="Nairobi / Kiambu (Kabete Central)">Nairobi / Kiambu (Kabete Central)</option>
+                          <option value="Nakuru (Rift Valley Hub)">Nakuru (Rift Valley Hub)</option>
+                          <option value="Uasin Gishu / Eldoret Basin">Uasin Gishu / Eldoret Basin</option>
+                          <option value="Nyeri / Mt. Kenya Region">Nyeri / Mt. Kenya Region</option>
+                          <option value="Kilifi / Coastal Livestock">Kilifi / Coastal Livestock</option>
+                          <option value="Other Agro-Ecological Zone">Other Agro-Ecological Zone</option>
                         </select>
                       </div>
                     </div>
@@ -373,6 +435,30 @@ export default function ContactUs() {
                       )}
                     </button>
 
+                    {errorMsg && (
+                      <div
+                        className="p-4 rounded-xl bg-error-container text-on-error-container font-label-md text-label-md animate-fade-in border-2 border-error/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm"
+                        id="contactErrorMessage"
+                        role="alert"
+                      >
+                        <div className="flex items-center gap-2 font-semibold">
+                          <span className="material-symbols-outlined text-[24px] text-error shrink-0">
+                            cloud_off
+                          </span>
+                          <span>{errorMsg}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                          className="px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm font-bold shadow hover:brightness-95 transition-all cursor-pointer whitespace-nowrap shrink-0 disabled:opacity-50"
+                          id="contactRetryBtn"
+                        >
+                          {isSubmitting ? 'Retrying...' : 'Retry'}
+                        </button>
+                      </div>
+                    )}
+
                     {isSubmitted && (
                       <div
                         className="p-4 rounded-lg bg-secondary-container text-on-secondary-container font-label-md text-label-md animate-fade-in border border-secondary/20"
@@ -380,7 +466,7 @@ export default function ContactUs() {
                       >
                         <div className="flex items-center gap-2 font-bold mb-1">
                           <span className="material-symbols-outlined text-[20px]">check_circle</span>
-                          <span>Request Queued with Central Triage</span>
+                          <span>Triage Ticket #{ticketRef} Queued with Central Dispatch</span>
                         </div>
                         Your inquiry has been queued with central dispatch. An on-call Veterinary
                         Officer will contact you within 15 minutes.
@@ -435,176 +521,112 @@ export default function ContactUs() {
                       </h2>
                     </div>
                     <span className="inline-flex items-center gap-1 text-label-sm font-label-sm text-primary font-bold">
-                      <span className="h-2 w-2 rounded-full bg-primary animate-pulse"></span> 5 Active Hubs
+                      <span className="h-2 w-2 rounded-full bg-primary animate-pulse"></span>{' '}
+                      {dbHubs && dbHubs.length > 0 ? `${dbHubs.length} Active Hubs` : '5 Active Hubs'}
                     </span>
                   </div>
 
-                  {/* Headquarters Card */}
-                  <div className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2.5">
-                        <div className="p-2 rounded-lg bg-primary-container text-on-primary">
-                          <span className="material-symbols-outlined text-[20px]">domain</span>
+                  {(dbHubs && dbHubs.length > 0 ? dbHubs : [
+                    {
+                      _id: 'hub-hq',
+                      name: 'Headquarters & Kabete Central Clinic',
+                      subtitle: 'Tier-1 Surgical & Pathological Lab',
+                      stationType: 'headquarters',
+                      address: 'Veterinary Complex, Kabete Road, Nairobi, Kenya',
+                      phone: phone,
+                      leadOfficer: 'Dr. M. Gatheca, DVM',
+                    },
+                    {
+                      _id: 'hub-nakuru',
+                      name: 'Nakuru & Rift Valley Ambulatory Hub',
+                      subtitle: 'Dairy, Feedlot & Commercial Pasture Unit',
+                      stationType: 'hub',
+                      address: 'George Morara Rd, Central Industrial Area, Nakuru',
+                      phone: emergencyPhone,
+                      leadOfficer: 'Dr. Eleanor Vance',
+                      coverageAreas: ['Naivasha', 'Rongai', 'Njoro']
+                    },
+                    {
+                      _id: 'hub-eldoret',
+                      name: 'Eldoret Dairy Basin Station',
+                      subtitle: 'Genetics & Synchronization Station',
+                      stationType: 'station',
+                      address: 'Uganda Rd, Agri-Business Mile, Eldoret',
+                      phone: phone,
+                      leadOfficer: 'Dr. Dennis Kipchumba',
+                      coverageAreas: ['Uasin Gishu', 'Trans Nzoia']
+                    },
+                    {
+                      _id: 'hub-nyeri',
+                      name: 'Nyeri Mount Kenya Regional Station',
+                      subtitle: 'Smallholder Agro-Vet Outreach',
+                      stationType: 'station',
+                      address: "Ruring'u Agricultural Hub, Nyeri County",
+                      phone: phone,
+                      leadOfficer: 'Dr. Grace Wanjiku',
+                      coverageAreas: ['Nyeri', 'Kirinyaga', 'Muranga']
+                    },
+                    {
+                      _id: 'hub-kilifi',
+                      name: 'Kilifi Coastal & Livestock Unit',
+                      subtitle: 'Tropical Disease & Vector Control',
+                      stationType: 'outpost',
+                      address: 'Mnarani Agricultural Outpost, Kilifi Coastal Strip',
+                      phone: phone,
+                      leadOfficer: 'Dr. Tariq Al-Mansoor',
+                      coverageAreas: ['Kilifi', 'Mombasa', 'Kwale']
+                    }
+                  ]).map((hub, idx) => (
+                    <div
+                      key={hub._id || idx}
+                      className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className={`p-2 rounded-lg ${hub.stationType === 'headquarters' ? 'bg-primary-container text-on-primary' : hub.stationType === 'hub' ? 'bg-secondary text-on-secondary' : 'bg-surface-container-high text-primary'}`}>
+                            <span className="material-symbols-outlined text-[20px]">
+                              {hub.stationType === 'headquarters' ? 'domain' : hub.stationType === 'hub' ? 'agriculture' : 'location_on'}
+                            </span>
+                          </div>
+                          <div>
+                            <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                              {hub.name}
+                            </h3>
+                            <span className="font-label-sm text-label-sm text-primary font-semibold">
+                              {hub.subtitle || (hub.zone ? `Zone: ${hub.zone}` : 'Regional Support Depot')}
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            Headquarters &amp; Kabete Central Clinic
-                          </h3>
-                          <span className="font-label-sm text-label-sm text-primary font-semibold">
-                            Tier-1 Surgical &amp; Pathological Lab
-                          </span>
-                        </div>
+                        <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-tinted text-primary font-bold uppercase">
+                          {hub.stationType === 'headquarters' ? 'Main Hub' : hub.stationType || 'Station'}
+                        </span>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-tinted text-primary font-bold uppercase">
-                        Main Hub
-                      </span>
-                    </div>
-                    <p className="mt-3 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
-                        pin_drop
-                      </span>
-                      <span>Veterinary Complex, Kabete Road, Nairobi, Kenya</span>
-                    </p>
-                    <div className="mt-3 pt-3 flex flex-wrap items-center justify-between gap-2 text-label-md font-label-md bg-surface-subtle p-2.5 rounded-lg border border-border-hairline">
-                      <a
-                        className="text-primary hover:underline font-bold flex items-center gap-1"
-                        href="tel:+254700264432"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">call</span> +254 700
-                        ANIHEAL
-                      </a>
-                      <span className="text-outline text-[13px]">Station Lead: Dr. M. Gatheca, DVM</span>
-                    </div>
-                  </div>
-
-                  {/* Nakuru & Rift Valley Card */}
-                  <div className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2.5">
-                        <div className="p-2 rounded-lg bg-secondary text-on-secondary">
-                          <span className="material-symbols-outlined text-[20px]">agriculture</span>
-                        </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            Nakuru &amp; Rift Valley Ambulatory Hub
-                          </h3>
-                          <span className="font-label-sm text-label-sm text-secondary font-semibold">
-                            Dairy, Feedlot &amp; Commercial Pasture Unit
-                          </span>
-                        </div>
+                      <p className="mt-3 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
+                        <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
+                          pin_drop
+                        </span>
+                        <span>{hub.address}</span>
+                      </p>
+                      <div className="mt-3 pt-3 flex flex-wrap items-center justify-between gap-2 text-label-md font-label-md bg-surface-subtle p-2.5 rounded-lg border border-border-hairline">
+                        <a
+                          className="text-primary hover:underline font-bold flex items-center gap-1"
+                          href={`tel:${(hub.phone || phone).replace(/\s+/g, '')}`}
+                        >
+                          <span className="material-symbols-outlined text-[16px]">call</span> {hub.phone || phone}
+                        </a>
+                        <span className="text-outline text-[13px]">
+                          {hub.leadOfficer ? `Station Lead: ${hub.leadOfficer}` : (Array.isArray(hub.coverageAreas) && hub.coverageAreas.length > 0 ? `Covers: ${hub.coverageAreas.join(', ')}` : 'Ambulatory Dispatch Ready')}
+                        </span>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant font-bold uppercase">
-                        Field Depot
-                      </span>
                     </div>
-                    <p className="mt-3 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
-                        pin_drop
-                      </span>
-                      <span>George Morara Rd, Central Industrial Area, Nakuru</span>
-                    </p>
-                    <div className="mt-3 pt-3 flex flex-wrap items-center justify-between gap-2 text-label-md font-label-md bg-surface-subtle p-2.5 rounded-lg border border-border-hairline">
-                      <a
-                        className="text-primary hover:underline font-bold flex items-center gap-1"
-                        href="tel:+254711445522"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">phone_iphone</span> +254
-                        (0) 711 445 522
-                      </a>
-                      <span className="text-outline text-[13px]">Covers: Naivasha, Rongai, Njoro</span>
-                    </div>
-                  </div>
-
-                  {/* Eldoret Card */}
-                  <div className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5">
-                        <div className="p-2 rounded-lg bg-surface-container-high text-primary">
-                          <span className="material-symbols-outlined text-[20px]">water_drop</span>
-                        </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            Eldoret Dairy Basin Station
-                          </h3>
-                          <span className="font-label-sm text-label-sm text-outline">
-                            Genetics &amp; Synchronization Station
-                          </span>
-                        </div>
-                      </div>
-                      <span className="material-symbols-outlined text-outline text-[20px]">
-                        directions_car
-                      </span>
-                    </div>
-                    <p className="mt-2 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
-                        pin_drop
-                      </span>
-                      <span>Uganda Rd, Agri-Business Mile, Eldoret</span>
-                    </p>
-                  </div>
-
-                  {/* Nyeri Mount Kenya Card */}
-                  <div className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5">
-                        <div className="p-2 rounded-lg bg-surface-container-high text-primary">
-                          <span className="material-symbols-outlined text-[20px]">terrain</span>
-                        </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            Nyeri Mount Kenya Regional Station
-                          </h3>
-                          <span className="font-label-sm text-label-sm text-outline">
-                            Smallholder Agro-Vet Outreach
-                          </span>
-                        </div>
-                      </div>
-                      <span className="material-symbols-outlined text-outline text-[20px]">
-                        directions_car
-                      </span>
-                    </div>
-                    <p className="mt-2 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
-                        pin_drop
-                      </span>
-                      <span>Ruring'u Agricultural Hub, Nyeri County</span>
-                    </p>
-                  </div>
-
-                  {/* Kilifi Coastal Unit */}
-                  <div className="p-5 rounded-xl bg-surface-clinical shadow-sm hover:shadow-md transition-shadow border border-border-hairline">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5">
-                        <div className="p-2 rounded-lg bg-surface-container-high text-primary">
-                          <span className="material-symbols-outlined text-[20px]">waves</span>
-                        </div>
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            Kilifi Coastal &amp; Livestock Unit
-                          </h3>
-                          <span className="font-label-sm text-label-sm text-outline">
-                            Tropical Disease &amp; Vector Control
-                          </span>
-                        </div>
-                      </div>
-                      <span className="material-symbols-outlined text-outline text-[20px]">
-                        directions_car
-                      </span>
-                    </div>
-                    <p className="mt-2 font-body-md text-body-md text-on-surface-variant flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-outline mt-0.5">
-                        pin_drop
-                      </span>
-                      <span>Mnarani Agricultural Outpost, Kilifi Coastal Strip</span>
-                    </p>
-                  </div>
+                  ))}
 
                   {/* Interactive Static Map View */}
                   <div className="rounded-xl overflow-hidden shadow-sm mt-4 bg-surface-subtle border border-border-hairline">
                     <div
                       className="w-full h-44 bg-cover bg-center"
                       style={{
-                        backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3sQHZm8XJ9JFoetAa_Bx6Bhgnv5kIorTfUXS3HKPIBrzlo4mN4k5dMG0lHzJxTI-G9-e00yt-GD4pxzS9ka94BSnx96bFRjCF0bn7jHxeHC-1OZXYNovL-D-IlPuuWU4MwGAWiQJUvaYn33bxVpCbhEyovL7n8kFZEpXtHvPiTj3AUVxhOl-IaylfNgdu5qu4302IbEcsSN0214l91GMze2Crx4uocVbVkZYj03ypTQyPRLMeVwcs')`
+                        backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3sQHZm8XJ9JFoetAa_Bx6Bhgnv5kIorTfUXS3HKPIBrzlo4mN4k5dMG0lHzJxTI-G9-e00yt-GD4pxzS9ka94BSnx96bFRjCF0bn7jHxeHC-1OZXYNovL-D-IlPuuWU4MwGAWiQJUvaYn33bxVpCbhEyovL7n8kFZEpXtHvPiTj3AUVxhOl-IaylfNgdu5qu4302IbEcsSN0214l91GMze2Crx4uocVbVkZYj03ypTQyPRLMeVwcs')`,
                       }}
                     ></div>
                     <div className="p-3 bg-surface-clinical flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant">
@@ -642,7 +664,7 @@ export default function ContactUs() {
               </div>
 
               <div className="space-y-3" id="faqAccordion">
-                {faqs.map((faq, index) => {
+                {faqsList.map((faq, index) => {
                   const isOpen = openFaq === index;
                   return (
                     <div
@@ -691,10 +713,10 @@ export default function ContactUs() {
               </div>
               <a
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm uppercase tracking-wider font-semibold hover:bg-[#991B1B] transition-colors"
-                href="tel:+254700264432"
+                href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
               >
                 <span className="material-symbols-outlined text-[16px]">phone_in_talk</span>
-                <span>Call +254 700 ANIHEAL</span>
+                <span>Call {emergencyPhone}</span>
               </a>
             </div>
           </section>

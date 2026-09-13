@@ -2,22 +2,27 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
+import { useContent } from '../hooks/useContent';
 
 export default function Services() {
+  const { services: dbServices, pricing: dbPricing, settings } = useContent();
   const [activeFilter, setActiveFilter] = useState('all');
+
+  const emergencyPhone = settings?.emergencyHotline || '+254 700 264 432';
 
   const filterTabs = [
     { id: 'all', label: 'All Disciplines' },
     { id: 'one-health', label: 'One Health & Bio-Security' },
     { id: 'therapeutic', label: 'Therapeutic & Diagnostics' },
     { id: 'reproductive', label: 'Reproductive Tech & Breeding' },
-    { id: 'insurance', label: 'Insurance & Feeds' }
+    { id: 'insurance', label: 'Insurance & Feeds' },
   ];
 
-  const servicesData = [
+  const defaultServices = [
     {
+      _id: 'one-health-consultancy',
       id: 'one-health-consultancy',
-      category: ['one-health'],
+      category: 'one-health',
       protocol: 'Service Protocol 01',
       badgeText: 'Zoonoses & Bio-Risk',
       badgeIcon: 'public',
@@ -31,24 +36,25 @@ export default function Services() {
         {
           icon: 'coronavirus',
           title: 'Zoonotic Surveillance',
-          desc: 'Serum banking, PCR cross-testing, and human-livestock barrier analysis.'
+          desc: 'Serum banking, PCR cross-testing, and human-livestock barrier analysis.',
         },
         {
           icon: 'sanitizer',
           title: 'Bio-Security Auditing',
-          desc: 'Footbath integrity, disinfection gates, visitor telemetry protocols.'
+          desc: 'Footbath integrity, disinfection gates, visitor telemetry protocols.',
         },
         {
           icon: 'water_drop',
           title: 'Effluent Management',
-          desc: 'Runoff bio-filtration, manure pathogen decay monitoring.'
-        }
+          desc: 'Runoff bio-filtration, manure pathogen decay monitoring.',
+        },
       ],
-      compliance: 'Formal WHO & WOAH One Health Guidelines Adherent'
+      compliance: 'Formal WHO & WOAH One Health Guidelines Adherent',
     },
     {
+      _id: 'disease-control',
       id: 'disease-control',
-      category: ['one-health', 'therapeutic'],
+      category: 'one-health',
       protocol: 'Service Protocol 02',
       badgeText: 'Prophylaxis & Isolation',
       badgeIcon: 'vaccines',
@@ -62,24 +68,25 @@ export default function Services() {
         {
           icon: 'calendar_month',
           title: 'Herd Vaccination Rosters',
-          desc: 'Predictive seasonal immunization schedules tailored to regional epidemiology.'
+          desc: 'Predictive seasonal immunization schedules tailored to regional epidemiology.',
         },
         {
           icon: 'security',
           title: 'Vector Suppression',
-          desc: 'Acaricide resistance assays and precision dip-tank management.'
+          desc: 'Acaricide resistance assays and precision dip-tank management.',
         },
         {
           icon: 'fence',
           title: 'Outbreak Containment',
-          desc: 'Rapid physical quarantine cordon, sentinel animal tagging, and reporting.'
-        }
+          desc: 'Rapid physical quarantine cordon, sentinel animal tagging, and reporting.',
+        },
       ],
-      compliance: 'Full Veterinary Movement Permits (VMP) Documentation'
+      compliance: 'Full Veterinary Movement Permits (VMP) Documentation',
     },
     {
+      _id: 'livestock-treatment',
       id: 'livestock-treatment',
-      category: ['therapeutic'],
+      category: 'therapeutic',
       protocol: 'Service Protocol 03',
       badgeText: '24/7 Mobile Ambulatory',
       badgeIcon: 'medical_services',
@@ -93,24 +100,25 @@ export default function Services() {
         {
           icon: 'smb_share',
           title: 'Hemoparasite Scans',
-          desc: 'Anaplasmosis, Babesiosis, and Theileriosis stain assays.'
+          desc: 'Anaplasmosis, Babesiosis, and Theileriosis stain assays.',
         },
         {
           icon: 'precision_manufacturing',
           title: 'Field Laparotomy',
-          desc: 'Aseptic abdominal interventions with continuous sedation monitoring.'
+          desc: 'Aseptic abdominal interventions with continuous sedation monitoring.',
         },
         {
           icon: 'science',
           title: 'Subclinical Mastitis',
-          desc: 'Quarter somatic cell counts and pathogen-targeted therapy.'
-        }
+          desc: 'Quarter somatic cell counts and pathogen-targeted therapy.',
+        },
       ],
-      compliance: 'Priority Triage dispatched via Ambulatory Hotline'
+      compliance: 'Priority Triage dispatched via Ambulatory Hotline',
     },
     {
+      _id: 'reproductive-health',
       id: 'reproductive-health',
-      category: ['reproductive'],
+      category: 'reproductive',
       protocol: 'Service Protocol 04',
       badgeText: 'Genomics & Reproduction',
       badgeIcon: 'genetics',
@@ -124,24 +132,25 @@ export default function Services() {
         {
           icon: 'sync_alt',
           title: 'Fixed-Time AI (FTAI)',
-          desc: 'Progesterone/GnRH hormonal protocols for clustered conception.'
+          desc: 'Progesterone/GnRH hormonal protocols for clustered conception.',
         },
         {
           icon: 'monitor_heart',
           title: 'Doppler Ultrasonography',
-          desc: 'Ovarian follicle dynamics and fetal viability evaluations.'
+          desc: 'Ovarian follicle dynamics and fetal viability evaluations.',
         },
         {
           icon: 'grade',
           title: 'Sexed Semen Programs',
-          desc: '90%+ female heifer generation from tested pedigree bulls.'
-        }
+          desc: '90%+ female heifer generation from tested pedigree bulls.',
+        },
       ],
-      compliance: 'Authorized Distributor of Certified ABS & World Wide Sires genetics'
+      compliance: 'Authorized Distributor of Certified ABS & World Wide Sires genetics',
     },
     {
+      _id: 'nutritional-assessment',
       id: 'nutritional-assessment',
-      category: ['insurance'],
+      category: 'insurance',
       protocol: 'Service Protocol 05',
       badgeText: 'Agronomic Nutrition',
       badgeIcon: 'grass',
@@ -155,24 +164,25 @@ export default function Services() {
         {
           icon: 'pie_chart',
           title: 'TMR Formulation',
-          desc: 'Computerized least-cost ration balancing using local agro-byproducts.'
+          desc: 'Computerized least-cost ration balancing using local agro-byproducts.',
         },
         {
           icon: 'grain',
           title: 'Silage Bio-Additives',
-          desc: 'Inoculant regimens that slash aerobic spoilage and mycotoxin build-up.'
+          desc: 'Inoculant regimens that slash aerobic spoilage and mycotoxin build-up.',
         },
         {
           icon: 'analytics',
           title: 'Metabolic Profiling',
-          desc: 'Ketosis testing, ruminal pH sampling, and body condition scoring (BCS).'
-        }
+          desc: 'Ketosis testing, ruminal pH sampling, and body condition scoring (BCS).',
+        },
       ],
-      compliance: 'Reduces Enteric Methane While Boosting Daily Milk Yield'
+      compliance: 'Reduces Enteric Methane While Boosting Daily Milk Yield',
     },
     {
+      _id: 'animal-insurance',
       id: 'animal-insurance',
-      category: ['insurance'],
+      category: 'insurance',
       protocol: 'Service Protocol 06',
       badgeText: 'Risk Management',
       badgeIcon: 'verified_user',
@@ -186,26 +196,92 @@ export default function Services() {
         {
           icon: 'tag',
           title: 'Biometric Tagging',
-          desc: 'Tamper-proof RFID tagging integrated with national livestock registries.'
+          desc: 'Tamper-proof RFID tagging integrated with national livestock registries.',
         },
         {
           icon: 'assignment_turned_in',
           title: 'Underwriting Valuation',
-          desc: 'Accurate asset valuation based on pedigree, production, and parity.'
+          desc: 'Accurate asset valuation based on pedigree, production, and parity.',
         },
         {
           icon: 'history_edu',
           title: 'Rapid Claims Autopsy',
-          desc: 'KVB-certified mortality reporting completed within 24 hours of demise.'
-        }
+          desc: 'KVB-certified mortality reporting completed within 24 hours of demise.',
+        },
       ],
-      compliance: 'Low-loss ratio protocols rewarded with annual premium discounts'
-    }
+      compliance: 'Low-loss ratio protocols rewarded with annual premium discounts',
+    },
   ];
 
-  const filteredServices = servicesData.filter(
-    (item) => activeFilter === 'all' || item.category.includes(activeFilter)
-  );
+  const servicesList = dbServices && dbServices.length > 0 ? dbServices : defaultServices;
+
+  const filteredServices = servicesList.filter((item) => {
+    if (activeFilter === 'all') return true;
+    const cat = Array.isArray(item.category)
+      ? item.category.join(' ').toLowerCase()
+      : (item.category || '').toLowerCase();
+    return cat.includes(activeFilter.replace('-', '')) || cat.includes(activeFilter);
+  });
+
+  const defaultPricing = [
+    {
+      _id: '1',
+      name: 'Basic Farm Retainer',
+      targetSegment: 'Smallholder & Homestead (1-10 head)',
+      price: 'KES 8,500',
+      period: '/ month',
+      description:
+        'Continuous preventative surveillance for small dairy operations and breeding pens (1-10 head).',
+      badge: 'Billed quarterly or annually',
+      isFeatured: false,
+      buttonText: 'Subscribe to Basic',
+      features: [
+        'Monthly herd health & mastitis audits',
+        'Vaccination calendar oversight',
+        'Subsidized ambulatory callout fees',
+        'Direct WhatsApp vet support group',
+      ],
+    },
+    {
+      _id: '2',
+      name: 'Commercial Dairy Protocol',
+      targetSegment: 'Commercial Production (11-100+ head)',
+      price: 'KES 24,000',
+      period: '/ month',
+      description:
+        'Complete herd health, reproductive scheduling, and metabolic surveillance (11-100+ head).',
+      badge: 'Includes bi-weekly on-site surgeon residency',
+      isFeatured: true,
+      buttonText: 'Enroll Commercial Protocol',
+      features: [
+        'Bi-weekly ultrasound reproductive exams',
+        'TMR least-cost nutritional formulation',
+        'Full priority ambulatory response (zero call fee)',
+        'Pre-underwriting insurance certification',
+        'Quarterly farm-worker One Health hygiene training',
+      ],
+    },
+    {
+      _id: '3',
+      name: 'Emergency Ambulatory',
+      targetSegment: 'On-Call Contingency',
+      price: 'KES 5,000',
+      period: '+ mileage',
+      description:
+        'Direct dispatch for non-retainer emergency surgical cases, dystocia, or toxic ingestion.',
+      badge: 'Diagnostic medications billed at cost',
+      isFeatured: false,
+      buttonText: 'Request Emergency Unit',
+      features: [
+        'Rapid mobile field unit mobilization',
+        'Emergency surgical intervention & anesthesia',
+        'Cold-chain antivenom & antitoxin stock',
+        'Official statutory notification if epizootic',
+      ],
+    },
+  ];
+
+  const pricingList = dbPricing && dbPricing.length > 0 ? dbPricing : defaultPricing;
 
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased">
@@ -306,8 +382,8 @@ export default function Services() {
             <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin space-y-space-xl">
               {filteredServices.map((srv) => (
                 <article
-                  key={srv.id}
-                  id={srv.id}
+                  key={srv._id || srv.title}
+                  id={srv._id || srv.title}
                   className="bg-surface-clinical rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-border-hairline"
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12">
@@ -315,14 +391,17 @@ export default function Services() {
                       <img
                         className="w-full h-full object-cover"
                         alt={srv.title}
-                        src={srv.image}
+                        src={
+                          srv.image ||
+                          'https://lh3.googleusercontent.com/aida-public/AB6AXuD8GMqS-s8oinLCAa3VcL8Xl7AQBM1TSOEF9XkmOobmDNuBcrYO1BnJzDYY41T8p8D9N9DXAJZ5xXcXs62AY48PxF50eFEK4mvnrlAmyiiDgMPdtr-U4_r1YfvJTd93s_r1lRgit73FS86IaEBFaO558hGseYNlXJUuDUeHj2wgYr0-fWtJ7mG4UE5sfCVkqHFhtPTMjJYKvI4veFlKgjAORdXijb34IbWE4OAS4B7gmYQXrKE4mb-6'
+                        }
                       />
                       <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-clinical/90 backdrop-blur-md shadow-sm border border-border-hairline">
                         <span className="material-symbols-outlined text-primary text-[18px]">
-                          {srv.badgeIcon}
+                          {srv.badgeIcon || srv.icon || 'verified'}
                         </span>
                         <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
-                          {srv.badgeText}
+                          {srv.badgeText || srv.badge || 'KVB Accredited'}
                         </span>
                       </div>
                     </div>
@@ -331,10 +410,10 @@ export default function Services() {
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <span className="font-label-sm text-label-sm uppercase tracking-wider text-secondary font-semibold">
-                            {srv.protocol}
+                            {srv.protocol || 'Service Protocol'}
                           </span>
                           <span className="px-2.5 py-0.5 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-semibold">
-                            {srv.statusTag}
+                            {srv.statusTag || 'Certified One Health'}
                           </span>
                         </div>
                         <h2 className="font-headline-xl text-headline-xl text-on-surface tracking-tight mb-3 font-bold">
@@ -344,37 +423,51 @@ export default function Services() {
                           {srv.description}
                         </p>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-                          {srv.features.map((feat, i) => (
-                            <div key={i} className="p-3.5 rounded-lg bg-surface-subtle border border-border-hairline">
-                              <span className="material-symbols-outlined text-primary text-[20px] mb-1">
-                                {feat.icon}
-                              </span>
-                              <h3 className="font-headline-sm text-headline-sm text-on-surface text-[15px] leading-snug font-bold">
-                                {feat.title}
-                              </h3>
-                              <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                                {feat.desc}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
+                        {srv.features && srv.features.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                            {srv.features.map((feat, i) => (
+                              <div
+                                key={i}
+                                className="p-3.5 rounded-lg bg-surface-subtle border border-border-hairline"
+                              >
+                                <span className="material-symbols-outlined text-primary text-[20px] mb-1">
+                                  {feat.icon || 'check_circle'}
+                                </span>
+                                <h3 className="font-headline-sm text-headline-sm text-on-surface text-[15px] leading-snug font-bold">
+                                  {feat.title}
+                                </h3>
+                                <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                                  {feat.desc}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border-hairline">
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-primary">verified</span>
                           <span className="font-label-md text-label-md text-on-surface-variant">
-                            {srv.compliance}
+                            {srv.compliance || 'Official Kenya Veterinary Board Guideline Compliant'}
                           </span>
                         </div>
-                        <Link
-                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-colors shadow-sm"
-                          to="/appointment-booking"
-                        >
-                          <span>Book This Service</span>
-                          <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                        </Link>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                          <Link
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-surface-tinted text-primary font-label-md text-label-md font-semibold hover:bg-primary hover:text-on-primary transition-colors border border-border-hairline"
+                            to={`/services/${srv.slug || srv._id}`}
+                          >
+                            <span>Protocol Details</span>
+                            <span className="material-symbols-outlined text-[16px]">visibility</span>
+                          </Link>
+                          <Link
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-colors shadow-sm"
+                            to="/appointment-booking"
+                          >
+                            <span>Book Triage</span>
+                            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -383,212 +476,151 @@ export default function Services() {
             </div>
           </section>
 
-          {/* SECTION: RETAINER & SERVICE TIERS */}
+          {/* SECTION: ANIMAL INSURANCE & SUBSCRIPTIONS */}
           <section className="w-full bg-surface-container py-space-2xl border-t border-border-hairline">
             <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
               <div className="text-center max-w-2xl mx-auto mb-space-xl">
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
-                  Predictable Clinical Budgeting
+                  Predictable Clinical Protection
                 </span>
                 <h2 className="font-display-lg text-display-lg text-on-surface tracking-tight mt-1 font-bold">
-                  Clinical Retainer Tiers
+                  Animal Insurance &amp; Health Subscriptions
                 </h2>
                 <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                  Select an ongoing managed-care plan or engage our emergency ambulatory units on demand.
-                  All packages include KVB regulatory compliance filing.
+                  Underwritten clinical healthcare plans tailored for Dairy Herds, Beef Cattle, Companion Pets, and Working Equine across Kenya.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter items-stretch">
-                {/* TIER 1 */}
-                <div className="bg-surface-clinical rounded-2xl p-8 shadow-sm flex flex-col justify-between border border-border-hairline">
+                <div className="rounded-2xl p-8 flex flex-col justify-between bg-surface-clinical shadow-sm border border-border-hairline hover:shadow-md">
                   <div>
-                    <span className="px-3 py-1 rounded-full bg-surface-container font-label-sm text-label-sm font-semibold text-on-surface-variant uppercase">
-                      Smallholder &amp; Homestead
+                    <span className="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold uppercase bg-surface-container text-on-surface-variant">
+                      Companion &amp; Working Pets
                     </span>
                     <h3 className="font-headline-lg text-headline-lg text-on-surface mt-4 mb-2 font-bold">
-                      Basic Farm Retainer
+                      Canine &amp; Pet Shield
                     </h3>
                     <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                      Continuous preventative surveillance for small dairy operations and breeding pens
-                      (1-10 head).
+                      Full emergency medical coverage, routine DHLPP/Rabies vaccinations, deworming, and surgical trauma care for working and guard dogs.
                     </p>
-                    <div className="mb-6 pb-6 bg-surface-tinted/50 p-4 rounded-xl border border-border-hairline">
+                    <div className="mb-6 p-4 rounded-xl border bg-surface-tinted/50 border-border-hairline">
                       <div className="flex items-baseline gap-1">
-                        <span className="font-display-lg text-display-lg text-primary font-bold">
-                          KES 8,500
-                        </span>
+                        <span className="font-display-lg text-display-lg text-primary font-bold">KES 1,200</span>
                         <span className="font-body-md text-body-md text-on-surface-variant">/ month</span>
                       </div>
-                      <span className="font-label-sm text-label-sm text-secondary font-medium">
-                        Billed quarterly or annually
-                      </span>
+                      <span className="font-label-sm text-label-sm text-secondary font-medium">Up to KES 80,000 Annual Claim Limit</span>
                     </div>
                     <ul className="space-y-3 font-body-md text-body-md text-on-surface-variant">
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Monthly herd health &amp; mastitis audits</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Emergency field surgery &amp; anesthesia</span>
                       </li>
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Vaccination calendar oversight</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Annual anti-rabies &amp; core immunization</span>
                       </li>
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Subsidized ambulatory callout fees</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Direct WhatsApp vet support group</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Zero callout charge for trauma triage</span>
                       </li>
                     </ul>
                   </div>
                   <div className="mt-8 pt-6">
                     <Link
-                      className="w-full inline-flex items-center justify-center py-3 rounded-full bg-surface-container text-on-surface font-label-lg text-label-lg hover:bg-primary hover:text-on-primary transition-all font-semibold"
-                      to="/appointment-booking"
+                      className="w-full inline-flex items-center justify-center py-3.5 rounded-full font-label-lg text-label-lg transition-all font-semibold bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary"
+                      to="/animal-insurance"
                     >
-                      Subscribe to Basic
+                      Explore Pet Plans
                     </Link>
                   </div>
                 </div>
 
-                {/* TIER 2 (Highlighted) */}
-                <div className="bg-surface-clinical rounded-2xl p-8 shadow-md flex flex-col justify-between relative ring-2 ring-primary border border-primary">
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider font-bold">
-                    Most Recommended for Dairies
+                <div className="rounded-2xl p-8 flex flex-col justify-between bg-surface-clinical shadow-lg border-2 border-primary ring-4 ring-surface-tinted relative">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary font-label-sm text-label-sm font-bold uppercase tracking-wider px-3.5 py-1 rounded-full shadow-sm">
+                    Most Popular Shield
                   </div>
                   <div>
-                    <span className="px-3 py-1 rounded-full bg-surface-tinted font-label-sm text-label-sm font-semibold text-primary uppercase">
-                      Commercial Production
+                    <span className="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold uppercase bg-surface-tinted text-primary">
+                      Commercial Dairy &amp; Cattle
                     </span>
                     <h3 className="font-headline-lg text-headline-lg text-on-surface mt-4 mb-2 font-bold">
-                      Commercial Dairy Protocol
+                      Herd Health &amp; Mortality Shield
                     </h3>
                     <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                      Complete herd health, reproductive scheduling, and metabolic surveillance (11-100+
-                      head).
+                      Continuous ambulatory surveillance, FMD/ECF prophylaxis, dystocia emergency c-sections, and mortality indemnity compensation.
                     </p>
-                    <div className="mb-6 pb-6 bg-surface-tinted p-4 rounded-xl border border-border-accent">
+                    <div className="mb-6 p-4 rounded-xl border bg-surface-tinted border-border-accent">
                       <div className="flex items-baseline gap-1">
-                        <span className="font-display-lg text-display-lg text-primary font-bold">
-                          KES 24,000
-                        </span>
-                        <span className="font-body-md text-body-md text-on-surface-variant">/ month</span>
+                        <span className="font-display-lg text-display-lg text-primary font-bold">KES 2,500</span>
+                        <span className="font-body-md text-body-md text-on-surface-variant">/ animal / mo</span>
                       </div>
-                      <span className="font-label-sm text-label-sm text-primary font-semibold">
-                        Includes bi-weekly on-site surgeon residency
-                      </span>
+                      <span className="font-label-sm text-label-sm text-secondary font-medium">Up to KES 200,000 Cow Valuation Cover</span>
                     </div>
                     <ul className="space-y-3 font-body-md text-body-md text-on-surface-variant">
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Bi-weekly ultrasound reproductive exams</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Bi-weekly reproductive &amp; mastitis audits</span>
                       </li>
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>TMR least-cost nutritional formulation</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Priority mobile ambulatory dispatch</span>
                       </li>
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Full priority ambulatory response (zero call fee)</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Pre-underwriting insurance certification</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Quarterly farm-worker One Health hygiene training</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>KVB-certified mortality claim payouts</span>
                       </li>
                     </ul>
                   </div>
                   <div className="mt-8 pt-6">
                     <Link
-                      className="w-full inline-flex items-center justify-center py-3.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-all shadow-sm font-semibold"
-                      to="/appointment-booking"
+                      className="w-full inline-flex items-center justify-center py-3.5 rounded-full font-label-lg text-label-lg transition-all font-semibold bg-primary text-on-primary hover:bg-secondary shadow-sm"
+                      to="/animal-insurance"
                     >
-                      Enroll Commercial Protocol
+                      Enroll Dairy Herd
                     </Link>
                   </div>
                 </div>
 
-                {/* TIER 3 */}
-                <div className="bg-surface-clinical rounded-2xl p-8 shadow-sm flex flex-col justify-between border border-border-hairline">
+                <div className="rounded-2xl p-8 flex flex-col justify-between bg-surface-clinical shadow-sm border border-border-hairline hover:shadow-md">
                   <div>
-                    <span className="px-3 py-1 rounded-full bg-error-container font-label-sm text-label-sm font-semibold text-error uppercase">
-                      On-Call Contingency
+                    <span className="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold uppercase bg-surface-container text-on-surface-variant">
+                      Equine &amp; Ranches
                     </span>
                     <h3 className="font-headline-lg text-headline-lg text-on-surface mt-4 mb-2 font-bold">
-                      Emergency Ambulatory
+                      Equine &amp; Large Stock Shield
                     </h3>
                     <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                      Direct dispatch for non-retainer emergency surgical cases, dystocia, or toxic
-                      ingestion.
+                      Specialized surgical colic care, lameness ultrasound diagnostics, tetanus antitoxin protocols, and pre-purchase veterinary audits.
                     </p>
-                    <div className="mb-6 pb-6 bg-error-container/40 p-4 rounded-xl border border-error/20">
+                    <div className="mb-6 p-4 rounded-xl border bg-surface-tinted/50 border-border-hairline">
                       <div className="flex items-baseline gap-1">
-                        <span className="font-display-lg text-display-lg text-error font-bold">
-                          KES 5,000
-                        </span>
-                        <span className="font-body-md text-body-md text-on-surface-variant">+ mileage</span>
+                        <span className="font-display-lg text-display-lg text-primary font-bold">KES 4,500</span>
+                        <span className="font-body-md text-body-md text-on-surface-variant">/ month</span>
                       </div>
-                      <span className="font-label-sm text-label-sm text-error font-medium">
-                        Diagnostic medications billed at cost
-                      </span>
+                      <span className="font-label-sm text-label-sm text-secondary font-medium">Up to KES 450,000 Clinical Limit</span>
                     </div>
                     <ul className="space-y-3 font-body-md text-body-md text-on-surface-variant">
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-error text-[20px]">
-                          emergency
-                        </span>
-                        <span>Rapid mobile field unit mobilization</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Emergency colic &amp; wound resuscitation</span>
                       </li>
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-error text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Emergency surgical intervention &amp; anesthesia</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Dental floating &amp; hoof health surveillance</span>
                       </li>
                       <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-error text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Cold-chain antivenom &amp; antitoxin stock</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-error text-[20px]">
-                          check_circle
-                        </span>
-                        <span>Official statutory notification if epizootic</span>
+                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Official movement permit facilitation</span>
                       </li>
                     </ul>
                   </div>
                   <div className="mt-8 pt-6">
-                    <a
-                      className="w-full inline-flex items-center justify-center py-3 rounded-full bg-error text-on-error font-label-lg text-label-lg hover:bg-red-700 transition-all font-semibold"
-                      href="tel:+254700264432"
+                    <Link
+                      className="w-full inline-flex items-center justify-center py-3.5 rounded-full font-label-lg text-label-lg transition-all font-semibold bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary"
+                      to="/animal-insurance"
                     >
-                      Request Emergency Unit
-                    </a>
+                      View Equine Plans
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -672,7 +704,7 @@ export default function Services() {
                           -48% Drop
                         </span>
                       </div>
-                      {/* Interactive Bar Chart Representation */}
+                      {/* Bar Chart Representation */}
                       <div className="w-full h-36 flex items-end gap-3 pt-4">
                         <div className="flex-1 flex flex-col items-center gap-1">
                           <div className="w-full bg-outline-variant/40 rounded-t h-28"></div>
@@ -760,10 +792,10 @@ export default function Services() {
                   </Link>
                   <a
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-on-primary/20 text-on-primary font-label-lg text-label-lg hover:bg-on-primary/30 transition-all font-semibold"
-                    href="tel:+254700264432"
+                    href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
                   >
                     <span className="material-symbols-outlined text-[18px]">phone</span>
-                    <span>+254 700 ANIHEAL</span>
+                    <span>{emergencyPhone}</span>
                   </a>
                 </div>
               </div>
@@ -784,10 +816,10 @@ export default function Services() {
               </div>
               <a
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm uppercase tracking-wider font-semibold hover:bg-[#991B1B] transition-colors"
-                href="tel:+254700264432"
+                href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
               >
                 <span className="material-symbols-outlined text-[16px]">phone_in_talk</span>
-                <span>Call +254 700 ANIHEAL</span>
+                <span>Call {emergencyPhone}</span>
               </a>
             </div>
           </section>

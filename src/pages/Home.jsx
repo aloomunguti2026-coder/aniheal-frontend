@@ -1,29 +1,210 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
+import { useContent } from '../hooks/useContent';
+import { API_BASE_URL } from '../services/api';
 
 export default function Home() {
-  const [formData, setFormData] = useState({
+  const { blocks, services, settings } = useContent();
+
+  const heroBlock = blocks['home_hero'] || {
+    badge: 'KENYA VETERINARY BOARD ACCREDITED',
+    subtitle: 'ACCREDITED KENYA VETERINARY CONSULTANCY',
+    title: 'Professional Consultancy You Can Trust',
+    body: 'AniHeal veterinary consultancy works on providing sustainable animal related solutions in fields of veterinary medicine, One Health, animal husbandry and animal welfare.',
+    metadata: {
+      metrics: [
+        { label: 'Accredited Practice', value: 'KVB' },
+        { label: 'One Health Focused', value: '100%' },
+        { label: 'Field Triage Units', value: '24/7' },
+        { label: 'Counties Covered', value: '14+' },
+      ],
+      primaryCtaText: 'Get Help from Us',
+      secondaryCtaText: 'Explore Services & Solutions',
+    },
+  };
+
+  const whyChooseUsBlock = blocks['home_why_choose_us'] || {
+    subtitle: 'Core Practice Pillars',
+    title: 'Why Choose us',
+    body: 'Built on surgical rigor, preventive epidemiological discipline, and certified regulatory compliance.',
+    metadata: {
+      pillars: [
+        {
+          icon: 'stethoscope',
+          title: 'Experienced Veterinary Team',
+          subtitle: 'Accredited By The KVB',
+          desc: 'Licensed veterinary surgeons, livestock epidemiologists, and reproduction technicians adhering to the highest standards of the Kenya Veterinary Board.',
+          badge: 'KVB Verified',
+        },
+        {
+          icon: 'biotech',
+          title: 'Science-Driven solutions',
+          subtitle: 'Evidence-Based Diagnostics',
+          desc: 'We combine diagnostics, research, and practical veterinary care for accurate decision-making.',
+          badge: 'Rapid Panels',
+        },
+        {
+          icon: 'verified',
+          title: 'Trusted Across the Animal Health Chain',
+          subtitle: 'Holistic Value Network',
+          desc: 'Supporting farmers, pet owners, and livestock enterprises with dependable care.',
+          badge: 'Nationwide',
+        },
+      ],
+    },
+  };
+
+  const missionVisionBlock = blocks['home_mission_vision'] || {
+    metadata: {
+      mission:
+        'To deliver long-lasting, affordable and sustainable animal health solutions that empower farmers, veterinarians and communities across Africa - integrating one-health principles, climate smart practices and innovation to combat diseases, strengthen food systems and advance animal welfare.',
+      vision:
+        'A world where animal life matters, every farmer thrives and every community is protected.',
+    },
+  };
+
+  const partnershipsBlock = blocks['home_partnerships'] || {
+    subtitle: 'Institutional Network',
+    title: 'Collaborations & Partnerships',
+    body: 'Partnering across government entities, pharmaceutical manufacturers, and research bodies to advance One Health across East Africa.',
+  };
+
+  const ctaBannerBlock = blocks['home_cta_banner'] || {
+    subtitle: 'Rapid Response Service',
+    title: 'Need Immediate Clinical Assistance on Your Farm?',
+    body: 'Our field veterinary team provides real-time WhatsApp visual triage, emergency ambulatory dispatch, and immediate drug dosage guidance.',
+  };
+
+  const emergencyPhone = settings?.emergencyHotline || settings?.emergencyPhone || '+254 700 264 432';
+
+  const defaultServices = [
+    {
+      _id: '1',
+      title: 'Consultancy – One Health',
+      badgeText: 'Core Focus',
+      badgeIcon: 'public',
+      statusTag: 'Zoonosis & Biosafety',
+      description:
+        'Integrating human, animal, and environmental ecosystems for zoonotic disease prevention, biosafety audits, and climate-resilient animal agriculture.',
+    },
+    {
+      _id: '2',
+      title: 'Disease Control & Treatment',
+      badgeText: 'Epidemiology',
+      badgeIcon: 'vaccines',
+      statusTag: 'Vaccines & Protocols',
+      description:
+        'Systematic herd vaccination regimes, biosecurity barriers, transboundary livestock disease alerts, and acute clinical therapeutic interventions.',
+    },
+    {
+      _id: '3',
+      title: 'Livestock Treatment & Diagnostics',
+      badgeText: 'Ambulatory',
+      badgeIcon: 'medical_services',
+      statusTag: 'On-Farm Lab Diagnostics',
+      description:
+        'Ambulatory farm-gate diagnosis, hematology profiles, tick-borne pathogen screenings, mastitis diagnostic milk cultures, and surgical procedures.',
+    },
+    {
+      _id: '4',
+      title: 'Animal Insurance & Subscription',
+      badgeText: 'Herd Security',
+      badgeIcon: 'shield',
+      statusTag: 'Commercial & Dairy Plans',
+      description:
+        'Comprehensive livestock insurance verification, scheduled preventive audits, mortality mitigation coverage, and affordable monthly veterinary retainers.',
+    },
+    {
+      _id: '5',
+      title: 'Reproductive Health & Breeding Management',
+      badgeText: 'Genetics',
+      badgeIcon: 'rebase_edit',
+      statusTag: 'AI & Pregnancy Scanning',
+      description:
+        'Artificial insemination (AI) programs, high-yield sire genetics selection, heat synchronization, ultrasound pregnancy checks, and dystocia intervention.',
+    },
+    {
+      _id: '6',
+      title: 'Nutritional Assessment & Feeding Programs',
+      badgeText: 'Productivity',
+      badgeIcon: 'grain',
+      statusTag: 'Ration Balancing',
+      description:
+        'Total mixed ration (TMR) optimization, fodder analysis, mycotoxin binding protocols, body condition scoring, and drought-hardy silages.',
+    },
+  ];
+
+  const displayedServices = services && services.length > 0 ? services : defaultServices;
+
+  const [formData, setFormData] = React.useState({
+    producerName: '',
+    producerPhone: '',
     livestockCategory: '',
     serviceCategory: '',
     farmCounty: '',
     visitDate: '',
     herdCount: '',
-    producerName: '',
-    producerPhone: '',
-    clinicalNotes: ''
+    clinicalNotes: '',
   });
-
-  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [submitted, setSubmitted] = React.useState(false);
+  const [ticketNumber, setTicketNumber] = React.useState('');
+  const [errorMsg, setErrorMsg] = React.useState('');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
+  const handleSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setSubmitting(true);
+    setErrorMsg('');
+    try {
+      const payload = {
+        producerName: formData.producerName,
+        producerPhone: formData.producerPhone,
+        farmName: formData.producerName || 'Farmer Client',
+        livestockCategory: formData.livestockCategory,
+        serviceCategory: formData.serviceCategory,
+        farmCounty: formData.farmCounty,
+        preferredDate: formData.visitDate,
+        herdCount: formData.herdCount,
+        clinicalNotes: formData.clinicalNotes,
+        triagePriority: 'morning',
+      };
+
+      const res = await fetch(`${API_BASE_URL}/appointments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success && data?.data?.ticketRef) {
+        setTicketNumber(data.data.ticketRef);
+        setSubmitted(true);
+        setErrorMsg('');
+      } else {
+        setSubmitted(false);
+        setTicketNumber('');
+        if (res.status >= 500) {
+          setErrorMsg(data?.message || 'Server error encountered while processing your triage ticket. Please try again.');
+        } else {
+          setErrorMsg(data?.message || 'Failed to submit triage ticket. Please verify all required fields and try again.');
+        }
+      }
+    } catch (err) {
+      console.error('Triage submission network error:', err);
+      setSubmitted(false);
+      setTicketNumber('');
+      setErrorMsg('Unable to submit your triage request. The server is currently unavailable. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -64,32 +245,31 @@ export default function Home() {
               <div className="lg:col-span-7 flex flex-col items-start gap-space-lg">
                 <div className="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm uppercase tracking-wider">
                   <span className="material-symbols-outlined text-[16px]">health_and_safety</span>
-                  ACCREDITED KENYA VETERINARY CONSULTANCY
+                  {heroBlock.badge || heroBlock.subtitle || 'ACCREDITED KENYA VETERINARY CONSULTANCY'}
                 </div>
                 <h1 className="font-display-lg text-display-lg text-primary tracking-tight">
-                  Professional Consultancy <span className="text-on-background">You Can Trust</span>
+                  {heroBlock.title || 'Professional Consultancy You Can Trust'}
                 </h1>
                 <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-2xl">
-                  AniHeal veterinary consultancy works on providing sustainable animal related solutions
-                  in fields of veterinary medicine, One Health, animal husbandry and animal welfare.
+                  {heroBlock.body || heroBlock.description}
                 </p>
 
                 {/* Dual CTA Row */}
                 <div className="flex flex-wrap items-center gap-space-md w-full sm:w-auto">
                   <a
                     className="inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-secondary transition-all transform hover:-translate-y-0.5"
-                    href="#booking-dispatch"
+                    href={heroBlock.metadata?.primaryCtaLink || '#booking-dispatch'}
                   >
-                    <span>Get Help from Us</span>
+                    <span>{heroBlock.metadata?.primaryCtaText || heroBlock.ctaPrimaryText || 'Get Help from Us'}</span>
                     <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                   </a>
-                  <a
+                  <Link
                     className="inline-flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-tinted text-primary font-label-lg text-label-lg hover:bg-secondary-container/50 transition-all"
-                    href="#clinical-services"
+                    to={heroBlock.metadata?.secondaryCtaLink || '/services'}
                   >
-                    <span>Explore Services &amp; Solutions</span>
+                    <span>{heroBlock.metadata?.secondaryCtaText || heroBlock.ctaSecondaryText || 'Explore Services & Solutions'}</span>
                     <span className="material-symbols-outlined text-[18px]">biotech</span>
-                  </a>
+                  </Link>
                 </div>
 
                 {/* Social Presence & Quick Connect */}
@@ -101,21 +281,21 @@ export default function Home() {
                     <a
                       aria-label="Facebook"
                       className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-                      href="#"
+                      href={settings?.socialLinks?.facebook || '#'}
                     >
                       <span className="material-symbols-outlined text-[16px]">public</span>
                     </a>
                     <a
                       aria-label="Twitter / X"
                       className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-                      href="#"
+                      href={settings?.socialLinks?.twitter || '#'}
                     >
                       <span className="material-symbols-outlined text-[16px]">tag</span>
                     </a>
                     <a
                       aria-label="Instagram"
                       className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-                      href="#"
+                      href={settings?.socialLinks?.instagram || '#'}
                     >
                       <span className="material-symbols-outlined text-[16px]">photo_camera</span>
                     </a>
@@ -124,30 +304,22 @@ export default function Home() {
 
                 {/* Metric Badges Row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm w-full pt-space-md">
-                  <div className="p-space-sm rounded-lg bg-surface-subtle flex flex-col">
-                    <span className="font-headline-sm text-headline-sm text-primary font-bold">KVB</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      Accredited Practice
-                    </span>
-                  </div>
-                  <div className="p-space-sm rounded-lg bg-surface-subtle flex flex-col">
-                    <span className="font-headline-sm text-headline-sm text-primary font-bold">100%</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      One Health Focused
-                    </span>
-                  </div>
-                  <div className="p-space-sm rounded-lg bg-surface-subtle flex flex-col">
-                    <span className="font-headline-sm text-headline-sm text-primary font-bold">24/7</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      Field Triage Units
-                    </span>
-                  </div>
-                  <div className="p-space-sm rounded-lg bg-surface-subtle flex flex-col">
-                    <span className="font-headline-sm text-headline-sm text-primary font-bold">14+</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      Counties Covered
-                    </span>
-                  </div>
+                  {(heroBlock.metadata?.metrics && heroBlock.metadata.metrics.length > 0
+                    ? heroBlock.metadata.metrics
+                    : [
+                        { label: 'Accredited Practice', value: 'KVB' },
+                        { label: 'One Health Focused', value: '100%' },
+                        { label: 'Field Triage Units', value: '24/7' },
+                        { label: 'Counties Covered', value: '14+' },
+                      ]
+                  ).map((m, mi) => (
+                    <div key={mi} className="p-space-sm rounded-lg bg-surface-subtle flex flex-col">
+                      <span className="font-headline-sm text-headline-sm text-primary font-bold">{m.value}</span>
+                      <span className="font-label-sm text-label-sm text-on-surface-variant">
+                        {m.label}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -204,7 +376,9 @@ export default function Home() {
                         KVB Verified Clinical Practice
                       </span>
                     </div>
-                    <span className="font-label-sm text-label-sm text-primary font-bold">ACC/2025</span>
+                    <span className="font-label-sm text-label-sm text-primary font-bold">
+                      {settings?.licenseNumber ? settings.licenseNumber.split('/').pop() : 'ACC/2025'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -216,121 +390,84 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter flex flex-col gap-space-xl">
               <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
                 <span className="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold mb-space-xs">
-                  Core Practice Pillars
+                  {whyChooseUsBlock.subtitle || 'Core Practice Pillars'}
                 </span>
                 <h2 className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
-                  Why Choose us
+                  {whyChooseUsBlock.title || 'Why Choose us'}
                 </h2>
                 <p className="font-body-md text-body-md text-on-surface-variant mt-space-xs">
-                  Built on surgical rigor, preventive epidemiological discipline, and certified regulatory
-                  compliance.
+                  {whyChooseUsBlock.body || 'Built on surgical rigor, preventive epidemiological discipline, and certified regulatory compliance.'}
                 </p>
               </div>
 
               {/* 3 Primary Clinical Pillars */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-                {/* Pillar 1 */}
-                <div className="bg-surface-clinical rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border border-border-hairline">
-                  <div className="w-1 h-full bg-primary absolute top-0 left-0"></div>
-                  <div className="flex flex-col gap-space-md">
-                    <div className="w-12 h-12 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[26px]">stethoscope</span>
-                    </div>
-                    <div>
-                      <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
-                        Experienced Veterinary Team
-                      </h3>
-                      <p className="font-label-md text-label-md text-primary font-semibold mt-1">
-                        Accredited By The KVB
+                {(whyChooseUsBlock.metadata?.pillars && whyChooseUsBlock.metadata.pillars.length > 0
+                  ? whyChooseUsBlock.metadata.pillars
+                  : [
+                      {
+                        icon: 'stethoscope',
+                        title: 'Experienced Veterinary Team',
+                        subtitle: 'Accredited By The KVB',
+                        desc: 'Licensed veterinary surgeons, livestock epidemiologists, and reproduction technicians adhering to the highest standards of the Kenya Veterinary Board.',
+                        badge: 'KVB Verified',
+                      },
+                      {
+                        icon: 'biotech',
+                        title: 'Science-Driven solutions',
+                        subtitle: 'Evidence-Based Diagnostics',
+                        desc: 'We combine diagnostics, research, and practical veterinary care for accurate decision-making.',
+                        badge: 'Rapid Panels',
+                      },
+                      {
+                        icon: 'verified',
+                        title: 'Trusted Across the Animal Health Chain',
+                        subtitle: 'Holistic Value Network',
+                        desc: 'Supporting farmers, pet owners, and livestock enterprises with dependable care.',
+                        badge: 'Nationwide',
+                      },
+                    ]
+                ).map((pillar, pi) => (
+                  <div
+                    key={pi}
+                    className="bg-surface-clinical rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border border-border-hairline"
+                  >
+                    <div className="w-1 h-full bg-primary absolute top-0 left-0"></div>
+                    <div className="flex flex-col gap-space-md">
+                      <div className="w-12 h-12 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined text-[26px]">
+                          {pillar.icon || 'verified'}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
+                          {pillar.title}
+                        </h3>
+                        {pillar.subtitle && (
+                          <p className="font-label-md text-label-md text-primary font-semibold mt-1">
+                            {pillar.subtitle}
+                          </p>
+                        )}
+                      </div>
+                      <p className="font-body-md text-body-md text-on-surface-variant">
+                        {pillar.desc}
                       </p>
                     </div>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Licensed veterinary surgeons, livestock epidemiologists, and reproduction technicians
-                      adhering to the highest standards of the Kenya Veterinary Board.
-                    </p>
-                  </div>
-                  {/* KVB Regulatory Banner inside card */}
-                  <div className="mt-space-lg pt-space-md bg-surface-subtle rounded-lg p-space-md flex items-center justify-between">
-                    <div className="flex items-center gap-space-xs">
-                      <span className="material-symbols-outlined text-primary text-[20px]">
-                        verified_user
-                      </span>
-                      <span className="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider">
-                        Official Certification
+                    <div className="mt-space-lg pt-space-md bg-surface-subtle rounded-lg p-space-md flex items-center justify-between">
+                      <div className="flex items-center gap-space-xs">
+                        <span className="material-symbols-outlined text-primary text-[20px]">
+                          verified_user
+                        </span>
+                        <span className="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider">
+                          Official Certification
+                        </span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
+                        {pillar.badge || 'Verified'}
                       </span>
                     </div>
-                    <span className="px-2 py-0.5 rounded bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
-                      KVB Verified
-                    </span>
                   </div>
-                </div>
-
-                {/* Pillar 2 */}
-                <div className="bg-surface-clinical rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border border-border-hairline">
-                  <div className="w-1 h-full bg-primary absolute top-0 left-0"></div>
-                  <div className="flex flex-col gap-space-md">
-                    <div className="w-12 h-12 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[26px]">biotech</span>
-                    </div>
-                    <div>
-                      <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
-                        Science-Driven solutions
-                      </h3>
-                      <p className="font-label-md text-label-md text-secondary font-semibold mt-1">
-                        Evidence-Based Diagnostics
-                      </p>
-                    </div>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      We combine diagnostics, research, and practical veterinary care for accurate
-                      decision-making.
-                    </p>
-                  </div>
-                  <div className="mt-space-lg pt-space-md bg-surface-subtle rounded-lg p-space-md flex items-center justify-between">
-                    <div className="flex items-center gap-space-xs">
-                      <span className="material-symbols-outlined text-secondary text-[20px]">
-                        science
-                      </span>
-                      <span className="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider">
-                        Field Lab Testing
-                      </span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed-variant font-label-sm text-label-sm font-bold">
-                      Rapid Panels
-                    </span>
-                  </div>
-                </div>
-
-                {/* Pillar 3 */}
-                <div className="bg-surface-clinical rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border border-border-hairline">
-                  <div className="w-1 h-full bg-primary absolute top-0 left-0"></div>
-                  <div className="flex flex-col gap-space-md">
-                    <div className="w-12 h-12 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[26px]">verified</span>
-                    </div>
-                    <div>
-                      <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
-                        Trusted Across the Animal Health Chain
-                      </h3>
-                      <p className="font-label-md text-label-md text-primary font-semibold mt-1">
-                        Holistic Value Network
-                      </p>
-                    </div>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Supporting farmers, pet owners, and livestock enterprises with dependable care.
-                    </p>
-                  </div>
-                  <div className="mt-space-lg pt-space-md bg-surface-subtle rounded-lg p-space-md flex items-center justify-between">
-                    <div className="flex items-center gap-space-xs">
-                      <span className="material-symbols-outlined text-primary text-[20px]">hub</span>
-                      <span className="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider">
-                        Producers &amp; Herds
-                      </span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded bg-surface-tinted text-primary font-label-sm text-label-sm font-bold">
-                      Nationwide
-                    </span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </section>
@@ -353,204 +490,44 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* 6 Key Service Units Grid */}
+              {/* Dynamic Service Units Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
-                {/* Service 1: One Health Consultancy */}
-                <div className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline">
-                  <div>
-                    <div className="flex items-center justify-between mb-space-md">
-                      <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-[22px]">public</span>
+                {displayedServices.slice(0, 6).map((srv) => (
+                  <div
+                    key={srv._id || srv.title}
+                    className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-space-md">
+                        <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
+                          <span className="material-symbols-outlined text-[22px]">
+                            {srv.badgeIcon || srv.icon || 'medical_services'}
+                          </span>
+                        </div>
+                        <span className="font-label-sm text-label-sm text-primary font-bold px-2 py-0.5 rounded bg-surface-tinted">
+                          {srv.badgeText || srv.badge || (Array.isArray(srv.category) ? srv.category[0] : srv.category) || 'Core Focus'}
+                        </span>
                       </div>
-                      <span className="font-label-sm text-label-sm text-primary font-bold px-2 py-0.5 rounded bg-surface-tinted">
-                        Core Focus
-                      </span>
+                      <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
+                        {srv.title}
+                      </h3>
+                      <p className="font-body-md text-body-md text-on-surface-variant">
+                        {srv.description}
+                      </p>
                     </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
-                      Consultancy – One Health
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Integrating human, animal, and environmental ecosystems for zoonotic disease
-                      prevention, biosafety audits, and climate-resilient animal agriculture.
-                    </p>
-                  </div>
-                  <div className="mt-space-md pt-space-sm flex items-center justify-between">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      Zoonosis &amp; Biosafety
-                    </span>
-                    <a
-                      className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
-                      href="#booking-dispatch"
-                    >
-                      Consult <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Service 2: Disease Control & Treatment */}
-                <div className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline">
-                  <div>
-                    <div className="flex items-center justify-between mb-space-md">
-                      <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-[22px]">vaccines</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-secondary font-bold px-2 py-0.5 rounded bg-secondary-container">
-                        Epidemiology
+                    <div className="mt-space-md pt-space-sm flex items-center justify-between border-t border-border-hairline/50">
+                      <span className="font-label-sm text-label-sm text-on-surface-variant">
+                        {srv.statusTag || srv.tag || 'One Health Certified'}
                       </span>
+                      <Link
+                        className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
+                        to="/appointment-booking"
+                      >
+                        Consult <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                      </Link>
                     </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
-                      Disease Control &amp; Treatment
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Systematic herd vaccination regimes, biosecurity barriers, transboundary livestock
-                      disease alerts, and acute clinical therapeutic interventions.
-                    </p>
                   </div>
-                  <div className="mt-space-md pt-space-sm flex items-center justify-between">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      Vaccines &amp; Protocols
-                    </span>
-                    <a
-                      className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
-                      href="#booking-dispatch"
-                    >
-                      View Protocols{' '}
-                      <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Service 3: Livestock Treatment & Diagnostics */}
-                <div className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline">
-                  <div>
-                    <div className="flex items-center justify-between mb-space-md">
-                      <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-[22px]">medical_services</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-primary font-bold px-2 py-0.5 rounded bg-surface-tinted">
-                        Ambulatory
-                      </span>
-                    </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
-                      Livestock Treatment &amp; Diagnostics
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Ambulatory farm-gate diagnosis, hematology profiles, tick-borne pathogen
-                      screenings, mastitis diagnostic milk cultures, and surgical procedures.
-                    </p>
-                  </div>
-                  <div className="mt-space-md pt-space-sm flex items-center justify-between">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      On-Farm Lab Diagnostics
-                    </span>
-                    <a
-                      className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
-                      href="#booking-dispatch"
-                    >
-                      Request Diagnostics{' '}
-                      <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Service 4: Animal Insurance & Subscription */}
-                <div className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline">
-                  <div>
-                    <div className="flex items-center justify-between mb-space-md">
-                      <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-[22px]">shield</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-kvb-gold font-bold px-2 py-0.5 rounded bg-surface-tinted">
-                        Herd Security
-                      </span>
-                    </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
-                      Animal Insurance &amp; Subscription
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Comprehensive livestock insurance verification, scheduled preventive audits,
-                      mortality mitigation coverage, and affordable monthly veterinary retainers.
-                    </p>
-                  </div>
-                  <div className="mt-space-md pt-space-sm flex items-center justify-between">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      Commercial &amp; Dairy Plans
-                    </span>
-                    <a
-                      className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
-                      href="#booking-dispatch"
-                    >
-                      Subscription Rates{' '}
-                      <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Service 5: Reproductive Health & Breeding */}
-                <div className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline">
-                  <div>
-                    <div className="flex items-center justify-between mb-space-md">
-                      <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-[22px]">rebase_edit</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-primary font-bold px-2 py-0.5 rounded bg-surface-tinted">
-                        Genetics
-                      </span>
-                    </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
-                      Reproductive Health &amp; Breeding Management
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Artificial insemination (AI) programs, high-yield sire genetics selection, heat
-                      synchronization, ultrasound pregnancy checks, and dystocia intervention.
-                    </p>
-                  </div>
-                  <div className="mt-space-md pt-space-sm flex items-center justify-between">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      AI &amp; Pregnancy Scanning
-                    </span>
-                    <a
-                      className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
-                      href="#booking-dispatch"
-                    >
-                      Breeding Program{' '}
-                      <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Service 6: Nutritional Assessment & Feeding Programs */}
-                <div className="bg-surface-subtle rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-border-hairline">
-                  <div>
-                    <div className="flex items-center justify-between mb-space-md">
-                      <div className="w-10 h-10 rounded-lg bg-surface-tinted flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-[22px]">grain</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-secondary font-bold px-2 py-0.5 rounded bg-secondary-container">
-                        Productivity
-                      </span>
-                    </div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">
-                      Nutritional Assessment &amp; Feeding Programs
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Total mixed ration (TMR) optimization, fodder analysis, mycotoxin binding protocols,
-                      body condition scoring, and drought-hardy silages.
-                    </p>
-                  </div>
-                  <div className="mt-space-md pt-space-sm flex items-center justify-between">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">
-                      Ration Balancing
-                    </span>
-                    <a
-                      className="font-label-md text-label-md text-primary font-semibold hover:underline flex items-center gap-1"
-                      href="#booking-dispatch"
-                    >
-                      Ration Consult{' '}
-                      <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                    </a>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </section>
@@ -585,8 +562,8 @@ export default function Home() {
                         <p className="font-body-sm text-body-sm">
                           Do not wait for form confirmation. Call our 24/7 Field Ambulatory Hotline
                           directly at{' '}
-                          <a href="tel:+254700264432" className="font-bold underline">
-                            +254 700 264 432
+                          <a href={`tel:${emergencyPhone.replace(/\s+/g, '')}`} className="font-bold underline">
+                            {emergencyPhone}
                           </a>
                           .
                         </p>
@@ -597,7 +574,7 @@ export default function Home() {
                     <div className="mt-space-lg pt-space-md">
                       <a
                         className="w-full flex items-center justify-between p-space-md rounded-xl bg-surface-tinted hover:bg-secondary-container transition-colors text-primary"
-                        href="https://wa.me/254700264432"
+                        href={`https://wa.me/${emergencyPhone.replace(/[^0-9]/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -692,15 +669,15 @@ export default function Home() {
                             required
                           >
                             <option value="">Select Location</option>
-                            <option value="nairobi">Nairobi County</option>
-                            <option value="kiambu">Kiambu County</option>
-                            <option value="nakuru">Nakuru County</option>
-                            <option value="uasin_gishu">Uasin Gishu / Eldoret</option>
-                            <option value="kajiado">Kajiado County</option>
-                            <option value="nyeri">Nyeri / Mt Kenya</option>
-                            <option value="muranga">Murang'a County</option>
-                            <option value="kilifi">Kilifi / Coast Hub</option>
-                            <option value="other">Other Regional Dispatch</option>
+                            <option value="Nairobi County">Nairobi County</option>
+                            <option value="Kiambu County">Kiambu County</option>
+                            <option value="Nakuru County">Nakuru County</option>
+                            <option value="Uasin Gishu / Eldoret">Uasin Gishu / Eldoret</option>
+                            <option value="Kajiado County">Kajiado County</option>
+                            <option value="Nyeri / Mt Kenya">Nyeri / Mt Kenya</option>
+                            <option value="Murang'a County">Murang'a County</option>
+                            <option value="Kilifi / Coast Hub">Kilifi / Coast Hub</option>
+                            <option value="Other Regional Dispatch">Other Regional Dispatch</option>
                           </select>
                         </div>
                         {/* Preferred Date */}
@@ -805,13 +782,39 @@ export default function Home() {
                           <span>Direct triage review by licensed KVB veterinary officer</span>
                         </div>
                         <button
-                          className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-secondary transition-all cursor-pointer"
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-secondary transition-all cursor-pointer disabled:opacity-50"
                           type="submit"
+                          disabled={submitting}
                         >
-                          <span>Schedule Veterinary Visit / Dispatch Triage</span>
+                          <span>{submitting ? 'Transmitting...' : 'Schedule Veterinary Visit / Dispatch Triage'}</span>
                           <span className="material-symbols-outlined text-[18px]">send</span>
                         </button>
                       </div>
+
+                      {/* Error Alert Message with Actionable Retry */}
+                      {errorMsg && (
+                        <div
+                          className="p-space-md rounded-xl bg-error-container text-on-error-container border-2 border-error/40 text-body-sm font-semibold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fade-in"
+                          id="bookingErrorMsg"
+                          role="alert"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[24px] text-error shrink-0">
+                              cloud_off
+                            </span>
+                            <span>{errorMsg}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={submitting}
+                            className="px-4 py-1.5 rounded-full bg-error text-on-error font-label-sm text-label-sm font-bold shadow hover:brightness-95 transition-all cursor-pointer whitespace-nowrap shrink-0 disabled:opacity-50"
+                            id="homeRetryBtn"
+                          >
+                            {submitting ? 'Retrying...' : 'Retry'}
+                          </button>
+                        </div>
+                      )}
 
                       {/* Success Alert Message */}
                       {submitted && (
@@ -819,15 +822,20 @@ export default function Home() {
                           className="p-space-md rounded-xl bg-surface-tinted border border-border-accent text-on-surface animate-fade-in"
                           id="bookingSuccessMsg"
                         >
-                          <div className="flex items-center gap-space-xs">
-                            <span className="material-symbols-outlined text-primary text-[20px]">
-                              check_circle
-                            </span>
-                            <span className="font-label-md text-label-md font-bold text-primary">
-                              Triage Request Received Successfully!
+                          <div className="flex items-center justify-between gap-space-xs">
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-primary text-[22px]">
+                                check_circle
+                              </span>
+                              <span className="font-label-md text-label-md font-bold text-primary">
+                                Triage Ticket #{ticketNumber} Generated!
+                              </span>
+                            </div>
+                            <span className="text-[12px] bg-primary text-on-primary font-bold px-2 py-0.5 rounded">
+                              Active Dispatch
                             </span>
                           </div>
-                          <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                          <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
                             Thank you, <strong className="text-on-surface">{formData.producerName || 'Farmer'}</strong>.
                             Our regional ambulatory dispatch officer is reviewing your case details for {formData.farmCounty || 'your location'}.
                             A licensed veterinary surgeon will contact you directly at <strong className="text-on-surface">{formData.producerPhone || 'your phone number'}</strong> shortly.
@@ -860,10 +868,8 @@ export default function Home() {
                       Our Mission
                     </h2>
                     <p className="font-body-lg text-body-lg text-on-surface leading-relaxed">
-                      To deliver long-lasting, affordable and sustainable animal health solutions that
-                      empower farmers, veterinarians and communities across Africa - integrating
-                      one-health principles, climate smart practices and innovation to combat diseases,
-                      strengthen food systems and advance animal welfare.
+                      {missionVisionBlock.metadata?.mission ||
+                        'To deliver long-lasting, affordable and sustainable animal health solutions that empower farmers, veterinarians and communities across Africa - integrating one-health principles, climate smart practices and innovation to combat diseases, strengthen food systems and advance animal welfare.'}
                     </p>
                   </div>
                   <div className="mt-space-lg pt-space-md flex items-center gap-space-md text-label-sm font-label-sm text-secondary font-semibold">
@@ -892,8 +898,8 @@ export default function Home() {
                       Our Vision
                     </h2>
                     <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
-                      A world where animal life matters, every farmer thrives and every community is
-                      protected.
+                      {missionVisionBlock.metadata?.vision ||
+                        'A world where animal life matters, every farmer thrives and every community is protected.'}
                     </p>
                   </div>
                   <div className="mt-space-lg pt-space-md flex items-center gap-space-md text-label-sm font-label-sm text-on-surface-variant">
@@ -918,14 +924,14 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter flex flex-col gap-space-xl">
               <div className="text-center max-w-2xl mx-auto flex flex-col gap-space-xs">
                 <span className="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest">
-                  Institutional Network
+                  {partnershipsBlock.subtitle || 'Institutional Network'}
                 </span>
                 <h2 className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
-                  Collaborations &amp; Partnerships
+                  {partnershipsBlock.title || 'Collaborations & Partnerships'}
                 </h2>
                 <p className="font-body-md text-body-md text-on-surface-variant">
-                  Partnering across government entities, pharmaceutical manufacturers, and research
-                  bodies to advance One Health across East Africa.
+                  {partnershipsBlock.body ||
+                    'Partnering across government entities, pharmaceutical manufacturers, and research bodies to advance One Health across East Africa.'}
                 </p>
               </div>
 
@@ -991,20 +997,20 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter flex flex-col md:flex-row items-center justify-between gap-space-lg">
               <div className="flex flex-col gap-space-xs text-center md:text-left max-w-2xl">
                 <span className="font-label-sm text-label-sm text-on-primary/80 uppercase font-bold tracking-widest">
-                  Rapid Response Service
+                  {ctaBannerBlock.subtitle || 'Rapid Response Service'}
                 </span>
                 <h2 className="font-headline-lg text-headline-lg font-bold">
-                  Need Immediate Clinical Assistance on Your Farm?
+                  {ctaBannerBlock.title || 'Need Immediate Clinical Assistance on Your Farm?'}
                 </h2>
                 <p className="font-body-md text-body-md text-on-primary/90">
-                  Our field veterinary team provides real-time WhatsApp visual triage, emergency
-                  ambulatory dispatch, and immediate drug dosage guidance.
+                  {ctaBannerBlock.body ||
+                    'Our field veterinary team provides real-time WhatsApp visual triage, emergency ambulatory dispatch, and immediate drug dosage guidance.'}
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-space-sm shrink-0">
                 <a
                   className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-clinical text-primary font-label-lg text-label-lg shadow-sm hover:bg-surface-tinted transition-all"
-                  href="https://wa.me/254700264432"
+                  href={`https://wa.me/${emergencyPhone.replace(/[^0-9]/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -1013,10 +1019,10 @@ export default function Home() {
                 </a>
                 <a
                   className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-error text-on-error font-label-lg text-label-lg shadow-sm hover:bg-kvb-red transition-all"
-                  href="tel:+254700264432"
+                  href={`tel:${emergencyPhone.replace(/\s+/g, '')}`}
                 >
                   <span className="material-symbols-outlined text-[20px]">call</span>
-                  <span>Hotline: +254 700 ANIHEAL</span>
+                  <span>Hotline: {emergencyPhone}</span>
                 </a>
               </div>
             </div>
