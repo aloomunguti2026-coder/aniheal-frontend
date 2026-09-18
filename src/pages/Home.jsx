@@ -33,8 +33,7 @@ export default function Home() {
       primaryCtaLink: '#booking-dispatch',
       secondaryCtaText: 'Explore Services & Solutions',
       secondaryCtaLink: '/services',
-      heroImage:
-        'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w',
+      heroImage: '/logo.png',
       heroTagline: 'Healthy Animals • Healthy People • Healthy Planet',
       fieldTriageStatus: 'Active Mobile Units',
       fieldTriageSquads: 'Central & Rift Valley Squads',
@@ -83,7 +82,7 @@ export default function Home() {
 
   const bookingHeaderBlock = blocks['home_booking_header'] || {
     badge: 'FIELD CLINICAL APPOINTMENT',
-    title: 'Schedule Farm Visit or Clinical Triage',
+    title: 'Schedule Farm Visit',
     body: 'Direct dispatch to commercial farms, smallholder dairy units, ranches, and companion animal households throughout Kenya.',
     metadata: {
       emergencyTitle: 'Acute Animal Emergency?',
@@ -108,28 +107,6 @@ export default function Home() {
     subtitle: 'Institutional Network',
     title: 'Collaborations & Partnerships',
     body: 'Partnering across government entities, pharmaceutical manufacturers, and research bodies to advance One Health across East Africa.',
-    metadata: {
-      partnerCards: [
-        {
-          icon: 'account_balance',
-          title: 'Government & Veterinary Authorities',
-          desc: 'Collaborating with the Directorate of Veterinary Services (DVS), Kenya Veterinary Board (KVB), and County Agriculture departments on statutory disease surveillance and vaccination.',
-          badge: 'Statutory Compliance',
-        },
-        {
-          icon: 'medication',
-          title: 'Pharmaceutical & Biological Suppliers',
-          desc: 'Sourcing accredited high-stability cold chain vaccines, high-potency veterinary therapeutics, and certified antiparasitics with strict traceability.',
-          badge: 'Cold-Chain Assurance',
-        },
-        {
-          icon: 'school',
-          title: 'Academic & Research Institutions',
-          desc: 'Conducting field validation trials, antimicrobial resistance (AMR) monitoring, and livestock disease transmission mapping with universities and research consortia.',
-          badge: 'Applied One Health Research',
-        },
-      ],
-    },
   };
 
   const ctaBannerBlock = blocks['home_cta_banner'] || {
@@ -319,11 +296,11 @@ export default function Home() {
                   {(heroBlock.metadata?.metrics && heroBlock.metadata.metrics.length > 0
                     ? heroBlock.metadata.metrics
                     : [
-                        { label: 'Accredited Practice', value: 'KVB' },
-                        { label: 'One Health Focused', value: '100%' },
-                        { label: 'Field Triage Units', value: '24/7' },
-                        { label: 'Counties Covered', value: '14+' },
-                      ]
+                      { label: 'Accredited Practice', value: 'KVB' },
+                      { label: 'One Health Focused', value: '100%' },
+                      { label: 'Field Triage Units', value: '24/7' },
+                      { label: 'Counties Covered', value: '14+' },
+                    ]
                   ).map((m, mi) => (
                     <div key={mi} className="p-space-sm rounded-lg bg-surface-subtle flex flex-col border border-border-hairline">
                       <span className="font-headline-sm text-headline-sm text-primary font-bold">{m.value}</span>
@@ -343,14 +320,10 @@ export default function Home() {
                     <img
                       alt="AniHeal Veterinary Solutions Official Emblem"
                       className="w-full max-w-[280px] h-auto object-contain"
-                      src={
-                        heroBlock.metadata?.heroImage ||
-                        'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w'
-                      }
+                      src={heroBlock.metadata?.heroImage || '/logo.png'}
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src =
-                          'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w';
+                        e.target.src = '/logo.png';
                       }}
                     />
                     <div className="mt-space-sm inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-tinted text-secondary font-label-sm text-label-sm font-semibold">
@@ -427,28 +400,28 @@ export default function Home() {
                 {(whyChooseUsBlock.metadata?.pillars && whyChooseUsBlock.metadata.pillars.length > 0
                   ? whyChooseUsBlock.metadata.pillars
                   : [
-                      {
-                        icon: 'stethoscope',
-                        title: 'Experienced Veterinary Team',
-                        subtitle: 'Accredited By The KVB',
-                        desc: 'Licensed veterinary surgeons, livestock epidemiologists, and reproduction technicians adhering to the highest standards of the Kenya Veterinary Board.',
-                        badge: 'KVB Verified',
-                      },
-                      {
-                        icon: 'biotech',
-                        title: 'Science-Driven solutions',
-                        subtitle: 'Evidence-Based Diagnostics',
-                        desc: 'We combine diagnostics, research, and practical veterinary care for accurate decision-making.',
-                        badge: 'Rapid Panels',
-                      },
-                      {
-                        icon: 'verified',
-                        title: 'Trusted Across the Animal Health Chain',
-                        subtitle: 'Holistic Value Network',
-                        desc: 'Supporting farmers, pet owners, and livestock enterprises with dependable care.',
-                        badge: 'Nationwide',
-                      },
-                    ]
+                    {
+                      icon: 'stethoscope',
+                      title: 'Experienced Veterinary Team',
+                      subtitle: 'Accredited By The KVB',
+                      desc: 'Licensed veterinary surgeons, livestock epidemiologists, and reproduction technicians adhering to the highest standards of the Kenya Veterinary Board.',
+                      badge: 'KVB Verified',
+                    },
+                    {
+                      icon: 'biotech',
+                      title: 'Science-Driven solutions',
+                      subtitle: 'Evidence-Based Diagnostics',
+                      desc: 'We combine diagnostics, research, and practical veterinary care for accurate decision-making.',
+                      badge: 'Rapid Panels',
+                    },
+                    {
+                      icon: 'verified',
+                      title: 'Trusted Across the Animal Health Chain',
+                      subtitle: 'Holistic Value Network',
+                      desc: 'Supporting farmers, pet owners, and livestock enterprises with dependable care.',
+                      badge: 'Nationwide',
+                    },
+                  ]
                 ).map((pillar, pi) => (
                   <div
                     key={pi}
@@ -582,7 +555,7 @@ export default function Home() {
                         {bookingHeaderBlock.badge || 'FIELD CLINICAL APPOINTMENT'}
                       </div>
                       <h2 className="font-headline-lg text-headline-lg text-on-surface font-bold">
-                        {bookingHeaderBlock.title || 'Schedule Farm Visit or Clinical Triage'}
+                        {bookingHeaderBlock.title || 'Schedule Farm Visit'}
                       </h2>
                       <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
                         {bookingHeaderBlock.body ||
@@ -651,7 +624,7 @@ export default function Home() {
                             required
                           >
                             <option value="">Select Livestock / Animal Type</option>
-                            <option value="dairy">Dairy Cattle (Pedigree &amp; Crossbred)</option>
+                            <option value="dairy">Dairy Cattle </option>
                             <option value="beef">Beef Cattle / Ranch Production</option>
                             <option value="shoats">Goats &amp; Sheep (Small Ruminants)</option>
                             <option value="poultry">Poultry (Layers, Broilers, Kienyeji)</option>
@@ -682,7 +655,7 @@ export default function Home() {
                               On-Farm Lab Diagnostics &amp; Blood Panel
                             </option>
                             <option value="insurance">Animal Insurance Health Verification</option>
-                            <option value="breeding">AI, Estrus Sync &amp; Ultrasound Scanning</option>
+                            <option value="breeding">AI, Estrus Sync &amp; Pregnancy diagnostic</option>
                             <option value="nutrition">Nutritional Rations &amp; Fodder Analysis</option>
                             <option value="routine">Routine Vaccination &amp; Parasite Control</option>
                           </select>
@@ -816,14 +789,14 @@ export default function Home() {
                           <span className="material-symbols-outlined text-primary text-[18px]">
                             verified
                           </span>
-                          <span>Direct triage review by licensed KVB veterinary officer</span>
+                          <span>Fast response from our team</span>
                         </div>
                         <button
                           className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-secondary transition-all cursor-pointer disabled:opacity-50 font-bold"
                           type="submit"
                           disabled={submitting}
                         >
-                          <span>{submitting ? 'Transmitting...' : 'Schedule Veterinary Visit / Dispatch Triage'}</span>
+                          <span>{submitting ? 'Transmitting...' : 'Schedule Veterinary Visit'}</span>
                           <span className="material-symbols-outlined text-[18px]">send</span>
                         </button>
                       </div>

@@ -25,8 +25,7 @@ export default function AdminContentHome() {
     primaryCtaLink: '#booking-dispatch',
     secondaryCtaText: 'Explore Services & Solutions',
     secondaryCtaLink: '/services',
-    heroImage:
-      'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w',
+    heroImage: '/logo.png',
     heroTagline: 'Healthy Animals • Healthy People • Healthy Planet',
     fieldTriageStatus: 'Active Mobile Units',
     fieldTriageSquads: 'Central & Rift Valley Squads',
@@ -80,7 +79,7 @@ export default function AdminContentHome() {
 
   const [bookingHeader, setBookingHeader] = useState({
     badge: 'FIELD CLINICAL APPOINTMENT',
-    title: 'Schedule Farm Visit or Clinical Triage',
+    title: 'Schedule Farm Visit',
     body: 'Direct dispatch to commercial farms, smallholder dairy units, ranches, and companion animal households throughout Kenya.',
     emergencyTitle: 'Acute Animal Emergency?',
     emergencyBody: 'Do not wait for form confirmation. Call our 24/7 Field Ambulatory Hotline directly at',
@@ -109,26 +108,6 @@ export default function AdminContentHome() {
     subtitle: 'Institutional Network',
     title: 'Collaborations & Partnerships',
     body: 'Partnering across government entities, pharmaceutical manufacturers, and research bodies to advance One Health across East Africa.',
-    partnerCards: [
-      {
-        icon: 'account_balance',
-        title: 'Government & Veterinary Authorities',
-        desc: 'Collaborating with the Directorate of Veterinary Services (DVS), Kenya Veterinary Board (KVB), and County Agriculture departments on statutory disease surveillance and vaccination.',
-        badge: 'Statutory Compliance',
-      },
-      {
-        icon: 'medication',
-        title: 'Pharmaceutical & Biological Suppliers',
-        desc: 'Sourcing accredited high-stability cold chain vaccines, high-potency veterinary therapeutics, and certified antiparasitics with strict traceability.',
-        badge: 'Cold-Chain Assurance',
-      },
-      {
-        icon: 'school',
-        title: 'Academic & Research Institutions',
-        desc: 'Conducting field validation trials, antimicrobial resistance (AMR) monitoring, and livestock disease transmission mapping with universities and research consortia.',
-        badge: 'Applied One Health Research',
-      },
-    ],
   });
 
   const [ctaBanner, setCtaBanner] = useState({
@@ -177,9 +156,7 @@ export default function AdminContentHome() {
             primaryCtaLink: m.primaryCtaLink || '#booking-dispatch',
             secondaryCtaText: m.secondaryCtaText || 'Explore Services & Solutions',
             secondaryCtaLink: m.secondaryCtaLink || '/services',
-            heroImage:
-              m.heroImage ||
-              'https://lh3.googleusercontent.com/aida/AEtjO1WXRU6SkdH2B4lJUTRkkG5jjNrZS6J_FfZ_9jGdtW5C2Hmju9dr4yiVjhwhkF3oiIlYJNh3S2yTo4gUaTp5FHYYMVkIuF5T0zAGkSQmkU_nvyj-8EzP6IEN9Xkde0ZmCaVDS1YDGDpUqrWHF5DP03eYOe_Nq5V67puwWs8Kvr-NJ5q0iUgnvmGMhJKEk4VBGl-TPvmIXCU4qG0z1fAXp2NGARC7oT9NmZrjUmZ8LkUnfAVhqZWvzKrS2w',
+            heroImage: m.heroImage || '/logo.png',
             heroTagline: m.heroTagline || 'Healthy Animals • Healthy People • Healthy Planet',
             fieldTriageStatus: m.fieldTriageStatus || 'Active Mobile Units',
             fieldTriageSquads: m.fieldTriageSquads || 'Central & Rift Valley Squads',
@@ -190,11 +167,11 @@ export default function AdminContentHome() {
               Array.isArray(m.metrics) && m.metrics.length > 0
                 ? m.metrics
                 : [
-                    { label: 'Accredited Practice', value: 'KVB' },
-                    { label: 'One Health Focused', value: '100%' },
-                    { label: 'Field Triage Units', value: '24/7' },
-                    { label: 'Counties Covered', value: '14+' },
-                  ],
+                  { label: 'Accredited Practice', value: 'KVB' },
+                  { label: 'One Health Focused', value: '100%' },
+                  { label: 'Field Triage Units', value: '24/7' },
+                  { label: 'Counties Covered', value: '14+' },
+                ],
           });
         }
 
@@ -255,15 +232,10 @@ export default function AdminContentHome() {
 
         // Partnerships
         if (b.home_partnerships) {
-          const m = b.home_partnerships.metadata || {};
           setPartnerships({
             subtitle: b.home_partnerships.subtitle || '',
             title: b.home_partnerships.title || '',
             body: b.home_partnerships.body || '',
-            partnerCards:
-              Array.isArray(m.partnerCards) && m.partnerCards.length > 0
-                ? m.partnerCards
-                : partnerships.partnerCards,
           });
         }
 
@@ -376,15 +348,13 @@ export default function AdminContentHome() {
           },
         }),
 
-        // 7. Collaborations
+        // 7. Collaborations Header
         api.put('/admin/content-blocks/home_partnerships', {
           section: 'homepage',
           title: partnerships.title,
           subtitle: partnerships.subtitle,
           body: partnerships.body,
-          metadata: {
-            partnerCards: partnerships.partnerCards,
-          },
+          metadata: {},
         }),
 
         // 8. CTA Banner
@@ -444,9 +414,8 @@ export default function AdminContentHome() {
       {/* Toast Alert */}
       {feedback && (
         <div
-          className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 transition-all animate-in fade-in slide-in-from-top-4 ${
-            feedback.type === 'error' ? 'bg-error text-on-error' : 'bg-primary text-on-primary'
-          }`}
+          className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 transition-all animate-in fade-in slide-in-from-top-4 ${feedback.type === 'error' ? 'bg-error text-on-error' : 'bg-primary text-on-primary'
+            }`}
         >
           <span className="material-symbols-outlined text-[20px]">
             {feedback.type === 'error' ? 'error' : 'check_circle'}
@@ -506,11 +475,10 @@ export default function AdminContentHome() {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full font-label-md text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-              activeTab === tab.id
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full font-label-md text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${activeTab === tab.id
                 ? 'bg-primary text-on-primary shadow-sm'
                 : 'bg-surface-subtle text-on-surface-variant hover:text-on-surface hover:bg-surface-clinical'
-            }`}
+              }`}
           >
             <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
             <span>{tab.label}</span>
@@ -1238,72 +1206,26 @@ export default function AdminContentHome() {
                 </div>
               </div>
 
-              {/* 3 Partner Cards */}
-              <div className="space-y-4">
-                <h3 className="font-headline-sm font-bold text-on-surface text-base">
-                  3 Institutional Partner Cards
-                </h3>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {partnerships.partnerCards.map((card, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-surface-clinical rounded-2xl p-5 shadow-sm border border-border-hairline space-y-3"
-                    >
-                      <div className="flex items-center justify-between pb-2 border-b border-border-hairline">
-                        <span className="font-label-sm font-bold uppercase text-primary">
-                          Partner Card #{idx + 1}
-                        </span>
-                        <span className="material-symbols-outlined text-primary text-[20px]">
-                          {card.icon || 'business'}
-                        </span>
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold uppercase text-on-surface-variant mb-1">
-                          Material Icon Name
-                        </label>
-                        <input
-                          type="text"
-                          value={card.icon}
-                          onChange={(e) => updatePartnerCard(idx, 'icon', e.target.value)}
-                          className="w-full h-9 px-3 rounded-lg bg-surface-subtle border border-border-hairline text-xs font-mono focus:border-primary focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold uppercase text-on-surface-variant mb-1">
-                          Partner Category Title
-                        </label>
-                        <input
-                          type="text"
-                          value={card.title}
-                          onChange={(e) => updatePartnerCard(idx, 'title', e.target.value)}
-                          className="w-full h-9 px-3 rounded-lg bg-surface-subtle border border-border-hairline text-sm font-bold focus:border-primary focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold uppercase text-on-surface-variant mb-1">
-                          Collaboration Scope Description
-                        </label>
-                        <textarea
-                          rows="4"
-                          value={card.desc}
-                          onChange={(e) => updatePartnerCard(idx, 'desc', e.target.value)}
-                          className="w-full p-2.5 rounded-lg bg-surface-subtle border border-border-hairline text-xs leading-relaxed focus:border-primary focus:outline-none"
-                        ></textarea>
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold uppercase text-on-surface-variant mb-1">
-                          Footer Badge Tag
-                        </label>
-                        <input
-                          type="text"
-                          value={card.badge}
-                          onChange={(e) => updatePartnerCard(idx, 'badge', e.target.value)}
-                          className="w-full h-9 px-3 rounded-lg bg-surface-subtle border border-border-hairline text-xs font-bold text-primary focus:border-primary focus:outline-none"
-                        />
-                      </div>
-                    </div>
-                  ))}
+              {/* Dynamic Database Collaborations Notice */}
+              <div className="bg-surface-tinted rounded-2xl p-6 border border-border-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[22px]">database</span>
+                    <h3 className="font-headline-sm font-bold text-on-surface text-base">
+                      Dynamic Collaborations &amp; Partner Stories
+                    </h3>
+                  </div>
+                  <p className="text-body-sm text-on-surface-variant max-w-xl">
+                    All collaboration cards, partner logos, research alliances, and articles displayed on the homepage and the public site are directly saved and queried from the database.
+                  </p>
                 </div>
+                <Link
+                  to="/admin/collaborations"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-dark transition-all shadow-sm shrink-0"
+                >
+                  <span className="material-symbols-outlined text-[18px]">handshake</span>
+                  <span>Manage Collaborations</span>
+                </Link>
               </div>
 
               {/* Bottom Tele-Triage Emergency Banner */}

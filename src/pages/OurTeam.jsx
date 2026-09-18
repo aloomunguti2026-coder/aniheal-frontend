@@ -43,13 +43,13 @@ export default function OurTeam() {
       activeFilter === 'leadership' ||
       (Array.isArray(directorMember.category)
         ? directorMember.category.some(
-            (c) =>
-              c.toLowerCase().includes(activeFilter.replace(/-/g, '')) ||
-              c.toLowerCase().includes(activeFilter.toLowerCase())
-          )
+          (c) =>
+            c.toLowerCase().includes(activeFilter.replace(/-/g, '')) ||
+            c.toLowerCase().includes(activeFilter.toLowerCase())
+        )
         : (directorMember.category || '')
-            .toLowerCase()
-            .includes(activeFilter.replace(/-/g, ''))));
+          .toLowerCase()
+          .includes(activeFilter.replace(/-/g, ''))));
 
   // Filter specialists according to active tab
   const filteredSpecialists = specialistsOnly.filter((spec) => {
@@ -79,7 +79,7 @@ export default function OurTeam() {
                   </span>
                 </div>
                 <h1 className="font-display-lg text-display-lg text-on-surface tracking-tight leading-tight font-extrabold">
-                  Our Licensed Veterinary Surgeons &amp; Clinical Epidemiologists
+                  Our Licensed Veterinarians &amp; Epidemiologists
                 </h1>
                 <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
                   Accredited by the Kenya Veterinary Board (KVB). Delivering high-tier veterinary medicine,
@@ -124,11 +124,10 @@ export default function OurTeam() {
                   return (
                     <button
                       key={tab.id}
-                      className={`px-4 py-1.5 rounded-full font-label-md text-label-md transition-all whitespace-nowrap cursor-pointer ${
-                        isActive
-                          ? 'bg-primary text-on-primary shadow-sm font-semibold'
-                          : 'text-on-surface-variant hover:text-primary hover:bg-surface-clinical'
-                      }`}
+                      className={`px-4 py-1.5 rounded-full font-label-md text-label-md transition-all whitespace-nowrap cursor-pointer ${isActive
+                        ? 'bg-primary text-on-primary shadow-sm font-semibold'
+                        : 'text-on-surface-variant hover:text-primary hover:bg-surface-clinical'
+                        }`}
                       onClick={() => setActiveFilter(tab.id)}
                       type="button"
                     >
@@ -456,8 +455,8 @@ export default function OurTeam() {
                                 {hub.leadOfficer
                                   ? hub.leadOfficer
                                   : Array.isArray(hub.fleetEquipment) && hub.fleetEquipment.length > 0
-                                  ? hub.fleetEquipment.join(', ')
-                                  : 'Active Ambulatory Squad'}
+                                    ? hub.fleetEquipment.join(', ')
+                                    : 'Active Ambulatory Squad'}
                               </span>
                             </div>
                           </div>
@@ -537,53 +536,43 @@ export default function OurTeam() {
 
                 {/* Research Publications & CPD Badges */}
                 <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-space-md">
-                  {(dbResearch && dbResearch.length > 0
-                    ? dbResearch
-                    : [
-                        {
-                          _id: 'res-1',
-                          tag: 'Research Output',
-                          year: 2024,
-                          title: 'Subclinical Mastitis in Dual-Purpose Cattle: Surveillance Models',
-                          authors:
-                            'Authored by Dr. Eleanor Vance and Dr. Grace Wanjiku in collaboration with KALRO and ILRI.',
-                          journal: 'African Journal of Animal Health, Vol 41',
-                        },
-                        {
-                          _id: 'res-2',
-                          tag: 'Technical Paper',
-                          year: 2023,
-                          title: 'Field Diagnostics for East Coast Fever (Theileriosis) in Rift Valley',
-                          authors:
-                            'Clinical validation and farm-level trial data on rapid lateral flow tests by Dr. Mercy Chebet.',
-                          journal: 'One Health Global Review, Issue 8',
-                        },
-                      ]
-                  ).map((res, idx) => (
-                    <div
-                      key={res._id || idx}
-                      className="bg-surface-tinted p-space-md rounded-xl space-y-3 border border-border-accent"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-secondary font-label-sm text-label-sm uppercase font-bold tracking-wider">
-                          {res.tag || 'Research Output'}
-                        </span>
-                        <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
-                          {res.year || 2024} Peer-Reviewed
-                        </span>
+                  {Array.isArray(dbResearch) && dbResearch.length > 0 ? (
+                    dbResearch.map((res, idx) => (
+                      <div
+                        key={res._id || idx}
+                        className="bg-surface-tinted p-space-md rounded-xl space-y-3 border border-border-accent"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-secondary font-label-sm text-label-sm uppercase font-bold tracking-wider">
+                            {res.tag || 'Research Output'}
+                          </span>
+                          <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
+                            {res.year || 2025} Peer-Reviewed
+                          </span>
+                        </div>
+                        <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                          {res.title}
+                        </h3>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant">
+                          {res.authors || res.summary}
+                        </p>
+                        <div className="flex items-center gap-2 text-primary font-label-sm text-label-sm font-semibold">
+                          <span className="material-symbols-outlined text-[16px]">menu_book</span>
+                          <span>{res.journal || 'AniHeal Clinical Bulletin'}</span>
+                        </div>
                       </div>
-                      <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                        {res.title}
-                      </h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant">
-                        {res.authors || res.summary}
+                    ))
+                  ) : (
+                    <div className="col-span-full bg-surface-tinted p-space-lg rounded-xl text-center border border-border-accent/40 space-y-2">
+                      <span className="material-symbols-outlined text-primary text-[32px]">biotech</span>
+                      <p className="font-label-md text-label-md font-bold text-on-surface">
+                        Continuous Professional Development &amp; Research
                       </p>
-                      <div className="flex items-center gap-2 text-primary font-label-sm text-label-sm font-semibold">
-                        <span className="material-symbols-outlined text-[16px]">menu_book</span>
-                        <span>{res.journal || 'AniHeal Clinical Bulletin'}</span>
-                      </div>
+                      <p className="text-body-sm text-on-surface-variant max-w-md mx-auto">
+                        Official veterinary clinical trial publications, One Health epidemiology reports, and peer-reviewed journals will be cataloged here.
+                      </p>
                     </div>
-                  ))}
+                  )}
 
                   <div className="bg-surface-container p-space-md rounded-xl space-y-2 border border-border-hairline">
                     <div className="flex items-center gap-2 text-primary font-headline-sm text-headline-sm font-bold">
@@ -623,8 +612,7 @@ export default function OurTeam() {
                   Join Our Veterinary Ambulatory Squad
                 </h2>
                 <p className="font-body-lg text-body-lg opacity-90 leading-relaxed">
-                  Are you a licensed veterinary surgeon, animal health technologist, or certified
-                  veterinary para-professional seeking to practice modern, data-driven medicine? AniHeal
+                  Are you a licensed veterinary surgeon or veterinary para-professional seeking to practice modern, data-driven medicine? AniHeal
                   is expanding its fleet across Western, Mount Kenya, and Coast zones.
                 </p>
                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2 font-label-md text-label-md opacity-90 font-semibold">
