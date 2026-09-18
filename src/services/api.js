@@ -16,7 +16,7 @@ export const API_BASE_URL = `${API_URL}/api`;
 /**
  * Universal API Request Handler
  * @param {string} endpoint - Relative path (e.g. '/public/services' or '/api/public/services') or absolute URL
- * @param {object} options - Fetch options (method, headers, body, etc.)
+ * @param {object} options - Fetch options (method, headers, body, params, etc.)
  */
 export async function request(endpoint, options = {}) {
   const token = localStorage.getItem('auth_token');
@@ -36,9 +36,24 @@ export async function request(endpoint, options = {}) {
       : `${API_BASE_URL}${cleanEndpoint}`;
   }
 
+  if (options.params && typeof options.params === 'object') {
+    const searchParams = new URLSearchParams();
+    Object.entries(options.params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, value);
+      }
+    });
+    const queryString = searchParams.toString();
+    if (queryString) {
+      url += (url.includes('?') ? '&' : '?') + queryString;
+    }
+  }
+
+  const { params, ...fetchOptions } = options;
+
   try {
     const response = await fetch(url, {
-      ...options,
+      ...fetchOptions,
       headers,
     });
 
@@ -48,6 +63,7 @@ export async function request(endpoint, options = {}) {
       const error = new Error(data?.message || `API request failed with status ${response.status}`);
       error.status = response.status;
       error.data = data;
+      error.response = { data, status: response.status };
       throw error;
     }
 
@@ -95,6 +111,7 @@ export async function uploadRequest(endpoint, formData, options = {}) {
       const error = new Error(data?.message || `File upload failed with status ${response.status}`);
       error.status = response.status;
       error.data = data;
+      error.response = { data, status: response.status };
       throw error;
     }
 
@@ -131,4 +148,3 @@ export const api = {
 };
 
 export default api;
-

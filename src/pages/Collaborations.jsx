@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/navigation/Navbar';
+import Footer from '../components/navigation/Footer';
 import collaborationService from '../services/collaborationService';
 
 export default function Collaborations() {
@@ -97,13 +99,16 @@ export default function Collaborations() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col pt-20">
-      {/* Hero Section */}
+    <div className="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col">
+      <Navbar />
+
+      <main className="flex-1 w-full pt-20">
+        {/* Hero Section */}
       <section className="relative py-16 lg:py-20 bg-gradient-to-b from-primary/10 via-surface-tinted/40 to-surface border-b border-border-hairline overflow-hidden">
         <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-label-md text-label-md font-bold mb-4 animate-fade-in">
-            <span className="material-symbols-outlined text-[18px]">handshake</span>
-            <span>STRATEGIC PARTNERSHIPS &amp; ALLIANCES</span>
+            {/* <span className="material-symbols-outlined text-[18px]">handshake</span> */}
+            {/* <span></span> */}
           </div>
           <h1 className="font-headline-lg lg:text-[44px] text-on-surface font-extrabold tracking-tight max-w-3xl mx-auto leading-tight">
             Collaborations &amp; One Health Initiatives
@@ -138,11 +143,10 @@ export default function Collaborations() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full font-label-md text-label-md font-bold transition-all ${
-                  selectedCategory === cat
+                className={`px-4 py-2 rounded-full font-label-md text-label-md font-bold transition-all ${selectedCategory === cat
                     ? 'bg-primary text-on-primary shadow-sm scale-105'
                     : 'bg-surface-clinical text-on-surface-variant hover:bg-surface-tinted border border-border-hairline'
-                }`}
+                  }`}
               >
                 {cat}
               </button>
@@ -252,9 +256,12 @@ export default function Collaborations() {
             ))}
           </div>
         )}
-      </section>
+        </section>
+      </main>
 
-      {/* Story & Comments Modal / Drawer */}
+      <Footer />
+
+      {/* Active Story Modal */}
       {activeStory && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-surface-clinical rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-border-hairline shadow-2xl relative my-8 animate-scale-in">
@@ -348,11 +355,10 @@ export default function Collaborations() {
                     activeStory.comments.map((comment, idx) => (
                       <div
                         key={idx}
-                        className={`p-4 rounded-2xl border ${
-                          comment.isStaff
+                        className={`p-4 rounded-2xl border ${comment.isStaff
                             ? 'bg-primary/5 border-primary/20'
                             : 'bg-surface border-border-hairline'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">

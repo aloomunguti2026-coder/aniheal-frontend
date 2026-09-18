@@ -5,7 +5,28 @@ import { useContent } from '../hooks/useContent';
 import { API_BASE_URL } from '../services/api';
 
 export default function ContactUs() {
-  const { settings, hubs: dbHubs, faqs: dbFaqs } = useContent();
+  const { settings, hubs: dbHubs, faqs: dbFaqs, blocks } = useContent();
+
+  const defaultFleetItems = [
+    {
+      name: 'Mobile Lab Fleet #3',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCdMipf_wHgAU1jJHBgzZ-6Av_FOWhaYTe_R9-pUVcedYopdfsqz05h2pLUvunESqUTs5qQ7PE4qFASeBGVWfVSZvspJFb4JPAt5kk3WO0D9tu2HlST18cJ3ygPKcaYjKN3hJrJ8lyFMrr5ozKgdT1YM4lsEa7ZpWUMDO1_Y_AY42lHfrKIfvOn6JZx30CnGUq2rCrWC_AYy4ozTsbtvRFnM5Bb1gl2r4BcFoGaHWLvSF3AtJW7KU2B',
+    },
+    {
+      name: 'Rift Valley Herd Triage',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuAuKHTURKZQOaYcfibAeMONBddKmwPREFD5iGH_CqqzH9tQiNalVh80yYdaD0v6ZSKMqKPTXd_0lYTdqHA5_Cwdky_5a9BRoHxuJSzbVZM74updOwNHCc1AXfrfkW8MxahBdJocfbPQmqZzW6CoJQiaYRUeQWT0LznnWguWv_dvn3UzlMalVH4Xa9Iag7GOCQmDzydia2FrRZvqduy8IrpPc0j6sLiA3Lp11DHLJ1WDkXDuT04mMW0v',
+    },
+  ];
+
+  const fleetBlock = blocks?.fleet_vignette;
+  const fleetTitle = fleetBlock?.title || 'Ambulatory Fleet In Action';
+  const fleetBadge = fleetBlock?.badge || 'Cold Chain + Ultrasound Equipped';
+  const fleetItems =
+    Array.isArray(fleetBlock?.metadata?.items) && fleetBlock.metadata.items.length > 0
+      ? fleetBlock.metadata.items
+      : defaultFleetItems;
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -413,11 +434,10 @@ export default function ContactUs() {
                     </div>
 
                     <button
-                      className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 h-12 rounded-full font-label-lg text-label-lg shadow-sm transition-all cursor-pointer ${
-                        isSubmitting
-                          ? 'bg-secondary text-on-primary'
-                          : 'bg-primary-container text-on-primary hover:bg-primary'
-                      }`}
+                      className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 h-12 rounded-full font-label-lg text-label-lg shadow-sm transition-all cursor-pointer ${isSubmitting
+                        ? 'bg-secondary text-on-primary'
+                        : 'bg-primary-container text-on-primary hover:bg-primary'
+                        }`}
                       id="submitBtn"
                       type="submit"
                       disabled={isSubmitting}
@@ -478,33 +498,28 @@ export default function ContactUs() {
                   <div className="mt-space-lg pt-space-md bg-surface-subtle rounded-xl p-5 border border-border-hairline">
                     <div className="flex items-center justify-between mb-3">
                       <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline font-bold">
-                        Ambulatory Fleet In Action
+                        {fleetTitle}
                       </span>
                       <span className="font-label-sm text-label-sm text-primary font-semibold">
-                        Cold Chain + Ultrasound Equipped
+                        {fleetBadge}
                       </span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="relative rounded-lg overflow-hidden h-36 bg-surface-container border border-border-hairline">
-                        <img
-                          className="w-full h-full object-cover"
-                          alt="Mobile Lab Fleet #3"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdMipf_wHgAU1jJHBgzZ-6Av_FOWhaYTe_R9-pUVcedYopdfsqz05h2pLUvunESqUTs5qQ7PE4qFASeBGVWfVSZvspJFb4JPAt5kk3WO0D9tu2HlST18cJ3ygPKcaYjKN3hJrJ8lyFMrr5ozKgdT1YM4lsEa7ZpWUMDO1_Y_AY42lHfrKIfvOn6JZx30CnGUq2rCrWC_AYy4ozTsbtvRFnM5Bb1gl2r4BcFoGaHWLvSF3AtJW7KU2B"
-                        />
-                        <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-surface-clinical/90 text-on-surface font-label-sm text-label-sm font-semibold">
-                          Mobile Lab Fleet #3
+                      {fleetItems.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="relative rounded-lg overflow-hidden h-36 bg-surface-container border border-border-hairline group"
+                        >
+                          <img
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            alt={item.name}
+                            src={item.image}
+                          />
+                          <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-surface-clinical/90 text-on-surface font-label-sm text-label-sm font-semibold">
+                            {item.name}
+                          </div>
                         </div>
-                      </div>
-                      <div className="relative rounded-lg overflow-hidden h-36 bg-surface-container border border-border-hairline">
-                        <img
-                          className="w-full h-full object-cover"
-                          alt="Rift Valley Herd Triage"
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuKHTURKZQOaYcfibAeMONBddKmwPREFD5iGH_CqqzH9tQiNalVh80yYdaD0v6ZSKMqKPTXd_0lYTdqHA5_Cwdky_5a9BRoHxuJSzbVZM74updOwNHCc1AXfrfkW8MxahBdJocfbPQmqZzW6CoJQiaYRUeQWT0LznnWguWv_dvn3UzlMalVH4Xa9Iag7GOCQmDzydia2FrRZvqduy8IrpPc0j6sLiA3Lp11DHLJ1WDkXDuT04mMW0v"
-                        />
-                        <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-surface-clinical/90 text-on-surface font-label-sm text-label-sm font-semibold">
-                          Rift Valley Herd Triage
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -517,7 +532,7 @@ export default function ContactUs() {
                         Strategic Presence
                       </span>
                       <h2 className="font-headline-lg text-headline-lg text-on-surface font-bold">
-                        Ambulatory Hubs &amp; Stations
+                        Visit our main Offices
                       </h2>
                     </div>
                     <span className="inline-flex items-center gap-1 text-label-sm font-label-sm text-primary font-bold">
@@ -579,19 +594,21 @@ export default function ContactUs() {
                     </div>
                   )}
 
-                  {/* Interactive Static Map View */}
+                  {/* Interactive Google Map View */}
                   <div className="rounded-xl overflow-hidden shadow-sm mt-4 bg-surface-subtle border border-border-hairline">
-                    <div
-                      className="w-full h-44 bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3sQHZm8XJ9JFoetAa_Bx6Bhgnv5kIorTfUXS3HKPIBrzlo4mN4k5dMG0lHzJxTI-G9-e00yt-GD4pxzS9ka94BSnx96bFRjCF0bn7jHxeHC-1OZXYNovL-D-IlPuuWU4MwGAWiQJUvaYn33bxVpCbhEyovL7n8kFZEpXtHvPiTj3AUVxhOl-IaylfNgdu5qu4302IbEcsSN0214l91GMze2Crx4uocVbVkZYj03ypTQyPRLMeVwcs')`,
-                      }}
-                    ></div>
+                    <iframe
+                      title="AniHeal Headquarters Location Map"
+                      src="https://maps.google.com/maps?cid=184748594220426890&output=embed"
+                      className="w-full h-64 border-0"
+                      allowFullScreen=""
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
                     <div className="p-3 bg-surface-clinical flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant">
-                      <span className="font-semibold">National Operations Coverage Map</span>
+                      <span className="font-semibold">Main Office Location Map</span>
                       <a
                         className="text-primary hover:underline font-semibold flex items-center gap-1"
-                        href="https://maps.google.com/?q=Kabete+Veterinary+Laboratories+Nairobi"
+                        href="https://maps.google.com/?cid=184748594220426890"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -638,9 +655,8 @@ export default function ContactUs() {
                           {faq.q}
                         </span>
                         <span
-                          className={`material-symbols-outlined text-primary transition-transform duration-200 ${
-                            isOpen ? 'rotate-180' : ''
-                          }`}
+                          className={`material-symbols-outlined text-primary transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
+                            }`}
                         >
                           expand_more
                         </span>

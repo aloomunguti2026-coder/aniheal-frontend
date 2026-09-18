@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { API_BASE_URL } from '../services/api';
 import { subscribeToContentUpdates } from '../services/eventBus';
 
-const CACHE_KEY = 'aniheal_persisted_content_v2';
+const CACHE_KEY = 'aniheal_persisted_content_v3';
 
 const loadCache = () => {
   try {
