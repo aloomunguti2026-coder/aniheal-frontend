@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useId } from 'react';
 import api, { API_BASE_URL } from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
+import { useConfirm } from '../../context/ConfirmContext';
 
 const CATEGORY_OPTIONS = [
   { value: 'one-health', label: 'One Health & Bio-Security' },
@@ -15,6 +16,7 @@ const DEFAULT_IMAGE =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuD8GMqS-s8oinLCAa3VcL8Xl7AQBM1TSOEF9XkmOobmDNuBcrYO1BnJzDYY41T8p8D9N9DXAJZ5xXcXs62AY48PxF50eFEK4mvnrlAmyiiDgMPdtr-U4_r1YfvJTd93s_r1lRgit73FS86IaEBFaO558hGseYNlXJUuDUeHj2wgYr0-fWtJ7mG4UE5sfCVkqHFhtPTMjJYKvI4veFlKgjAORdXijb34IbWE4OAS4B7gmYQXrKE4mb-6';
 
 export default function AdminServices() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [activeMainTab, setActiveMainTab] = useState('catalog'); // 'catalog' | 'page_headers'
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -280,7 +282,16 @@ export default function AdminServices() {
   };
 
   const handleDelete = async (id, title) => {
-    if (!window.confirm(`Are you sure you want to delete the clinical service protocol "${title}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Delete Service Protocol',
+      message: `Are you sure you want to permanently delete the clinical service protocol "${title}"?`,
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await api.delete(`/admin/services/${id}`);
       if (res.success) {

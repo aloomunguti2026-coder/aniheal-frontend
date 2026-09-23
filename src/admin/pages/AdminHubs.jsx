@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminHubs() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [hubs, setHubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -118,7 +120,11 @@ export default function AdminHubs() {
         setTimeout(() => setActionSuccess(null), 4000);
       }
     } catch (err) {
-      alert('Failed to update fleet vignette: ' + (err.response?.data?.message || err.message));
+      await showAlert({
+        title: 'Update Failed',
+        message: 'Failed to update fleet vignette: ' + (err.response?.data?.message || err.message),
+        type: 'error',
+      });
     } finally {
       setSavingFleet(false);
     }
@@ -153,7 +159,16 @@ export default function AdminHubs() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Are you sure you want to delete office/station "${name}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Delete Station / Hub',
+      message: `Are you sure you want to permanently delete office/station "${name}"?`,
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await api.delete(`/admin/hubs/${id}`);
       if (res && (res.success || res.status === 200)) {
@@ -163,7 +178,11 @@ export default function AdminHubs() {
         setTimeout(() => setActionSuccess(null), 4000);
       }
     } catch (err) {
-      alert('Failed to delete hub: ' + (err.response?.data?.message || err.message));
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to delete hub: ' + (err.response?.data?.message || err.message),
+        type: 'error',
+      });
     }
   };
 

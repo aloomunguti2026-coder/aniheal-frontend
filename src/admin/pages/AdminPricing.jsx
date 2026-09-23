@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminPricing() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingPlan, setEditingPlan] = useState(null);
@@ -81,7 +83,16 @@ export default function AdminPricing() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete pricing tier "${name}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Delete Pricing Plan',
+      message: `Are you sure you want to permanently delete pricing tier "${name}"?`,
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await api.delete(`/admin/pricing-plans/${id}`);
       if (res.success) {
@@ -89,7 +100,11 @@ export default function AdminPricing() {
         notifyContentUpdated();
       }
     } catch (err) {
-      alert('Failed to delete pricing plan: ' + err.message);
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to delete pricing plan: ' + err.message,
+        type: 'error',
+      });
     }
   };
 
@@ -125,7 +140,11 @@ export default function AdminPricing() {
         }
       }
     } catch (err) {
-      alert('Failed to save pricing plan: ' + err.message);
+      await showAlert({
+        title: 'Save Failed',
+        message: 'Failed to save pricing plan: ' + err.message,
+        type: 'error',
+      });
     } finally {
       setSaving(false);
     }

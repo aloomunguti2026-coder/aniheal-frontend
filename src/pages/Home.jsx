@@ -2,20 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
+import SocialIcon from '../components/common/SocialIcon';
 import { useContent } from '../hooks/useContent';
 import { API_BASE_URL } from '../services/api';
 
 export default function Home() {
   const { blocks, services, collaborations, settings } = useContent();
-
-  const topBarBlock = blocks['home_top_bar'] || {
-    badge: 'KENYA VETERINARY BOARD ACCREDITED',
-    metadata: {
-      licenseText: 'Practice License KVB/PR/2025/0842',
-      oneHealthText: 'One Health Alliance Member',
-      dispatchText: '24/7 Mobile Triage Response',
-    },
-  };
 
   const heroBlock = blocks['home_hero'] || {
     badge: 'KENYA VETERINARY BOARD ACCREDITED',
@@ -200,31 +192,6 @@ export default function Home() {
 
       <main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]">
         <div className="flex flex-col w-full">
-          {/* Top Accreditation & Regulatory Status Bar */}
-          <section className="w-full bg-surface-container-low py-space-sm px-margin-mobile lg:px-gutter border-b border-border-hairline">
-            <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-space-sm text-label-sm font-label-sm">
-              <div className="flex items-center gap-space-sm">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-tinted text-primary font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
-                  {topBarBlock.badge || 'KENYA VETERINARY BOARD ACCREDITED'}
-                </span>
-                <span className="text-on-surface-variant hidden sm:inline">
-                  • {topBarBlock.metadata?.licenseText || 'Practice License KVB/PR/2025/0842'}
-                </span>
-              </div>
-              <div className="flex items-center gap-space-md text-on-surface-variant">
-                <span className="inline-flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[15px] text-primary">verified</span>
-                  {topBarBlock.metadata?.oneHealthText || 'One Health Alliance Member'}
-                </span>
-                <span className="hidden md:inline text-on-surface-variant/40">|</span>
-                <span className="hidden md:inline">
-                  {topBarBlock.metadata?.dispatchText || '24/7 Mobile Triage Response'}
-                </span>
-              </div>
-            </div>
-          </section>
-
           {/* Hero Section */}
           <section className="relative w-full bg-surface-clinical overflow-hidden py-space-xl lg:py-space-2xl">
             <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
@@ -262,34 +229,65 @@ export default function Home() {
                 </div>
 
                 {/* Social Presence & Quick Connect */}
-                <div className="flex items-center gap-space-sm pt-space-xs">
-                  <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">
-                    Follow Clinical Updates:
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <a
-                      aria-label="Facebook"
-                      className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-                      href={settings?.socialLinks?.facebook || '#'}
-                    >
-                      <span className="material-symbols-outlined text-[16px]">public</span>
-                    </a>
-                    <a
-                      aria-label="Twitter / X"
-                      className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-                      href={settings?.socialLinks?.twitter || '#'}
-                    >
-                      <span className="material-symbols-outlined text-[16px]">tag</span>
-                    </a>
-                    <a
-                      aria-label="Instagram"
-                      className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-                      href={settings?.socialLinks?.instagram || '#'}
-                    >
-                      <span className="material-symbols-outlined text-[16px]">photo_camera</span>
-                    </a>
-                  </div>
-                </div>
+                {(() => {
+                  const showSocialPresence = heroBlock.metadata?.showSocialPresence !== false;
+                  if (!showSocialPresence) return null;
+
+                  const socialLabel = heroBlock.metadata?.socialLabel || 'Follow Clinical Updates:';
+
+                  let heroSocialAccounts = [];
+                  if (Array.isArray(heroBlock.metadata?.socialAccounts) && heroBlock.metadata.socialAccounts.length > 0) {
+                    heroSocialAccounts = heroBlock.metadata.socialAccounts.filter(
+                      (a) => a.enabled !== false && a.url && a.url.trim() !== '' && a.url !== '#'
+                    );
+                  } else {
+                    const sLinks = heroBlock.metadata?.socialLinks || settings?.socialLinks || {};
+                    const defaultAccounts = [
+                      { platform: 'facebook', label: 'Facebook', url: sLinks.facebook },
+                      { platform: 'twitter', label: 'Twitter / X', url: sLinks.twitter },
+                      { platform: 'instagram', label: 'Instagram', url: sLinks.instagram },
+                      { platform: 'linkedin', label: 'LinkedIn', url: sLinks.linkedin },
+                      { platform: 'youtube', label: 'YouTube', url: sLinks.youtube },
+                      { platform: 'tiktok', label: 'TikTok', url: sLinks.tiktok },
+                      { platform: 'whatsapp', label: 'WhatsApp', url: sLinks.whatsapp },
+                    ];
+                    heroSocialAccounts = defaultAccounts.filter(
+                      (a) => a.url && a.url.trim() !== '' && a.url !== '#'
+                    );
+                    if (heroSocialAccounts.length === 0) {
+                      heroSocialAccounts = [
+                        { platform: 'facebook', label: 'Facebook', url: sLinks.facebook || '#' },
+                        { platform: 'twitter', label: 'Twitter / X', url: sLinks.twitter || '#' },
+                        { platform: 'instagram', label: 'Instagram', url: sLinks.instagram || '#' },
+                      ];
+                    }
+                  }
+
+                  if (heroSocialAccounts.length === 0) return null;
+
+                  return (
+                    <div className="flex items-center gap-space-sm pt-space-xs flex-wrap">
+                      <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">
+                        {socialLabel}
+                      </span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {heroSocialAccounts.map((account, idx) => (
+                          <a
+                            key={idx}
+                            aria-label={account.label || account.platform}
+                            title={account.label || account.platform}
+                            className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all duration-200 transform hover:scale-110 shadow-sm"
+                            href={account.url}
+                            target={account.url && account.url.startsWith('http') ? '_blank' : undefined}
+                            rel={account.url && account.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          >
+                            <SocialIcon platform={account.platform} className="w-3.5 h-3.5" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Metric Badges Row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm w-full pt-space-md">

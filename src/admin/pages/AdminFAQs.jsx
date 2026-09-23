@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminFAQs() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingFaq, setEditingFaq] = useState(null);
@@ -53,8 +55,19 @@ export default function AdminFAQs() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this FAQ?')) return;
+  const handleDelete = async (id, questionText) => {
+    const isConfirmed = await confirm({
+      title: 'Delete FAQ',
+      message: questionText
+        ? `Are you sure you want to delete FAQ: "${questionText}"?`
+        : 'Are you sure you want to permanently delete this FAQ item?',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await api.delete(`/admin/faqs/${id}`);
       if (res.success) {
@@ -62,7 +75,11 @@ export default function AdminFAQs() {
         notifyContentUpdated();
       }
     } catch (err) {
-      alert('Failed to delete FAQ: ' + err.message);
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to delete FAQ: ' + err.message,
+        type: 'error',
+      });
     }
   };
 
@@ -89,7 +106,11 @@ export default function AdminFAQs() {
         }
       }
     } catch (err) {
-      alert('Failed to save FAQ: ' + err.message);
+      await showAlert({
+        title: 'Save Failed',
+        message: 'Failed to save FAQ: ' + err.message,
+        type: 'error',
+      });
     } finally {
       setSaving(false);
     }

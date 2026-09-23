@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import productService from '../../services/productService';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminProducts() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -98,19 +100,42 @@ export default function AdminProducts() {
         setProducts(products.map((item) => (item._id === p._id ? { ...item, isActive: !item.isActive } : item)));
       }
     } catch (err) {
-      alert(err.message || 'Failed to toggle product status');
+      await showAlert({
+        title: 'Status Update Failed',
+        message: err.message || 'Failed to toggle product status',
+        type: 'error',
+      });
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to permanently delete this product?')) return;
+  const handleDelete = async (p) => {
+    const productId = typeof p === 'object' ? p._id : p;
+    const productName = typeof p === 'object' ? p.name : '';
+
+    const isConfirmed = await confirm({
+      title: 'Delete Product',
+      message: productName
+        ? `Are you sure you want to permanently delete "${productName}"? This action cannot be undone.`
+        : 'Are you sure you want to permanently delete this product? This action cannot be undone.',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+      icon: 'delete_forever',
+    });
+
+    if (!isConfirmed) return;
+
     try {
-      const res = await productService.deleteProduct(id);
+      const res = await productService.deleteProduct(productId);
       if (res.success) {
-        setProducts(products.filter((p) => p._id !== id));
+        setProducts(products.filter((item) => item._id !== productId));
       }
     } catch (err) {
-      alert(err.message || 'Failed to delete product');
+      await showAlert({
+        title: 'Deletion Failed',
+        message: err.message || 'Failed to delete product',
+        type: 'error',
+      });
     }
   };
 
@@ -301,7 +326,7 @@ export default function AdminProducts() {
                         <span className="material-symbols-outlined text-[18px]">edit</span>
                       </button>
                       <button
-                        onClick={() => handleDelete(p._id)}
+                        onClick={() => handleDelete(p)}
                         className="p-1.5 rounded-lg text-error hover:bg-error-container/30 transition-colors"
                         title="Delete Product"
                       >

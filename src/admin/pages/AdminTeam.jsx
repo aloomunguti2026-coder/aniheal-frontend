@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useId } from 'react';
 import api, { API_BASE_URL } from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
+import { useConfirm } from '../../context/ConfirmContext';
 
 const CATEGORY_OPTIONS = [
   { value: 'leadership', label: 'Clinical Leadership' },
@@ -14,6 +15,7 @@ const DEFAULT_IMAGE =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAwEQECb8OurVoi2GFDxSPomx5mCzT1SPE2x6JKkK4uwMPyk36iit-a7RG1-Qt28yyNu-iiQqN-C7zWmf3jnNf0ERgucQupyrUKISH80Ov4HXHZIZ1n_zBZ-92rZqr7TzQ8xM7i9pZ5pwvilXPSndralMnY9aBrtKJpQj5YltnY8A1pq5x4ghVeQtwzFyr516MZ_UDD5uXEpxDhp_g8eq4EK23Ye7UCLLacU8LqbbPAq2La-_VWujuo';
 
 export default function AdminTeam() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingMember, setEditingMember] = useState(null);
@@ -204,7 +206,16 @@ export default function AdminTeam() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Are you sure you want to remove specialist profile "${name}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Remove Specialist Profile',
+      message: `Are you sure you want to remove specialist profile "${name}"?`,
+      confirmText: 'Yes, Remove',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await api.delete(`/admin/team/${id}`);
       if (res.success) {

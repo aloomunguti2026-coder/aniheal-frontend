@@ -339,153 +339,72 @@ export default function Services() {
             </div>
           </section>
 
-          {/* SECTION: ANIMAL INSURANCE & SUBSCRIPTIONS */}
+          {/* SECTION: ANIMAL HEALTH CARE SUBSCRIPTIONS */}
           <section className="w-full bg-surface-container py-space-2xl border-t border-border-hairline">
             <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
-              <div className="text-center max-w-2xl mx-auto mb-space-xl">
+              <div className="text-center max-w-3xl mx-auto mb-space-xl">
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
-                  {insuranceBlock?.subtitle || 'Predictable Clinical Protection'}
+                  {insuranceBlock?.subtitle || 'Continuous Preventative Care'}
                 </span>
                 <h2 className="font-display-lg text-display-lg text-on-surface tracking-tight mt-1 font-bold">
-                  {insuranceBlock?.title || 'Animal Insurance & Health Subscriptions'}
+                  {insuranceBlock?.title || 'Animal Health Care Subscriptions'}
                 </h2>
-                <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                  {insuranceBlock?.body ||
-                    'Underwritten clinical healthcare plans tailored for Dairy Herds, Beef Cattle, Companion Pets, and Working Equine across Kenya.'}
+                <p className="font-body-md text-body-md text-on-surface-variant mt-2 leading-relaxed">
+                  AniHeal provides structured health subscription coverage for companion pets, dairy herds, small ruminants, and working equine. Subscriptions eliminate unexpected clinical expenses by delivering continuous veterinary supervision, scheduled wellness visits, and rapid emergency ambulatory dispatch.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter items-stretch">
-                <div className="rounded-2xl p-8 flex flex-col justify-between bg-surface-clinical shadow-sm border border-border-hairline hover:shadow-md">
-                  <div>
-                    <span className="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold uppercase bg-surface-container text-on-surface-variant">
-                      Companion &amp; Working Pets
+              {/* Subscription Explanation Card */}
+              <div className="bg-surface-clinical rounded-3xl p-8 lg:p-10 border border-border-hairline shadow-sm max-w-4xl mx-auto space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="p-5 rounded-2xl bg-surface-tinted/40 border border-border-hairline space-y-2.5">
+                    <span className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-xs">
+                      <span className="material-symbols-outlined text-[22px]">health_and_safety</span>
                     </span>
-                    <h3 className="font-headline-lg text-headline-lg text-on-surface mt-4 mb-2 font-bold">
-                      Canine &amp; Pet Shield
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                      Full emergency medical coverage, routine DHLPP/Rabies vaccinations, deworming, and surgical trauma care for working and guard dogs.
+                    <h4 className="font-headline-sm text-base font-bold text-on-surface">
+                      Proactive Preventative Care
+                    </h4>
+                    <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                      Bi-annual veterinary checkups, routine vaccinations, deworming cycles, and reproductive audits.
                     </p>
-                    <div className="mb-6 p-4 rounded-xl border bg-surface-tinted/50 border-border-hairline">
-                      <div className="flex items-baseline gap-1">
-                        <span className="font-display-lg text-display-lg text-primary font-bold">KES 1,200</span>
-                        <span className="font-body-md text-body-md text-on-surface-variant">/ month</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-secondary font-medium">Up to KES 80,000 Annual Claim Limit</span>
-                    </div>
-                    <ul className="space-y-3 font-body-md text-body-md text-on-surface-variant">
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Emergency field surgery &amp; anesthesia</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Annual anti-rabies &amp; core immunization</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Zero callout charge for trauma triage</span>
-                      </li>
-                    </ul>
                   </div>
-                  <div className="mt-8 pt-6">
-                    <Link
-                      className="w-full inline-flex items-center justify-center py-3.5 rounded-full font-label-lg text-label-lg transition-all font-semibold bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary"
-                      to="/animal-insurance"
-                    >
-                      Explore Pet Plans
-                    </Link>
+
+                  <div className="p-5 rounded-2xl bg-surface-tinted/40 border border-border-hairline space-y-2.5">
+                    <span className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-xs">
+                      <span className="material-symbols-outlined text-[22px]">emergency</span>
+                    </span>
+                    <h4 className="font-headline-sm text-base font-bold text-on-surface">
+                      Cashless Emergency Triage
+                    </h4>
+                    <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                      24/7 mobile ambulatory dispatch to your farm or home with zero callout fees for acute emergencies.
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-surface-tinted/40 border border-border-hairline space-y-2.5">
+                    <span className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-xs">
+                      <span className="material-symbols-outlined text-[22px]">local_shipping</span>
+                    </span>
+                    <h4 className="font-headline-sm text-base font-bold text-on-surface">
+                      Prescription &amp; Feeds Refills
+                    </h4>
+                    <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                      Scheduled doorstep fulfillment of certified pharmaceuticals, nutritional supplements, and vaccines.
+                    </p>
                   </div>
                 </div>
 
-                <div className="rounded-2xl p-8 flex flex-col justify-between bg-surface-clinical shadow-lg border-2 border-primary ring-4 ring-surface-tinted relative">
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary font-label-sm text-label-sm font-bold uppercase tracking-wider px-3.5 py-1 rounded-full shadow-sm">
-                    Most Popular Shield
-                  </div>
-                  <div>
-                    <span className="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold uppercase bg-surface-tinted text-primary">
-                      Commercial Dairy &amp; Cattle
-                    </span>
-                    <h3 className="font-headline-lg text-headline-lg text-on-surface mt-4 mb-2 font-bold">
-                      Herd Health &amp; Mortality Shield
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                      Continuous ambulatory surveillance, FMD/ECF prophylaxis, dystocia emergency c-sections, and mortality indemnity compensation.
-                    </p>
-                    <div className="mb-6 p-4 rounded-xl border bg-surface-tinted border-border-accent">
-                      <div className="flex items-baseline gap-1">
-                        <span className="font-display-lg text-display-lg text-primary font-bold">KES 2,500</span>
-                        <span className="font-body-md text-body-md text-on-surface-variant">/ animal / mo</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-secondary font-medium">Up to KES 200,000 Cow Valuation Cover</span>
-                    </div>
-                    <ul className="space-y-3 font-body-md text-body-md text-on-surface-variant">
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Bi-weekly reproductive &amp; mastitis audits</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Priority mobile ambulatory dispatch</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>KVB-certified mortality claim payouts</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="mt-8 pt-6">
-                    <Link
-                      className="w-full inline-flex items-center justify-center py-3.5 rounded-full font-label-lg text-label-lg transition-all font-semibold bg-primary text-on-primary hover:bg-secondary shadow-sm"
-                      to="/animal-insurance"
-                    >
-                      Enroll Dairy Herd
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl p-8 flex flex-col justify-between bg-surface-clinical shadow-sm border border-border-hairline hover:shadow-md">
-                  <div>
-                    <span className="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold uppercase bg-surface-container text-on-surface-variant">
-                      Equine &amp; Ranches
-                    </span>
-                    <h3 className="font-headline-lg text-headline-lg text-on-surface mt-4 mb-2 font-bold">
-                      Equine &amp; Large Stock Shield
-                    </h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                      Specialized surgical colic care, lameness ultrasound diagnostics, tetanus antitoxin protocols, and pre-purchase veterinary audits.
-                    </p>
-                    <div className="mb-6 p-4 rounded-xl border bg-surface-tinted/50 border-border-hairline">
-                      <div className="flex items-baseline gap-1">
-                        <span className="font-display-lg text-display-lg text-primary font-bold">KES 4,500</span>
-                        <span className="font-body-md text-body-md text-on-surface-variant">/ month</span>
-                      </div>
-                      <span className="font-label-sm text-label-sm text-secondary font-medium">Up to KES 450,000 Clinical Limit</span>
-                    </div>
-                    <ul className="space-y-3 font-body-md text-body-md text-on-surface-variant">
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Emergency colic &amp; wound resuscitation</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Dental floating &amp; hoof health surveillance</span>
-                      </li>
-                      <li className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-                        <span>Official movement permit facilitation</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="mt-8 pt-6">
-                    <Link
-                      className="w-full inline-flex items-center justify-center py-3.5 rounded-full font-label-lg text-label-lg transition-all font-semibold bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary"
-                      to="/animal-insurance"
-                    >
-                      View Equine Plans
-                    </Link>
-                  </div>
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border-hairline">
+                  <p className="text-xs text-on-surface-variant text-center sm:text-left">
+                    Learn more about how our subscription care protocols work or explore our upcoming dedicated platform.
+                  </p>
+                  <Link
+                    to="/animal-insurance"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-on-primary font-label-md text-sm font-bold shadow-sm hover:bg-primary-container transition-all whitespace-nowrap"
+                  >
+                    <span>Explore Care Subscriptions</span>
+                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  </Link>
                 </div>
               </div>
             </div>

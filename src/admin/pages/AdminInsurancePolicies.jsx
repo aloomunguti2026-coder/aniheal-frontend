@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import insuranceService from '../../services/insuranceService';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminInsurancePolicies() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [subscriptions, setSubscriptions] = useState([]);
   const [policies, setPolicies] = useState([]);
   const [activeTab, setActiveTab] = useState('subscriptions'); // 'subscriptions' | 'policies'
@@ -35,15 +37,33 @@ export default function AdminInsurancePolicies() {
   };
 
   const handleConvert = async (subId) => {
-    if (!window.confirm('Convert this application into an active policy and enroll the animal?')) return;
+    const isConfirmed = await confirm({
+      title: 'Issue Policy & Enroll Animal',
+      message: 'Convert this application into an active policy and enroll the animal into the clinical registry?',
+      confirmText: 'Yes, Convert & Issue',
+      cancelText: 'Cancel',
+      type: 'info',
+      icon: 'verified',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await insuranceService.convertSubscriptionToPolicy(subId);
       if (res.success) {
-        alert('Application converted and policy issued successfully!');
+        await showAlert({
+          title: 'Policy Issued',
+          message: 'Application converted and policy issued successfully!',
+          type: 'success',
+        });
         fetchData();
       }
     } catch (err) {
-      alert(err.message || 'Failed to convert application');
+      await showAlert({
+        title: 'Action Failed',
+        message: err.message || 'Failed to convert application',
+        type: 'error',
+      });
     }
   };
 
@@ -54,7 +74,11 @@ export default function AdminInsurancePolicies() {
         setSubscriptions(subscriptions.map((s) => (s._id === subId ? { ...s, status } : s)));
       }
     } catch (err) {
-      alert(err.message || 'Failed to update application status');
+      await showAlert({
+        title: 'Action Failed',
+        message: err.message || 'Failed to update application status',
+        type: 'error',
+      });
     }
   };
 

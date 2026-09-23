@@ -194,7 +194,7 @@ export default function ContactUs() {
                     rel="noopener noreferrer"
                   >
                     <span className="material-symbols-outlined text-[20px]">chat</span>
-                    <span>WhatsApp Emergency Tele-Triage</span>
+                    <span>WhatsApp Number</span>
                   </a>
                   <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-surface-clinical shadow-sm text-on-surface-variant font-label-sm text-label-sm border border-border-hairline">
                     <span className="material-symbols-outlined text-primary text-[18px]">lock_clock</span>

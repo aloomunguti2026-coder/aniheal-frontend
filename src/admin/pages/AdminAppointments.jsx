@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminAppointments() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState('');
@@ -64,21 +66,38 @@ export default function AdminAppointments() {
         setSelectedTicket(null);
       }
     } catch (err) {
-      alert('Failed to update status: ' + err.message);
+      await showAlert({
+        title: 'Update Failed',
+        message: 'Failed to update status: ' + err.message,
+        type: 'error',
+      });
     } finally {
       setUpdating(false);
     }
   };
 
   const handleDelete = async (id, ref) => {
-    if (!window.confirm(`Delete triage ticket #${ref}?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Delete Triage Ticket',
+      message: `Are you sure you want to permanently delete triage ticket #${ref}?`,
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await api.delete(`/appointments/${id}`);
       if (res.success) {
         setAppointments((prev) => prev.filter((a) => a._id !== id));
       }
     } catch (err) {
-      alert('Failed to delete ticket: ' + err.message);
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to delete ticket: ' + err.message,
+        type: 'error',
+      });
     }
   };
 

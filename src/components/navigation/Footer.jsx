@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../hooks/useContent';
+import SocialIcon from '../common/SocialIcon';
 
 export default function Footer() {
   const { settings, services: dbServices, hubs: dbHubs } = useContent();
@@ -78,6 +79,40 @@ export default function Footer() {
               {licenseDescription}
             </p>
           </div>
+
+          {/* Footer Social Links */}
+          {(() => {
+            const sLinks = settings?.socialLinks || {};
+            const socialAccounts = [
+              { platform: 'facebook', label: 'Facebook', url: sLinks.facebook },
+              { platform: 'twitter', label: 'Twitter / X', url: sLinks.twitter },
+              { platform: 'instagram', label: 'Instagram', url: sLinks.instagram },
+              { platform: 'linkedin', label: 'LinkedIn', url: sLinks.linkedin },
+              { platform: 'youtube', label: 'YouTube', url: sLinks.youtube },
+              { platform: 'tiktok', label: 'TikTok', url: sLinks.tiktok },
+              { platform: 'whatsapp', label: 'WhatsApp', url: sLinks.whatsapp },
+            ].filter((acc) => acc.url && acc.url.trim() !== '' && acc.url !== '#');
+
+            if (socialAccounts.length === 0) return null;
+
+            return (
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
+                {socialAccounts.map((acc, idx) => (
+                  <a
+                    key={idx}
+                    href={acc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={acc.label}
+                    title={acc.label}
+                    className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all duration-200 transform hover:scale-110 shadow-sm"
+                  >
+                    <SocialIcon platform={acc.platform} className="w-3.5 h-3.5" />
+                  </a>
+                ))}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Dynamic Veterinary Services Links from Admin CMS */}
@@ -199,19 +234,8 @@ export default function Footer() {
       </div>
 
       {/* Sub-footer bottom bar */}
-      <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter mt-space-xl pt-space-md flex flex-col md:flex-row items-center justify-between text-on-surface-variant font-label-md text-label-md gap-space-md border-t border-border-hairline">
+      <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter mt-space-xl pt-space-md flex items-center justify-center text-center text-on-surface-variant font-label-md text-label-md border-t border-border-hairline">
         <p>© {new Date().getFullYear()} {siteName} (aniheal.co.ke). All rights reserved.</p>
-        <div className="flex items-center gap-space-md flex-wrap justify-center">
-          <span className="text-primary font-bold">KVB Accredited Practice</span>
-          <span className="text-on-surface-variant/40">|</span>
-          <span>Ministry of Agriculture &amp; Livestock Standards</span>
-          <span className="text-on-surface-variant/40">|</span>
-          <span>One Health Alliance Member</span>
-          <span className="text-on-surface-variant/40">|</span>
-          <Link to="/admin" className="text-primary hover:underline font-bold">
-            Staff Portal
-          </Link>
-        </div>
       </div>
     </footer>
   );

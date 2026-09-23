@@ -191,13 +191,7 @@ export default function Navbar() {
             Book Appointment
           </Link>
 
-          <Link
-            to="/admin"
-            title="Staff & Admin Portal"
-            className="w-9 h-9 rounded-full bg-primary hover:bg-primary-dark transition-colors flex items-center justify-center shadow-sm text-on-primary"
-          >
-            <span className="material-symbols-outlined text-[18px]">person</span>
-          </Link>
+
 
           {/* Mobile Menu Toggle */}
           <button
@@ -341,15 +335,7 @@ export default function Navbar() {
             <span>Book Appointment</span>
           </Link>
 
-          {/* Staff & Admin Portal */}
-          <Link
-            to="/admin"
-            onClick={closeMobileMenu}
-            className="px-4 py-2 rounded-lg font-label-lg text-on-surface-variant hover:bg-surface-tinted font-semibold flex items-center gap-2 border-t border-border-hairline pt-3"
-          >
-            <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
-            <span>Staff &amp; Admin Portal</span>
-          </Link>
+
 
           {/* 24/7 Field Hotline */}
           <a

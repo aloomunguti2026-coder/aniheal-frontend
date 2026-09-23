@@ -1,534 +1,477 @@
-import React, { useState, useEffect } from 'react';
-import insuranceService from '../services/insuranceService';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
 
-export default function AnimalInsurance() {
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selectedSpecies, setSelectedSpecies] = useState('dairy_cattle');
-  const [billingCycle, setBillingCycle] = useState('annual'); // 'annual' or 'monthly'
-  const [selectedPlanForEnroll, setSelectedPlanForEnroll] = useState(null);
+/**
+ * Interactive Cat illustration whose head and eyes follow the mouse cursor
+ */
+function CursorTrackingCat() {
+  const catRef = useRef(null);
+  const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 });
+  const [headTransform, setHeadTransform] = useState({ x: 0, y: 0, rotate: 0 });
+  const [isBlinking, setIsBlinking] = useState(false);
 
-  // Application form state
-  const [appForm, setAppForm] = useState({
-    applicantName: '',
-    applicantPhone: '',
-    applicantEmail: '',
-    county: '',
-    farmLocation: '',
-    animalName: '',
-    tagOrChipId: '',
-    breed: '',
-    age: '',
-    animalCount: 1,
-    notes: '',
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(null);
-  const [submitError, setSubmitError] = useState('');
-
-  const speciesOptions = [
-    { id: 'dairy_cattle', label: 'Dairy Cattle', icon: 'pets' },
-    { id: 'beef_cattle', label: 'Beef Cattle', icon: 'agriculture' },
-    { id: 'canine', label: 'Canines / Dogs', icon: 'sound_detection_dog_barking' },
-    { id: 'feline', label: 'Felines / Cats', icon: 'cruelty_free' },
-    { id: 'equine', label: 'Equine / Horses', icon: 'sports_kabaddi' },
-    { id: 'small_ruminants', label: 'Goats & Sheep', icon: 'grass' },
-    { id: 'poultry', label: 'Commercial Poultry', icon: 'egg' },
-  ];
-
+  // Periodic natural blinking
   useEffect(() => {
-    fetchPlans();
+    const blinkInterval = setInterval(() => {
+      setIsBlinking(true);
+      setTimeout(() => setIsBlinking(false), 200);
+    }, 4000);
+    return () => clearInterval(blinkInterval);
   }, []);
 
-  const fetchPlans = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const res = await insuranceService.getActivePlans();
-      if (res.success) {
-        setPlans(res.data || []);
-      } else {
-        setError('Unable to load insurance plans.');
-      }
-    } catch (err) {
-      console.error('Failed to fetch insurance plans:', err);
-      setError('Unable to connect to AniHeal Insurance Desk.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Track mouse cursor and compute gaze vector
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!catRef.current) return;
+      const rect = catRef.current.getBoundingClientRect();
+      const catCenterX = rect.left + rect.width / 2;
+      const catCenterY = rect.top + rect.height / 2 - 30; // focus on head center
 
-  const getPriceForSpecies = (plan, species, cycle) => {
-    if (plan.speciesPricing && plan.speciesPricing.length > 0) {
-      const match = plan.speciesPricing.find((sp) => sp.species === species);
-      if (match) {
-        return cycle === 'annual' ? match.annualPremium : match.monthlyPremium;
-      }
-    }
-    return cycle === 'annual' ? plan.basePrice : Math.round(plan.basePrice / 10);
-  };
+      const dx = e.clientX - catCenterX;
+      const dy = e.clientY - catCenterY;
+      const distance = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx);
 
-  const getCoverageLimit = (plan, species) => {
-    if (plan.speciesPricing && plan.speciesPricing.length > 0) {
-      const match = plan.speciesPricing.find((sp) => sp.species === species);
-      if (match) return match.coverageLimit;
-    }
-    return 150000;
-  };
+      // Max eye pupil displacement (within eyeball boundaries)
+      const maxEyeDisplacement = 7;
+      const eyeMagnitude = Math.min(maxEyeDisplacement, distance / 25);
+      const pupilX = Math.cos(angle) * eyeMagnitude;
+      const pupilY = Math.sin(angle) * eyeMagnitude;
 
-  const getDeductible = (plan, species) => {
-    if (plan.speciesPricing && plan.speciesPricing.length > 0) {
-      const match = plan.speciesPricing.find((sp) => sp.species === species);
-      if (match) return match.deductible;
-    }
-    return 1000;
-  };
+      // Head tilt & slight movement in 2D perspective
+      const maxHeadShift = 10;
+      const headMagnitude = Math.min(maxHeadShift, distance / 35);
+      const headX = Math.cos(angle) * headMagnitude;
+      const headY = Math.sin(angle) * headMagnitude;
+      const headRotate = Math.max(-14, Math.min(14, (dx / (window.innerWidth / 2)) * 12));
 
-  const handleOpenEnroll = (plan) => {
-    setSelectedPlanForEnroll(plan);
-    setSubmitSuccess(null);
-    setSubmitError('');
-    setAppForm({
-      applicantName: '',
-      applicantPhone: '',
-      applicantEmail: '',
-      county: '',
-      farmLocation: '',
-      animalName: '',
-      tagOrChipId: '',
-      breed: '',
-      age: '',
-      animalCount: 1,
-      notes: '',
-    });
-  };
+      setEyeOffset({ x: pupilX, y: pupilY });
+      setHeadTransform({ x: headX, y: headY, rotate: headRotate });
+    };
 
-  const handleApplicationSubmit = async (e) => {
-    e.preventDefault();
-    if (!appForm.applicantName || !appForm.applicantPhone || !appForm.county) {
-      setSubmitError('Please complete all required contact fields.');
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      setSubmitError('');
-
-      const payload = {
-        ...appForm,
-        species: selectedSpecies,
-        planId: selectedPlanForEnroll._id,
-        preferredBilling: billingCycle,
-      };
-
-      const res = await insuranceService.submitSubscription(payload);
-      if (res.success) {
-        setSubmitSuccess(res.data);
-      } else {
-        setSubmitError(res.message || 'Failed to submit application.');
-      }
-    } catch (err) {
-      console.error('Subscription error:', err);
-      setSubmitError(err.message || 'Error processing enrollment.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col text-on-surface">
+    <div
+      ref={catRef}
+      className="relative flex flex-col items-center justify-center select-none"
+    >
+      {/* Cat SVG Artwork */}
+      <svg
+        width="280"
+        height="260"
+        viewBox="0 0 280 260"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="drop-shadow-xl overflow-visible"
+      >
+        {/* Cat Body & Back Paws */}
+        <ellipse cx="140" cy="195" rx="72" ry="58" fill="#1e293b" />
+        <ellipse cx="140" cy="190" rx="64" ry="52" fill="#334155" />
+        {/* Chest Fur */}
+        <path
+          d="M 120 160 Q 140 190 160 160 Q 150 180 140 195 Q 130 180 120 160 Z"
+          fill="#f8fafc"
+          opacity="0.9"
+        />
+
+        {/* Tail swaying gently */}
+        <path
+          d="M 205 200 C 235 195, 255 170, 245 140 C 240 125, 225 125, 230 140 C 235 155, 220 175, 195 190"
+          stroke="#334155"
+          strokeWidth="16"
+          strokeLinecap="round"
+          fill="none"
+          className="transition-transform duration-500 origin-bottom"
+        />
+
+        {/* Front Paws */}
+        <ellipse cx="112" cy="232" rx="18" ry="12" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="2" />
+        <ellipse cx="168" cy="232" rx="18" ry="12" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="2" />
+        <path d="M 106 230 L 106 238 M 118 230 L 118 238" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+        <path d="M 162 230 L 162 238 M 174 230 L 174 238" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+
+        {/* Moving Head Group */}
+        <g
+          style={{
+            transform: `translate(${headTransform.x}px, ${headTransform.y}px) rotate(${headTransform.rotate}deg)`,
+            transformOrigin: '140px 110px',
+            transition: 'transform 0.08s ease-out',
+          }}
+        >
+          {/* Left Ear */}
+          <path
+            d="M 85 90 L 65 30 L 110 65 Z"
+            fill="#334155"
+            stroke="#1e293b"
+            strokeWidth="3"
+            strokeLinejoin="round"
+          />
+          {/* Left Inner Ear Pink */}
+          <path d="M 86 82 L 73 42 L 104 66 Z" fill="#fda4af" />
+
+          {/* Right Ear */}
+          <path
+            d="M 195 90 L 215 30 L 170 65 Z"
+            fill="#334155"
+            stroke="#1e293b"
+            strokeWidth="3"
+            strokeLinejoin="round"
+          />
+          {/* Right Inner Ear Pink */}
+          <path d="M 194 82 L 207 42 L 176 66 Z" fill="#fda4af" />
+
+          {/* Cat Head Base */}
+          <ellipse cx="140" cy="110" rx="66" ry="54" fill="#334155" stroke="#1e293b" strokeWidth="3" />
+
+          {/* Forehead Marking / M Shape */}
+          <path
+            d="M 125 75 L 140 88 L 155 75 M 132 81 L 140 92 L 148 81"
+            stroke="#1e293b"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+
+          {/* Cheeks Fluff */}
+          <path d="M 74 115 L 60 120 L 75 128" fill="#334155" stroke="#1e293b" strokeWidth="2" />
+          <path d="M 206 115 L 220 120 L 205 128" fill="#334155" stroke="#1e293b" strokeWidth="2" />
+
+          {/* Eyes (Left & Right) */}
+          {/* Left Eyeball */}
+          <ellipse cx="112" cy="106" rx="16" ry={isBlinking ? '1' : '15'} fill="#22c55e" stroke="#14532d" strokeWidth="2" />
+          {/* Right Eyeball */}
+          <ellipse cx="168" cy="106" rx="16" ry={isBlinking ? '1' : '15'} fill="#22c55e" stroke="#14532d" strokeWidth="2" />
+
+          {!isBlinking && (
+            <>
+              {/* Left Eye Pupil (Tracks Cursor) */}
+              <ellipse
+                cx={112 + eyeOffset.x}
+                cy={106 + eyeOffset.y}
+                rx="6"
+                ry="11"
+                fill="#0f172a"
+              />
+              {/* Left Eye Light Catch */}
+              <circle cx={110 + eyeOffset.x} cy={102 + eyeOffset.y} r="3" fill="#ffffff" />
+
+              {/* Right Eye Pupil (Tracks Cursor) */}
+              <ellipse
+                cx={168 + eyeOffset.x}
+                cy={106 + eyeOffset.y}
+                rx="6"
+                ry="11"
+                fill="#0f172a"
+              />
+              {/* Right Eye Light Catch */}
+              <circle cx={166 + eyeOffset.x} cy={102 + eyeOffset.y} r="3" fill="#ffffff" />
+            </>
+          )}
+
+          {/* Cat Nose */}
+          <polygon points="140,126 133,118 147,118" fill="#f43f5e" />
+
+          {/* Cat Mouth / Muzzle */}
+          <path
+            d="M 140 126 L 140 132 M 140 132 Q 133 138 126 133 M 140 132 Q 147 138 154 133"
+            stroke="#1e293b"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+
+          {/* Left Whiskers */}
+          <line x1="122" y1="128" x2="68" y2="120" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
+          <line x1="122" y1="133" x2="65" y2="135" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
+          <line x1="122" y1="138" x2="72" y2="148" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
+
+          {/* Right Whiskers */}
+          <line x1="158" y1="128" x2="212" y2="120" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
+          <line x1="158" y1="133" x2="215" y2="135" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
+          <line x1="158" y1="138" x2="208" y2="148" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
+
+          {/* Cute Rosy Cheeks */}
+          <ellipse cx="98" cy="122" rx="8" ry="4" fill="#fb7185" opacity="0.4" />
+          <ellipse cx="182" cy="122" rx="8" ry="4" fill="#fb7185" opacity="0.4" />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+export default function AnimalInsurance() {
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistAnimal, setWaitlistAnimal] = useState('Cats & Dogs');
+  const [waitlistSuccess, setWaitlistSuccess] = useState(false);
+
+  const handleWaitlistSubmit = (e) => {
+    e.preventDefault();
+    if (!waitlistEmail || !waitlistEmail.includes('@')) return;
+    setWaitlistSuccess(true);
+  };
+
+  const howItWorksSteps = [
+    {
+      step: '01',
+      title: 'Digital Health & Identification Profile',
+      icon: 'badge',
+      badge: 'Step 1: Onboarding',
+      desc: 'Create an intelligent digital animal profile with microchip ID, ear-tag records, breed, age, and verified vaccination history.',
+    },
+    {
+      step: '02',
+      title: 'Routine Preventative Wellness & Tele-Triage',
+      icon: 'vaccines',
+      badge: 'Step 2: Proactive Care',
+      desc: 'Scheduled bi-annual veterinarian farm visits, mandatory rabies / FMD inoculations, deworming cycles, and unlimited WhatsApp clinical tele-triage.',
+    },
+    {
+      step: '03',
+      title: 'Cashless Emergency Clinical Intervention',
+      icon: 'emergency',
+      badge: 'Step 3: Rapid Dispatch',
+      desc: '24/7 priority ambulatory mobile dispatch to your farm or household with direct cashless coverage for surgeries, diagnostics, and dystocia relief.',
+    },
+    {
+      step: '04',
+      title: 'Automated Pharmacy & Supplement Refills',
+      icon: 'local_shipping',
+      badge: 'Step 4: Continuous Health',
+      desc: 'Automated doorstep fulfillment of essential livestock minerals, flea/tick topicals, prescription diets, and therapeutic feed additives.',
+    },
+  ];
+
+  const upcomingFeatures = [
+    {
+      icon: 'pets',
+      title: 'Feline & Canine Pet Care Pass',
+      desc: 'All-inclusive annual preventative packages covering vaccines, dental scaling, routine blood work, and emergency hospital admittance.',
+    },
+    {
+      icon: 'agriculture',
+      title: 'Commercial Herd & Dairy Subscriptions',
+      desc: 'Per-head monthly coverage for milking herds, artificial insemination cycles, mastitis control, and calf-rearing guarantees.',
+    },
+    {
+      icon: 'sync_saved_locally',
+      title: 'Automated Direct Farm Sync',
+      desc: 'Live synchronization between farmer records, milk yield logs, and AniHeal clinical monitoring telemetry.',
+    },
+    {
+      icon: 'verified_user',
+      title: 'Zero-Deductible Emergency Claims',
+      desc: 'Instant claim approval across all KVB-certified partner hospitals and AniHeal mobile ambulance units.',
+    },
+  ];
+
+  return (
+    <div className="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-1 pt-24 pb-16">
-        {/* Hero Banner */}
-        <section className="relative bg-gradient-to-b from-surface-clinical via-surface-tinted/40 to-surface py-12 lg:py-16 border-b border-border-hairline">
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold uppercase tracking-wider">
-              <span className="material-symbols-outlined text-[16px]">verified</span>
-              <span>AniHeal Clinical Shield &bull; Underwritten by KVB Veterinary Experts</span>
-            </div>
-            <h1 className="font-headline-xl text-3xl sm:text-4xl lg:text-5xl font-bold text-on-surface leading-tight">
-              Animal Insurance &amp; Health Subscriptions
-            </h1>
-            <p className="font-body-lg text-lg text-on-surface-variant">
-              Protect your high-value dairy herds, companion pets, and working horses against unexpected surgical emergencies, mortality, and infectious disease outbreaks.
-            </p>
+        {/* Hero Section with Interactive Cursor Tracking Cat */}
+        <section className="relative w-full bg-surface-clinical overflow-hidden py-12 lg:py-16 border-b border-border-hairline">
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+          <div className="absolute -bottom-24 -left-20 w-80 h-80 rounded-full bg-surface-tinted blur-2xl pointer-events-none"></div>
 
-            {/* Billing Cycle Toggle */}
-            <div className="pt-4 inline-flex items-center p-1 rounded-full bg-surface-clinical border border-border-hairline shadow-sm">
-              <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-5 py-2 rounded-full font-label-md text-label-md font-semibold transition-all ${
-                  billingCycle === 'monthly'
-                    ? 'bg-primary text-on-primary shadow-xs'
-                    : 'text-on-surface-variant hover:text-primary'
-                }`}
-              >
-                Monthly Retainer
-              </button>
-              <button
-                onClick={() => setBillingCycle('annual')}
-                className={`px-5 py-2 rounded-full font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5 ${
-                  billingCycle === 'annual'
-                    ? 'bg-primary text-on-primary shadow-xs'
-                    : 'text-on-surface-variant hover:text-primary'
-                }`}
-              >
-                <span>Annual Policy</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-secondary-container text-on-secondary text-[10px] font-bold">
-                  Save 15%
-                </span>
-              </button>
+          <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+            {/* Left Column: Heading & Description */}
+            <div className="lg:col-span-7 flex flex-col items-start gap-5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold border border-border-accent">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span>STANDALONE PLATFORM COMING SOON</span>
+              </div>
+
+              <h1 className="font-display-lg text-3xl sm:text-4xl lg:text-5xl text-primary tracking-tight font-extrabold leading-tight">
+                Animal Care &amp; Health Subscriptions
+              </h1>
+
+              <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                We are transitioning our complete <strong>Pets &amp; Livestock Health Subscription Ecosystem</strong> into a dedicated, state-of-the-art digital portal engineered for comprehensive preventive care, digital microchip tracking, and rapid cashless clinical triage.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <a
+                  href="#how-it-works"
+                  className="px-6 py-3 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-md hover:bg-primary-container transition-all flex items-center gap-2"
+                >
+                  <span>How Subscriptions Work</span>
+                  <span className="material-symbols-outlined text-[18px]">arrow_downward</span>
+                </a>
+                <Link
+                  to="/appointment-booking"
+                  className="px-6 py-3 rounded-full bg-surface-tinted text-primary border border-border-accent font-label-lg text-label-lg font-bold hover:bg-surface-container transition-all"
+                >
+                  Book Immediate Clinical Visit
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column: Interactive Cursor Tracking Cat Component */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 sm:p-8 bg-surface-subtle/70 rounded-3xl border border-border-hairline shadow-sm backdrop-blur-sm">
+              <CursorTrackingCat />
             </div>
           </div>
         </section>
 
-        {/* Interactive Species Selector */}
-        <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-6">
-            <h2 className="font-headline-sm text-xl font-bold text-on-surface">
-              1. Select Your Animal or Livestock Category
+        {/* How The Animal Care Subscription Works */}
+        <section id="how-it-works" className="py-16 max-w-7xl mx-auto px-margin-mobile lg:px-gutter space-y-12">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="font-label-sm text-xs text-primary uppercase font-bold tracking-wider">
+              System Blueprint &amp; Care Protocol
+            </span>
+            <h2 className="font-headline-xl text-3xl font-bold text-on-surface">
+              How the AniHeal Care Subscription Works
             </h2>
-            <p className="text-body-sm text-on-surface-variant mt-0.5">
-              Premiums and clinical underwriting limits are customized for each species' veterinary risk profile.
+            <p className="font-body-md text-on-surface-variant">
+              Designed under the One Health framework to eliminate unexpected medical bills and deliver continuous, preventative veterinarian supervision directly to your doorstep.
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {speciesOptions.map((sp) => (
-              <button
-                key={sp.id}
-                onClick={() => setSelectedSpecies(sp.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl font-label-md text-label-md font-semibold whitespace-nowrap transition-all border ${
-                  selectedSpecies === sp.id
-                    ? 'bg-primary text-on-primary border-primary shadow-sm scale-105'
-                    : 'bg-surface-clinical text-on-surface-variant hover:bg-surface-tinted border-border-hairline'
-                }`}
+          {/* 4 Steps Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {howItWorksSteps.map((stepItem, idx) => (
+              <div
+                key={idx}
+                className="p-6 rounded-2xl bg-surface-clinical border border-border-hairline shadow-sm hover:border-primary transition-all duration-300 flex flex-col justify-between group"
               >
-                <span className="material-symbols-outlined text-[20px]">{sp.icon}</span>
-                <span>{sp.label}</span>
-              </button>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="w-12 h-12 rounded-xl bg-surface-tinted text-primary flex items-center justify-center shadow-xs">
+                      <span className="material-symbols-outlined text-[26px]">{stepItem.icon}</span>
+                    </span>
+                    <span className="font-display-md text-2xl font-black text-outline/40 group-hover:text-primary transition-colors">
+                      {stepItem.step}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold text-secondary uppercase tracking-wider block mb-1">
+                      {stepItem.badge}
+                    </span>
+                    <h3 className="font-headline-md text-lg font-bold text-on-surface group-hover:text-primary transition-colors">
+                      {stepItem.title}
+                    </h3>
+                  </div>
+                  <p className="font-body-sm text-sm text-on-surface-variant leading-relaxed">
+                    {stepItem.desc}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        {/* Pricing & Plans Cards */}
-        <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-4 text-body-md text-on-surface-variant">Loading insurance plans...</p>
-            </div>
-          ) : error ? (
-            <div className="p-8 rounded-2xl bg-surface-clinical border border-error/20 text-center max-w-md mx-auto">
-              <p className="text-error font-semibold">{error}</p>
-              <button onClick={fetchPlans} className="mt-4 px-6 py-2 rounded-full bg-primary text-on-primary font-bold">
-                Retry
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {plans.map((plan) => {
-                const calculatedPrice = getPriceForSpecies(plan, selectedSpecies, billingCycle);
-                const coverageLimit = getCoverageLimit(plan, selectedSpecies);
-                const deductible = getDeductible(plan, selectedSpecies);
-
-                return (
-                  <div
-                    key={plan._id}
-                    className={`relative flex flex-col justify-between rounded-3xl bg-surface-clinical p-8 border transition-all ${
-                      plan.isPopular
-                        ? 'border-primary shadow-xl shadow-primary/5 ring-2 ring-primary/20'
-                        : 'border-border-hairline hover:border-primary/40 shadow-sm'
-                    }`}
-                  >
-                    {plan.isPopular && (
-                      <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold uppercase tracking-wider shadow-sm">
-                        Most Popular Shield
-                      </span>
-                    )}
-
-                    <div className="space-y-6">
-                      {/* Plan Header */}
-                      <div className="space-y-2">
-                        <div className="text-label-sm font-mono uppercase text-secondary font-bold">
-                          {plan.code}
-                        </div>
-                        <h3 className="font-headline-sm text-2xl font-bold text-on-surface">
-                          {plan.name}
-                        </h3>
-                        <p className="font-body-sm text-body-sm text-on-surface-variant">
-                          {plan.description}
-                        </p>
-                      </div>
-
-                      {/* Pricing Tag */}
-                      <div className="p-4 rounded-2xl bg-surface-tinted/50 border border-border-hairline space-y-1">
-                        <span className="text-label-sm text-outline uppercase font-semibold block">
-                          Premium ({selectedSpecies.replace('_', ' ')})
-                        </span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="font-headline-xl text-3xl font-bold text-primary">
-                            KES {Number(calculatedPrice).toLocaleString()}
-                          </span>
-                          <span className="text-label-md text-on-surface-variant font-medium">
-                            / {billingCycle === 'annual' ? 'year' : 'month'}
-                          </span>
-                        </div>
-                        <div className="pt-2 text-[12px] text-secondary flex items-center justify-between border-t border-border-hairline">
-                          <span>Max Claim Limit: <strong>KES {Number(coverageLimit).toLocaleString()}</strong></span>
-                          <span>Deductible: <strong>KES {Number(deductible).toLocaleString()}</strong></span>
-                        </div>
-                      </div>
-
-                      {/* Features List */}
-                      <div className="space-y-3">
-                        <span className="text-label-sm font-bold uppercase tracking-wider text-outline block">
-                          Included Clinical Cover:
-                        </span>
-                        <ul className="space-y-2.5">
-                          {plan.coverageDetails?.map((cov, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5 text-body-sm text-on-surface">
-                              <span className="material-symbols-outlined text-primary text-[20px] shrink-0">
-                                check_circle
-                              </span>
-                              <span>{cov}</span>
-                            </li>
-                          ))}
-                          {plan.exclusions && plan.exclusions.length > 0 && (
-                            <li className="pt-2 text-[12px] text-on-surface-variant/80 border-t border-border-hairline">
-                              <strong>Waiting Period:</strong> {plan.waitingPeriodDays || 14} days
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 pt-6 border-t border-border-hairline">
-                      <button
-                        onClick={() => handleOpenEnroll(plan)}
-                        className={`w-full py-3 rounded-2xl font-label-md text-label-md font-bold transition-all shadow-sm flex items-center justify-center gap-2 ${
-                          plan.isPopular
-                            ? 'bg-primary text-on-primary hover:bg-secondary'
-                            : 'bg-surface-tinted text-primary hover:bg-primary hover:text-on-primary'
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-[20px]">health_and_safety</span>
-                        <span>Enroll Animal in Plan</span>
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      </main>
-
-      {/* Enrollment Application Modal */}
-      {selectedPlanForEnroll && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface-clinical rounded-3xl max-w-xl w-full border border-border-hairline shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
-            {/* Header */}
-            <div className="p-6 bg-gradient-to-r from-primary to-secondary text-on-primary flex items-center justify-between shrink-0">
+        {/* Dedicated System Preview & Waitlist */}
+        <section className="py-12 bg-surface-container-low border-y border-border-hairline">
+          <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left: What's coming */}
+            <div className="lg:col-span-7 space-y-6">
               <div>
-                <h3 className="font-headline-sm text-xl font-bold">Animal Insurance Enrollment</h3>
-                <p className="font-label-sm text-label-sm text-on-primary/85 mt-0.5">
-                  Plan: {selectedPlanForEnroll.name} &bull; {selectedSpecies.replace('_', ' ')}
+                <span className="font-label-sm text-xs text-primary uppercase font-bold tracking-wider">
+                  Upcoming Standalone Platform
+                </span>
+                <h2 className="font-headline-xl text-2xl sm:text-3xl font-bold text-on-surface mt-1">
+                  Built for Household Pets &amp; Enterprise Ranches
+                </h2>
+                <p className="font-body-md text-on-surface-variant mt-2">
+                  The upcoming standalone AniHeal Subscriptions application provides farmers and pet owners with dedicated mobile apps, automated renewal billing, microchip scanners, and real-time telehealth.
                 </p>
               </div>
-              <button
-                onClick={() => setSelectedPlanForEnroll(null)}
-                className="w-8 h-8 rounded-full bg-on-primary/20 hover:bg-on-primary/30 flex items-center justify-center text-on-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-[20px]">close</span>
-              </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {upcomingFeatures.map((feat, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-surface-clinical border border-border-hairline flex items-start gap-3">
+                    <span className="material-symbols-outlined text-primary text-[22px] shrink-0 mt-0.5">
+                      {feat.icon}
+                    </span>
+                    <div>
+                      <h4 className="font-label-md text-sm font-bold text-on-surface">{feat.title}</h4>
+                      <p className="text-xs text-on-surface-variant mt-0.5 leading-relaxed">{feat.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {submitSuccess ? (
-              <div className="p-8 text-center space-y-4 overflow-y-auto">
-                <div className="w-16 h-16 rounded-full bg-primary-container text-on-primary flex items-center justify-center mx-auto shadow-sm">
-                  <span className="material-symbols-outlined text-[36px]">verified</span>
-                </div>
-                <h4 className="font-headline-sm text-2xl font-bold text-on-surface">Application Submitted!</h4>
-                <p className="font-body-md text-body-md text-on-surface-variant">
-                  Your insurance enrollment file reference is <strong className="font-mono text-primary font-bold">{submitSuccess.applicationNumber}</strong>.
+            {/* Right: VIP Early Notification Form */}
+            <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-surface-clinical border-2 border-border-accent shadow-md space-y-5">
+              <div className="space-y-1">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary uppercase">
+                  <span className="material-symbols-outlined text-[16px]">notifications_active</span>
+                  Get Notified Upon Launch
+                </span>
+                <h3 className="font-headline-md text-xl font-bold text-on-surface">
+                  Join the Health Subscription Waitlist
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Be the first to enroll your animals with an exclusive <strong>20% Early Adopter Discount</strong> when the standalone portal launches.
                 </p>
-                <div className="p-4 rounded-2xl bg-surface-tinted text-label-sm text-left space-y-1.5 border border-border-hairline">
-                  <div><strong>Applicant:</strong> {submitSuccess.applicantName} ({submitSuccess.applicantPhone})</div>
-                  <div><strong>Insured Species:</strong> {submitSuccess.species}</div>
-                  <div><strong>Plan Selected:</strong> {selectedPlanForEnroll.name}</div>
-                  <div><strong>Status:</strong> Underwriting &amp; Health Verification in Progress</div>
-                </div>
-                <p className="text-body-sm text-on-surface-variant">
-                  A certified AniHeal veterinary officer in your county will contact you within 24 hours to conduct a baseline health inspection and issue your official policy certificate.
-                </p>
-                <button
-                  onClick={() => setSelectedPlanForEnroll(null)}
-                  className="w-full py-3 rounded-xl bg-primary text-on-primary font-label-md font-bold"
-                >
-                  Done
-                </button>
               </div>
-            ) : (
-              <form onSubmit={handleApplicationSubmit} className="p-6 space-y-4 overflow-y-auto">
-                {submitError && (
-                  <div className="p-3 rounded-xl bg-error-container/40 border border-error/20 text-error font-body-sm text-body-sm flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px]">error</span>
-                    <span>{submitError}</span>
-                  </div>
-                )}
 
-                <div className="p-3 rounded-xl bg-surface-tinted flex items-center justify-between text-label-sm">
-                  <span>Selected Category: <strong className="uppercase">{selectedSpecies.replace('_', ' ')}</strong></span>
-                  <span>Premium: <strong>KES {Number(getPriceForSpecies(selectedPlanForEnroll, selectedSpecies, billingCycle)).toLocaleString()} / {billingCycle}</strong></span>
+              {waitlistSuccess ? (
+                <div className="p-5 rounded-2xl bg-surface-tinted border border-border-accent text-center space-y-2">
+                  <span className="material-symbols-outlined text-primary text-[36px]">check_circle</span>
+                  <h4 className="font-bold text-primary text-base">You're on the Priority List!</h4>
+                  <p className="text-xs text-on-surface-variant">
+                    We'll email you at <strong>{waitlistEmail}</strong> as soon as the dedicated animal subscription system is officially released.
+                  </p>
                 </div>
-
-                <h5 className="font-label-sm font-bold uppercase tracking-wider text-outline">
-                  1. Farmer / Pet Owner Details
-                </h5>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ) : (
+                <form onSubmit={handleWaitlistSubmit} className="space-y-4">
                   <div>
-                    <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                      Full Legal Name *
+                    <label className="block text-xs font-bold text-on-surface mb-1">
+                      Primary Animal Category
                     </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Mary Njeri"
-                      value={appForm.applicantName}
-                      onChange={(e) => setAppForm({ ...appForm, applicantName: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
-                    />
+                    <select
+                      value={waitlistAnimal}
+                      onChange={(e) => setWaitlistAnimal(e.target.value)}
+                      className="w-full h-11 px-3 rounded-xl bg-surface-subtle border border-border-hairline text-sm font-semibold text-on-surface focus:border-primary"
+                    >
+                      <option value="Cats & Dogs">Companion Pets (Cats &amp; Dogs)</option>
+                      <option value="Dairy & Beef Cattle">Cattle &amp; Dairy Herds</option>
+                      <option value="Goats & Sheep">Small Ruminants (Goats &amp; Sheep)</option>
+                      <option value="Horses & Equine">Horses &amp; Equine</option>
+                      <option value="Poultry Enterprises">Commercial Poultry Units</option>
+                    </select>
                   </div>
 
                   <div>
-                    <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+254 700 000 000"
-                      value={appForm.applicantPhone}
-                      onChange={(e) => setAppForm({ ...appForm, applicantPhone: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                      County *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Kiambu, Uasin Gishu"
-                      value={appForm.county}
-                      onChange={(e) => setAppForm({ ...appForm, county: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                      Email Address (Optional)
+                    <label className="block text-xs font-bold text-on-surface mb-1">
+                      Your Email Address *
                     </label>
                     <input
                       type="email"
-                      placeholder="mary@domain.com"
-                      value={appForm.applicantEmail}
-                      onChange={(e) => setAppForm({ ...appForm, applicantEmail: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <h5 className="font-label-sm font-bold uppercase tracking-wider text-outline pt-2">
-                  2. Animal / Pet Identification
-                </h5>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                      Animal / Pet Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Bella"
-                      value={appForm.animalName}
-                      onChange={(e) => setAppForm({ ...appForm, animalName: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
+                      required
+                      value={waitlistEmail}
+                      onChange={(e) => setWaitlistEmail(e.target.value)}
+                      placeholder="farmer@domain.com"
+                      className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-sm focus:border-primary"
                     />
                   </div>
 
-                  <div>
-                    <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                      Tag or Microchip ID
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. EAR-TAG-991"
-                      value={appForm.tagOrChipId}
-                      onChange={(e) => setAppForm({ ...appForm, tagOrChipId: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                      Breed / Age
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. German Shepherd, 2yo"
-                      value={appForm.breed}
-                      onChange={(e) => setAppForm({ ...appForm, breed: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="font-label-sm text-label-sm font-semibold text-on-surface block mb-1">
-                    Known Medical History or Notes
-                  </label>
-                  <textarea
-                    rows="2"
-                    placeholder="List recent vaccinations, surgical history, or breeding status..."
-                    value={appForm.notes}
-                    onChange={(e) => setAppForm({ ...appForm, notes: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-surface border border-border-hairline text-body-sm focus:border-primary focus:outline-none"
-                  ></textarea>
-                </div>
-
-                <div className="pt-3 flex items-center justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPlanForEnroll(null)}
-                    className="px-5 py-2.5 rounded-xl text-on-surface-variant font-label-md font-semibold hover:bg-surface-tinted transition-colors"
-                  >
-                    Cancel
-                  </button>
                   <button
                     type="submit"
-                    disabled={submitting}
-                    className="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md font-bold hover:bg-secondary transition-colors shadow-sm disabled:opacity-60"
+                    className="w-full h-12 rounded-full bg-primary text-on-primary font-label-md text-sm font-bold shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    {submitting ? 'Processing Application...' : 'Submit Application'}
+                    <span>Notify Me On Launch</span>
+                    <span className="material-symbols-outlined text-[18px]">send</span>
                   </button>
-                </div>
-              </form>
-            )}
+
+                  <p className="text-[11px] text-center text-outline">
+                    No spam. You can request urgent veterinary services anytime via our 24/7 hotline.
+                  </p>
+                </form>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        </section>
+      </main>
 
       <Footer />
     </div>

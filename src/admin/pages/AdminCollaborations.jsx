@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import collaborationService from '../../services/collaborationService';
 import { notifyContentUpdated } from '../../services/eventBus';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminCollaborations() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [collaborations, setCollaborations] = useState([]);
   const [metrics, setMetrics] = useState({ total: 0, published: 0, totalComments: 0 });
   const [loading, setLoading] = useState(true);
@@ -157,12 +159,25 @@ export default function AdminCollaborations() {
       fetchCollaborations();
       setTimeout(() => setActionSuccess(null), 4000);
     } catch (err) {
-      alert('Failed to delete collaboration: ' + (err.response?.data?.message || err.message));
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to delete collaboration: ' + (err.response?.data?.message || err.message),
+        type: 'error',
+      });
     }
   };
 
   const handleDeleteComment = async (collabId, commentId) => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    const isConfirmed = await confirm({
+      title: 'Delete Comment',
+      message: 'Are you sure you want to permanently delete this reader comment?',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       await collaborationService.deleteComment(collabId, commentId);
       // Update local comments modal
@@ -172,7 +187,11 @@ export default function AdminCollaborations() {
       }
       fetchCollaborations();
     } catch (err) {
-      alert('Failed to delete comment: ' + (err.response?.data?.message || err.message));
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to delete comment: ' + (err.response?.data?.message || err.message),
+        type: 'error',
+      });
     }
   };
 
@@ -187,7 +206,11 @@ export default function AdminCollaborations() {
       }
       fetchCollaborations();
     } catch (err) {
-      alert('Failed to toggle comment approval: ' + (err.response?.data?.message || err.message));
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to toggle comment approval: ' + (err.response?.data?.message || err.message),
+        type: 'error',
+      });
     }
   };
 

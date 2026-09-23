@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
+import SocialIcon from '../../components/common/SocialIcon';
 
 export default function AdminContentHome() {
   const [activeTab, setActiveTab] = useState('hero');
@@ -37,6 +38,17 @@ export default function AdminContentHome() {
       { label: 'One Health Focused', value: '100%' },
       { label: 'Field Triage Units', value: '24/7' },
       { label: 'Counties Covered', value: '14+' },
+    ],
+    showSocialPresence: true,
+    socialLabel: 'Follow Clinical Updates:',
+    socialAccounts: [
+      { platform: 'facebook', label: 'Facebook', url: '', enabled: true },
+      { platform: 'twitter', label: 'Twitter / X', url: '', enabled: true },
+      { platform: 'instagram', label: 'Instagram', url: '', enabled: true },
+      { platform: 'linkedin', label: 'LinkedIn', url: '', enabled: false },
+      { platform: 'youtube', label: 'YouTube', url: '', enabled: false },
+      { platform: 'tiktok', label: 'TikTok', url: '', enabled: false },
+      { platform: 'whatsapp', label: 'WhatsApp', url: '', enabled: false },
     ],
   });
 
@@ -172,6 +184,20 @@ export default function AdminContentHome() {
                   { label: 'Field Triage Units', value: '24/7' },
                   { label: 'Counties Covered', value: '14+' },
                 ],
+            showSocialPresence: m.showSocialPresence !== false,
+            socialLabel: m.socialLabel || 'Follow Clinical Updates:',
+            socialAccounts:
+              Array.isArray(m.socialAccounts) && m.socialAccounts.length > 0
+                ? m.socialAccounts
+                : [
+                  { platform: 'facebook', label: 'Facebook', url: m.socialLinks?.facebook || '', enabled: Boolean(m.socialLinks?.facebook && m.socialLinks.facebook !== '#') },
+                  { platform: 'twitter', label: 'Twitter / X', url: m.socialLinks?.twitter || '', enabled: Boolean(m.socialLinks?.twitter && m.socialLinks.twitter !== '#') },
+                  { platform: 'instagram', label: 'Instagram', url: m.socialLinks?.instagram || '', enabled: Boolean(m.socialLinks?.instagram && m.socialLinks.instagram !== '#') },
+                  { platform: 'linkedin', label: 'LinkedIn', url: m.socialLinks?.linkedin || '', enabled: Boolean(m.socialLinks?.linkedin && m.socialLinks.linkedin !== '#') },
+                  { platform: 'youtube', label: 'YouTube', url: m.socialLinks?.youtube || '', enabled: Boolean(m.socialLinks?.youtube && m.socialLinks.youtube !== '#') },
+                  { platform: 'tiktok', label: 'TikTok', url: m.socialLinks?.tiktok || '', enabled: Boolean(m.socialLinks?.tiktok && m.socialLinks.tiktok !== '#') },
+                  { platform: 'whatsapp', label: 'WhatsApp', url: m.socialLinks?.whatsapp || '', enabled: Boolean(m.socialLinks?.whatsapp && m.socialLinks.whatsapp !== '#') },
+                ],
           });
         }
 
@@ -297,6 +323,9 @@ export default function AdminContentHome() {
             fieldTriageDesc: hero.fieldTriageDesc,
             kvbVerifiedText: hero.kvbVerifiedText,
             kvbLicenseTag: hero.kvbLicenseTag,
+            showSocialPresence: hero.showSocialPresence,
+            socialLabel: hero.socialLabel,
+            socialAccounts: hero.socialAccounts,
           },
         }),
 
@@ -409,6 +438,32 @@ export default function AdminContentHome() {
     });
   };
 
+  // Hero Social Account helpers
+  const updateSocialAccount = (index, field, value) => {
+    setHero((prev) => {
+      const newAccounts = [...(prev.socialAccounts || [])];
+      newAccounts[index] = { ...newAccounts[index], [field]: value };
+      return { ...prev, socialAccounts: newAccounts };
+    });
+  };
+
+  const addSocialAccount = () => {
+    setHero((prev) => ({
+      ...prev,
+      socialAccounts: [
+        ...(prev.socialAccounts || []),
+        { platform: 'website', label: 'Custom Channel', url: '', enabled: true },
+      ],
+    }));
+  };
+
+  const removeSocialAccount = (index) => {
+    setHero((prev) => {
+      const newAccounts = (prev.socialAccounts || []).filter((_, idx) => idx !== index);
+      return { ...prev, socialAccounts: newAccounts };
+    });
+  };
+
   return (
     <div className="space-y-6 max-w-6xl pb-12">
       {/* Toast Alert */}
@@ -476,8 +531,8 @@ export default function AdminContentHome() {
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full font-label-md text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${activeTab === tab.id
-                ? 'bg-primary text-on-primary shadow-sm'
-                : 'bg-surface-subtle text-on-surface-variant hover:text-on-surface hover:bg-surface-clinical'
+              ? 'bg-primary text-on-primary shadow-sm'
+              : 'bg-surface-subtle text-on-surface-variant hover:text-on-surface hover:bg-surface-clinical'
               }`}
           >
             <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
@@ -644,6 +699,148 @@ export default function AdminContentHome() {
                       onChange={(e) => setHero({ ...hero, secondaryCtaLink: e.target.value })}
                       className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary focus:outline-none"
                     />
+                  </div>
+                </div>
+
+                {/* Hero Social Presence & Quick Connect Channels */}
+                <div className="pt-4 border-t border-border-hairline space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <h3 className="font-headline-sm font-bold text-on-surface text-sm uppercase text-primary flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-[18px]">share</span>
+                        <span>Hero Social Presence &amp; Follow Channels</span>
+                      </h3>
+                      <p className="text-[12px] text-outline mt-0.5">
+                        Displayed below the main Hero Call-To-Action buttons on the live homepage.
+                      </p>
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer bg-surface-subtle px-3 py-1.5 rounded-xl border border-border-hairline hover:bg-surface-container-low transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={hero.showSocialPresence}
+                        onChange={(e) => setHero({ ...hero, showSocialPresence: e.target.checked })}
+                        className="w-4 h-4 rounded text-primary focus:ring-primary accent-primary"
+                      />
+                      <span className="text-xs font-bold text-on-surface">Show on Homepage</span>
+                    </label>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="sm:col-span-2">
+                      <label className="block font-label-md text-on-surface font-semibold mb-1 text-xs uppercase">
+                        Section Title Label
+                      </label>
+                      <input
+                        type="text"
+                        value={hero.socialLabel}
+                        onChange={(e) => setHero({ ...hero, socialLabel: e.target.value })}
+                        placeholder="Follow Clinical Updates:"
+                        className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Social Accounts List */}
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase text-on-surface-variant">
+                        Configured Channels ({hero.socialAccounts?.filter(a => a.enabled && a.url).length || 0} Active)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={addSocialAccount}
+                        className="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-lg bg-surface-tinted text-primary hover:bg-primary hover:text-on-primary transition-colors cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">add</span>
+                        <span>Add Channel</span>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3">
+                      {hero.socialAccounts?.map((account, idx) => (
+                        <div
+                          key={idx}
+                          className={`p-3.5 rounded-xl border transition-all flex flex-col md:flex-row items-start md:items-center gap-3 ${
+                            account.enabled && account.url
+                              ? 'bg-surface-subtle border-border-hairline'
+                              : 'bg-surface-subtle/50 border-border-hairline/60 opacity-75'
+                          }`}
+                        >
+                          {/* Icon Badge & Platform Selector */}
+                          <div className="flex items-center gap-2.5 min-w-[175px]">
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                                account.enabled && account.url
+                                  ? 'bg-primary text-on-primary shadow-sm'
+                                  : 'bg-surface-container text-outline'
+                              }`}
+                            >
+                              <SocialIcon platform={account.platform} className="w-4 h-4" />
+                            </div>
+                            <select
+                              value={account.platform}
+                              onChange={(e) => updateSocialAccount(idx, 'platform', e.target.value)}
+                              className="h-9 px-2.5 rounded-lg bg-surface-clinical border border-border-hairline text-xs font-bold text-on-surface focus:border-primary focus:outline-none"
+                            >
+                              <option value="facebook">Facebook</option>
+                              <option value="twitter">Twitter / X</option>
+                              <option value="instagram">Instagram</option>
+                              <option value="linkedin">LinkedIn</option>
+                              <option value="youtube">YouTube</option>
+                              <option value="tiktok">TikTok</option>
+                              <option value="whatsapp">WhatsApp</option>
+                              <option value="telegram">Telegram</option>
+                              <option value="website">Custom / Website</option>
+                            </select>
+                          </div>
+
+                          {/* Account Label */}
+                          <div className="w-full md:w-44 shrink-0">
+                            <input
+                              type="text"
+                              value={account.label || ''}
+                              onChange={(e) => updateSocialAccount(idx, 'label', e.target.value)}
+                              placeholder="Display Label"
+                              className="w-full h-9 px-3 rounded-lg bg-surface-clinical border border-border-hairline text-xs focus:border-primary focus:outline-none"
+                            />
+                          </div>
+
+                          {/* Account URL */}
+                          <div className="w-full flex-1">
+                            <input
+                              type="text"
+                              value={account.url || ''}
+                              onChange={(e) => updateSocialAccount(idx, 'url', e.target.value)}
+                              placeholder="URL (e.g. https://instagram.com/aniheal)"
+                              className="w-full h-9 px-3 rounded-lg bg-surface-clinical border border-border-hairline text-xs font-mono focus:border-primary focus:outline-none"
+                            />
+                          </div>
+
+                          {/* Action controls */}
+                          <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                            <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold select-none">
+                              <input
+                                type="checkbox"
+                                checked={account.enabled !== false}
+                                onChange={(e) => updateSocialAccount(idx, 'enabled', e.target.checked)}
+                                className="w-4 h-4 rounded text-primary accent-primary cursor-pointer"
+                              />
+                              <span className={account.enabled ? 'text-primary' : 'text-outline'}>
+                                {account.enabled ? 'Active' : 'Off'}
+                              </span>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => removeSocialAccount(idx)}
+                              className="w-8 h-8 rounded-lg text-outline hover:text-error hover:bg-error/10 flex items-center justify-center transition-colors cursor-pointer"
+                              title="Remove Channel"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

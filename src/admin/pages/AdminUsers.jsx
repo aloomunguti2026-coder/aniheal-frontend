@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import api from '../../services/api';
 
 export default function AdminUsers() {
   const { user: currentUser } = useAuth();
+  const { confirm, alert: showAlert } = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -17,6 +19,7 @@ export default function AdminUsers() {
     password: '',
     role: 'editor',
     isActive: true,
+    mustChangePassword: true,
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -50,8 +53,9 @@ export default function AdminUsers() {
       name: usr.name,
       email: usr.email,
       password: '', // leave empty if unchanged
-      role: usr.role,
-      isActive: usr.isActive,
+      role: usr.role || 'editor',
+      isActive: usr.isActive !== undefined ? usr.isActive : true,
+      mustChangePassword: !!usr.mustChangePassword,
     });
     setModalOpen(true);
   };
@@ -84,17 +88,39 @@ export default function AdminUsers() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to deactivate or delete this administrator?')) return;
+  const handleDelete = async (u) => {
+    const userId = typeof u === 'object' ? u._id : u;
+    const userName = typeof u === 'object' ? u.name : '';
+
+    const isConfirmed = await confirm({
+      title: 'Deactivate / Delete Administrator',
+      message: userName
+        ? `Are you sure you want to deactivate or delete the account for "${userName}"?`
+        : 'Are you sure you want to deactivate or delete this administrator?',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
-      const res = await api.delete(`/admin/users/${id}`);
+      const res = await api.delete(`/admin/users/${userId}`);
       if (res.success) {
         loadUsers();
       } else {
-        alert(res.message || 'Failed to delete user');
+        await showAlert({
+          title: 'Action Failed',
+          message: res.message || 'Failed to delete user',
+          type: 'error',
+        });
       }
     } catch (err) {
-      alert(err.message || 'Error deleting user');
+      await showAlert({
+        title: 'Action Failed',
+        message: err.message || 'Error deleting user',
+        type: 'error',
+      });
     }
   };
 
@@ -181,13 +207,23 @@ export default function AdminUsers() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-on-surface-variant font-mono text-body-sm">
-                      {usr.email}
+                      <div>{usr.email}</div>
+                      {usr.mustChangePassword && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-800 mt-0.5">
+                          <span className="material-symbols-outlined text-[12px]">key</span>
+                          Temporary Password
+                        </span>
+                      )}
                     </td>
                     <td className="py-4 px-6">
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold uppercase tracking-wider ${
                           usr.role === 'superadmin'
                             ? 'bg-primary text-on-primary'
+                            : usr.role === 'admin'
+                            ? 'bg-indigo-600 text-white'
+                            : usr.role === 'vet'
+                            ? 'bg-emerald-600 text-white'
                             : 'bg-secondary-container text-on-secondary-container border border-border-accent'
                         }`}
                       >
@@ -291,8 +327,21 @@ export default function AdminUsers() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-xl border border-border-hairline bg-surface-subtle focus:bg-surface-clinical focus:outline-none focus:border-primary font-body-md"
-                  placeholder={editUser ? '••••••••' : 'Minimum 8 characters'}
+                  placeholder={editUser ? '••••••••' : 'Temporary or permanent password (min 8 chars)'}
                 />
+              </div>
+
+              <div className="flex items-center gap-2 py-1">
+                <input
+                  type="checkbox"
+                  id="mustChangePassword"
+                  checked={formData.mustChangePassword}
+                  onChange={(e) => setFormData({ ...formData, mustChangePassword: e.target.checked })}
+                  className="w-4 h-4 rounded text-primary border-border-hairline focus:ring-primary"
+                />
+                <label htmlFor="mustChangePassword" className="text-body-sm font-semibold text-on-surface cursor-pointer">
+                  Require password change on user's first login
+                </label>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -303,20 +352,22 @@ export default function AdminUsers() {
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-border-hairline bg-surface-subtle focus:bg-surface-clinical focus:outline-none focus:border-primary font-body-md"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border-hairline bg-surface-subtle focus:bg-surface-clinical focus:outline-none focus:border-primary font-body-md font-semibold"
                   >
-                    <option value="editor">Editor</option>
-                    <option value="superadmin">Super Admin</option>
+                    <option value="superadmin">Super Admin (Full Access)</option>
+                    <option value="admin">Admin (Staff & Content)</option>
+                    <option value="vet">Field Vet (Clinical Logs & Cases)</option>
+                    <option value="editor">Editor (Content & Services)</option>
                   </select>
                 </div>
                 <div>
                   <label className="block font-label-md text-label-md font-bold text-on-surface mb-1.5">
-                    Status
+                    Account Status
                   </label>
                   <select
                     value={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.value === 'true' })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-border-hairline bg-surface-subtle focus:bg-surface-clinical focus:outline-none focus:border-primary font-body-md"
+                    className="w-full px-4 py-2.5 rounded-xl border border-border-hairline bg-surface-subtle focus:bg-surface-clinical focus:outline-none focus:border-primary font-body-md font-semibold"
                   >
                     <option value="true">Active</option>
                     <option value="false">Disabled / Suspended</option>
@@ -328,14 +379,14 @@ export default function AdminUsers() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl border border-border-hairline font-label-md text-on-surface-variant hover:bg-surface-tinted transition-colors"
+                  className="px-5 py-2.5 rounded-xl border border-border-hairline font-label-md text-on-surface-variant hover:bg-surface-tinted transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saveLoading}
-                  className="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md font-bold hover:bg-primary-dark transition-colors shadow-sm disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md font-bold hover:bg-primary-dark transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
                 >
                   {saveLoading ? 'Saving...' : 'Save User Account'}
                 </button>

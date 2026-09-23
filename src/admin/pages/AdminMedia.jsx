@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api, { API_BASE_URL } from '../../services/api';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminMedia() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [mediaList, setMediaList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -48,10 +50,18 @@ export default function AdminMedia() {
       if (res.success && res.data) {
         setMediaList((prev) => [res.data, ...prev]);
       } else {
-        alert(res.message || 'Upload failed');
+        await showAlert({
+          title: 'Upload Failed',
+          message: res.message || 'Upload failed',
+          type: 'error',
+        });
       }
     } catch (err) {
-      alert('Upload error: ' + err.message);
+      await showAlert({
+        title: 'Upload Error',
+        message: 'Upload error: ' + err.message,
+        type: 'error',
+      });
     } finally {
       setUploading(false);
     }
@@ -64,14 +74,27 @@ export default function AdminMedia() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this image?')) return;
+    const isConfirmed = await confirm({
+      title: 'Delete Media Image',
+      message: 'Are you sure you want to permanently delete this media image?',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await api.delete(`/media/${id}`);
       if (res.success) {
         setMediaList((prev) => prev.filter((m) => m._id !== id));
       }
     } catch (err) {
-      alert('Failed to delete media: ' + err.message);
+      await showAlert({
+        title: 'Action Failed',
+        message: 'Failed to delete media: ' + err.message,
+        type: 'error',
+      });
     }
   };
 

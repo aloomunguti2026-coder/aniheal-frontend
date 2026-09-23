@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
+import SocialIcon from '../../components/common/SocialIcon';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -20,6 +21,20 @@ export default function AdminSettings() {
     headquartersAddress: 'Veterinary Complex, Kabete Rd, Nairobi, Kenya',
     metaTitle: 'AniHeal Veterinary Solutions | KVB Accredited',
     metaDescription: '',
+    notificationEmails: {
+      triageAlertEmail: 'hello.aniheal@gmail.com',
+      orderAlertEmail: 'hello.aniheal@gmail.com',
+      insuranceAlertEmail: 'hello.aniheal@gmail.com',
+    },
+    socialLinks: {
+      facebook: '',
+      twitter: '',
+      instagram: '',
+      linkedin: '',
+      youtube: '',
+      tiktok: '',
+      whatsapp: '',
+    },
   });
 
   const [loading, setLoading] = useState(true);
@@ -35,7 +50,26 @@ export default function AdminSettings() {
       setLoading(true);
       const res = await api.get('/public/settings');
       if (res.success && res.data) {
-        setSettings((prev) => ({ ...prev, ...res.data }));
+        setSettings((prev) => ({
+          ...prev,
+          ...res.data,
+          notificationEmails: {
+            triageAlertEmail: 'hello.aniheal@gmail.com',
+            orderAlertEmail: 'hello.aniheal@gmail.com',
+            insuranceAlertEmail: 'hello.aniheal@gmail.com',
+            ...(res.data.notificationEmails || {}),
+          },
+          socialLinks: {
+            facebook: '',
+            twitter: '',
+            instagram: '',
+            linkedin: '',
+            youtube: '',
+            tiktok: '',
+            whatsapp: '',
+            ...(res.data.socialLinks || {}),
+          },
+        }));
       }
     } catch (err) {
       console.error('Failed to load settings:', err);
@@ -47,6 +81,26 @@ export default function AdminSettings() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSettings((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleNotificationEmailChange = (key, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      notificationEmails: {
+        ...(prev.notificationEmails || {}),
+        [key]: value,
+      },
+    }));
+  };
+
+  const handleSocialChange = (platform, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      socialLinks: {
+        ...(prev.socialLinks || {}),
+        [platform]: value,
+      },
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -274,6 +328,96 @@ export default function AdminSettings() {
           </div>
         </div>
 
+        {/* Internal Operations & Department Alert Emails Box */}
+        <div className="bg-surface-clinical rounded-2xl p-6 shadow-sm border border-border-hairline space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border-hairline">
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-primary text-[24px]">mark_email_unread</span>
+              <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
+                Internal Department Alert Routing Emails
+              </h2>
+            </div>
+            <span className="text-[12px] text-outline">
+              Target destination inboxes for automated staff dispatches
+            </span>
+          </div>
+
+          <p className="text-body-sm text-on-surface-variant">
+            Set custom recipient email addresses for each department. By default, alerts route to the company official account (<strong>hello.aniheal@gmail.com</strong>).
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            {/* 1. Triage Alert Email */}
+            <div className="p-4 rounded-xl bg-surface-subtle border border-border-hairline space-y-2">
+              <div className="flex items-center gap-2 text-error">
+                <span className="material-symbols-outlined text-[20px]">medical_services</span>
+                <span className="font-label-md text-label-md font-bold text-on-surface">
+                  Triage &amp; Clinical Alerts
+                </span>
+              </div>
+              <label className="block text-[11px] text-on-surface-variant font-medium">
+                Incoming field triage &amp; emergency cases
+              </label>
+              <input
+                type="email"
+                value={settings.notificationEmails?.triageAlertEmail || ''}
+                onChange={(e) => handleNotificationEmailChange('triageAlertEmail', e.target.value)}
+                placeholder="hello.aniheal@gmail.com"
+                className="w-full h-10 px-3 rounded-lg bg-surface-clinical border border-border-hairline text-body-sm font-medium focus:border-primary"
+              />
+              <span className="text-[10px] text-outline block">
+                Dispatches urgent farmer tickets &amp; contact info
+              </span>
+            </div>
+
+            {/* 2. Product Orders Alert Email */}
+            <div className="p-4 rounded-xl bg-surface-subtle border border-border-hairline space-y-2">
+              <div className="flex items-center gap-2 text-primary">
+                <span className="material-symbols-outlined text-[20px]">shopping_cart_checkout</span>
+                <span className="font-label-md text-label-md font-bold text-on-surface">
+                  Store Orders &amp; Sales
+                </span>
+              </div>
+              <label className="block text-[11px] text-on-surface-variant font-medium">
+                Pharmacy fulfillment &amp; stock orders
+              </label>
+              <input
+                type="email"
+                value={settings.notificationEmails?.orderAlertEmail || ''}
+                onChange={(e) => handleNotificationEmailChange('orderAlertEmail', e.target.value)}
+                placeholder="hello.aniheal@gmail.com"
+                className="w-full h-10 px-3 rounded-lg bg-surface-clinical border border-border-hairline text-body-sm font-medium focus:border-primary"
+              />
+              <span className="text-[10px] text-outline block">
+                Dispatches customer orders &amp; delivery destinations
+              </span>
+            </div>
+
+            {/* 3. Insurance Alert Email */}
+            <div className="p-4 rounded-xl bg-surface-subtle border border-border-hairline space-y-2">
+              <div className="flex items-center gap-2 text-primary-container">
+                <span className="material-symbols-outlined text-[20px]">health_and_safety</span>
+                <span className="font-label-md text-label-md font-bold text-on-surface">
+                  Insurance Underwriting
+                </span>
+              </div>
+              <label className="block text-[11px] text-on-surface-variant font-medium">
+                Livestock cover enrollment applications
+              </label>
+              <input
+                type="email"
+                value={settings.notificationEmails?.insuranceAlertEmail || ''}
+                onChange={(e) => handleNotificationEmailChange('insuranceAlertEmail', e.target.value)}
+                placeholder="hello.aniheal@gmail.com"
+                className="w-full h-10 px-3 rounded-lg bg-surface-clinical border border-border-hairline text-body-sm font-medium focus:border-primary"
+              />
+              <span className="text-[10px] text-outline block">
+                Dispatches policy requests &amp; herd counts
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Billing & M-Pesa Till Box */}
         <div className="bg-surface-clinical rounded-2xl p-6 shadow-sm border border-border-hairline space-y-4">
           <div className="flex items-center gap-2.5 pb-3 border-b border-border-hairline">
@@ -307,6 +451,135 @@ export default function AdminSettings() {
                 value={settings.mpesaTillName}
                 onChange={handleChange}
                 className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md font-semibold focus:bg-surface-clinical focus:border-primary"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Social Media & Online Channels Box */}
+        <div className="bg-surface-clinical rounded-2xl p-6 shadow-sm border border-border-hairline space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border-hairline">
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-primary text-[24px]">share</span>
+              <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
+                Social Media Channels &amp; Public Profiles
+              </h2>
+            </div>
+            <span className="text-[12px] text-outline">
+              Used across Hero, Footer &amp; Contact Pages
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label className="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-semibold mb-1">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center p-0.5">
+                  <SocialIcon platform="facebook" className="w-3.5 h-3.5" />
+                </span>
+                <span>Facebook Page URL</span>
+              </label>
+              <input
+                type="text"
+                value={settings.socialLinks?.facebook || ''}
+                onChange={(e) => handleSocialChange('facebook', e.target.value)}
+                placeholder="https://facebook.com/aniheal"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-semibold mb-1">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center p-0.5">
+                  <SocialIcon platform="twitter" className="w-3 h-3" />
+                </span>
+                <span>Twitter / X Profile URL</span>
+              </label>
+              <input
+                type="text"
+                value={settings.socialLinks?.twitter || ''}
+                onChange={(e) => handleSocialChange('twitter', e.target.value)}
+                placeholder="https://x.com/aniheal"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-semibold mb-1">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center p-0.5">
+                  <SocialIcon platform="instagram" className="w-3.5 h-3.5" />
+                </span>
+                <span>Instagram Profile URL</span>
+              </label>
+              <input
+                type="text"
+                value={settings.socialLinks?.instagram || ''}
+                onChange={(e) => handleSocialChange('instagram', e.target.value)}
+                placeholder="https://instagram.com/aniheal"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-semibold mb-1">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center p-0.5">
+                  <SocialIcon platform="linkedin" className="w-3.5 h-3.5" />
+                </span>
+                <span>LinkedIn Organization URL</span>
+              </label>
+              <input
+                type="text"
+                value={settings.socialLinks?.linkedin || ''}
+                onChange={(e) => handleSocialChange('linkedin', e.target.value)}
+                placeholder="https://linkedin.com/company/aniheal"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-semibold mb-1">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center p-0.5">
+                  <SocialIcon platform="youtube" className="w-3.5 h-3.5" />
+                </span>
+                <span>YouTube Channel URL</span>
+              </label>
+              <input
+                type="text"
+                value={settings.socialLinks?.youtube || ''}
+                onChange={(e) => handleSocialChange('youtube', e.target.value)}
+                placeholder="https://youtube.com/@aniheal"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-semibold mb-1">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center p-0.5">
+                  <SocialIcon platform="tiktok" className="w-3 h-3" />
+                </span>
+                <span>TikTok Profile URL</span>
+              </label>
+              <input
+                type="text"
+                value={settings.socialLinks?.tiktok || ''}
+                onChange={(e) => handleSocialChange('tiktok', e.target.value)}
+                placeholder="https://tiktok.com/@aniheal"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
+              />
+            </div>
+
+            <div className="sm:col-span-2 lg:col-span-3">
+              <label className="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-semibold mb-1">
+                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center p-0.5">
+                  <SocialIcon platform="whatsapp" className="w-3.5 h-3.5" />
+                </span>
+                <span>WhatsApp Community / Direct Chat Link</span>
+              </label>
+              <input
+                type="text"
+                value={settings.socialLinks?.whatsapp || ''}
+                onChange={(e) => handleSocialChange('whatsapp', e.target.value)}
+                placeholder="https://wa.me/254700264432"
+                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md focus:bg-surface-clinical focus:border-primary"
               />
             </div>
           </div>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import insuranceService from '../../services/insuranceService';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function AdminInsurance() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [plans, setPlans] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -110,19 +112,38 @@ export default function AdminInsurance() {
         setPlans(plans.map((p) => (p._id === plan._id ? { ...p, isActive: !p.isActive } : p)));
       }
     } catch (err) {
-      alert(err.message || 'Failed to toggle plan status');
+      await showAlert({
+        title: 'Status Update Failed',
+        message: err.message || 'Failed to toggle plan status',
+        type: 'error',
+      });
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this insurance plan tier?')) return;
+  const handleDelete = async (id, name) => {
+    const isConfirmed = await confirm({
+      title: 'Delete Insurance Plan',
+      message: name
+        ? `Are you sure you want to permanently delete plan tier "${name}"?`
+        : 'Are you sure you want to delete this insurance plan tier?',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await insuranceService.deletePlan(id);
       if (res.success) {
         setPlans(plans.filter((p) => p._id !== id));
       }
     } catch (err) {
-      alert(err.message || 'Failed to delete plan');
+      await showAlert({
+        title: 'Action Failed',
+        message: err.message || 'Failed to delete plan',
+        type: 'error',
+      });
     }
   };
 

@@ -16,7 +16,7 @@ export default function BookAppointment() {
   const [speciesType, setSpeciesType] = useState('dairy');
   const [headcountTotal, setHeadcountTotal] = useState('24');
   const [affectedCount, setAffectedCount] = useState('1');
-  
+
   const [clinicalService, setClinicalService] = useState('acute_treatment');
   const [symptomsDescription, setSymptomsDescription] = useState('');
   const [filesCount, setFilesCount] = useState(0);
@@ -295,17 +295,17 @@ export default function BookAppointment() {
   const serviceOptions =
     dbServices && dbServices.length > 0
       ? dbServices.map((s) => ({
-          id: s.slug || s._id || s.title?.toLowerCase().replace(/\s+/g, '_'),
-          title: s.title,
-          desc: s.description || s.summary || '',
-          icon: s.icon || 'medical_services',
-          iconColor:
-            s.category === 'emergency'
-              ? 'text-error'
-              : s.category === 'reproduction'
+        id: s.slug || s._id || s.title?.toLowerCase().replace(/\s+/g, '_'),
+        title: s.title,
+        desc: s.description || s.summary || '',
+        icon: s.icon || 'medical_services',
+        iconColor:
+          s.category === 'emergency'
+            ? 'text-error'
+            : s.category === 'reproduction'
               ? 'text-secondary'
               : 'text-primary',
-        }))
+      }))
       : defaultServices;
 
   const defaultHubs = [
@@ -415,22 +415,20 @@ export default function BookAppointment() {
                             if (st.num < currentStep) setCurrentStep(st.num);
                           }}
                           disabled={st.num > currentStep}
-                          className={`flex flex-col sm:flex-row items-center justify-center gap-2 p-2.5 rounded-xl transition-all text-center sm:text-left ${
-                            isCurrent
-                              ? 'bg-primary text-on-primary shadow-sm font-bold'
-                              : isCompleted
+                          className={`flex flex-col sm:flex-row items-center justify-center gap-2 p-2.5 rounded-xl transition-all text-center sm:text-left ${isCurrent
+                            ? 'bg-primary text-on-primary shadow-sm font-bold'
+                            : isCompleted
                               ? 'bg-surface-tinted text-primary font-semibold hover:bg-surface-container cursor-pointer'
                               : 'bg-surface-subtle text-outline opacity-60 cursor-not-allowed'
-                          }`}
+                            }`}
                         >
                           <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 ${
-                              isCurrent
-                                ? 'bg-white text-primary font-bold'
-                                : isCompleted
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 ${isCurrent
+                              ? 'bg-white text-primary font-bold'
+                              : isCompleted
                                 ? 'bg-primary text-on-primary'
                                 : 'bg-surface-container text-outline'
-                            }`}
+                              }`}
                           >
                             {isCompleted ? (
                               <span className="material-symbols-outlined text-[14px]">check</span>
@@ -495,11 +493,10 @@ export default function BookAppointment() {
                                 className="sr-only"
                               />
                               <div
-                                className={`p-4 rounded-2xl border transition-all h-full flex flex-col justify-between gap-3 ${
-                                  appointmentType === 'farm_visit'
-                                    ? 'bg-surface-tinted border-primary ring-2 ring-primary/20 shadow-sm'
-                                    : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
-                                }`}
+                                className={`p-4 rounded-2xl border transition-all h-full flex flex-col justify-between gap-3 ${appointmentType === 'farm_visit'
+                                  ? 'bg-surface-tinted border-primary ring-2 ring-primary/20 shadow-sm'
+                                  : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
+                                  }`}
                               >
                                 <div className="flex items-start justify-between">
                                   <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -508,11 +505,10 @@ export default function BookAppointment() {
                                     </span>
                                   </div>
                                   <span
-                                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                      appointmentType === 'farm_visit'
-                                        ? 'bg-primary text-on-primary'
-                                        : 'bg-surface-container text-outline'
-                                    }`}
+                                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${appointmentType === 'farm_visit'
+                                      ? 'bg-primary text-on-primary'
+                                      : 'bg-surface-container text-outline'
+                                      }`}
                                   >
                                     Most Popular
                                   </span>
@@ -543,11 +539,10 @@ export default function BookAppointment() {
                                 className="sr-only"
                               />
                               <div
-                                className={`p-4 rounded-2xl border transition-all h-full flex flex-col justify-between gap-3 ${
-                                  appointmentType === 'office_visit'
-                                    ? 'bg-surface-tinted border-primary ring-2 ring-primary/20 shadow-sm'
-                                    : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
-                                }`}
+                                className={`p-4 rounded-2xl border transition-all h-full flex flex-col justify-between gap-3 ${appointmentType === 'office_visit'
+                                  ? 'bg-surface-tinted border-primary ring-2 ring-primary/20 shadow-sm'
+                                  : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
+                                  }`}
                               >
                                 <div className="flex items-start justify-between">
                                   <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
@@ -556,11 +551,10 @@ export default function BookAppointment() {
                                     </span>
                                   </div>
                                   <span
-                                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                      appointmentType === 'office_visit'
-                                        ? 'bg-secondary text-on-secondary'
-                                        : 'bg-surface-container text-outline'
-                                    }`}
+                                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${appointmentType === 'office_visit'
+                                      ? 'bg-secondary text-on-secondary'
+                                      : 'bg-surface-container text-outline'
+                                      }`}
                                   >
                                     Clinic Walk-In
                                   </span>
@@ -612,11 +606,10 @@ export default function BookAppointment() {
                                     onChange={() => setSpeciesType(opt.id)}
                                   />
                                   <div
-                                    className={`p-3 rounded-xl text-center flex flex-col items-center gap-1.5 shadow-sm transition-all border ${
-                                      isSelected
-                                        ? 'bg-surface-tinted text-primary border-primary font-semibold ring-2 ring-primary/20'
-                                        : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
-                                    }`}
+                                    className={`p-3 rounded-xl text-center flex flex-col items-center gap-1.5 shadow-sm transition-all border ${isSelected
+                                      ? 'bg-surface-tinted text-primary border-primary font-semibold ring-2 ring-primary/20'
+                                      : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
+                                      }`}
                                   >
                                     <span className="material-symbols-outlined text-[24px]">
                                       {opt.icon}
@@ -732,11 +725,10 @@ export default function BookAppointment() {
                                   onChange={() => setClinicalService(srv.id)}
                                 />
                                 <div
-                                  className={`p-3.5 rounded-xl flex items-start gap-3 shadow-sm transition-all border h-full ${
-                                    isSelected
-                                      ? 'bg-surface-tinted border-primary ring-2 ring-primary/20'
-                                      : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
-                                  }`}
+                                  className={`p-3.5 rounded-xl flex items-start gap-3 shadow-sm transition-all border h-full ${isSelected
+                                    ? 'bg-surface-tinted border-primary ring-2 ring-primary/20'
+                                    : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
+                                    }`}
                                 >
                                   <span
                                     className={`material-symbols-outlined text-[24px] mt-0.5 ${srv.iconColor}`}
@@ -950,11 +942,10 @@ export default function BookAppointment() {
                                       className="sr-only"
                                     />
                                     <div
-                                      className={`p-4 rounded-xl border transition-all h-full space-y-2 ${
-                                        isSelected
-                                          ? 'bg-surface-tinted border-primary ring-2 ring-primary/20 shadow-sm'
-                                          : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
-                                      }`}
+                                      className={`p-4 rounded-xl border transition-all h-full space-y-2 ${isSelected
+                                        ? 'bg-surface-tinted border-primary ring-2 ring-primary/20 shadow-sm'
+                                        : 'bg-surface-subtle border-border-hairline hover:bg-surface-container-low'
+                                        }`}
                                     >
                                       <div className="flex items-start justify-between">
                                         <span className="font-bold text-on-surface text-xs sm:text-sm">
@@ -1005,11 +996,10 @@ export default function BookAppointment() {
                                 onChange={() => setDispatchTier('emergency')}
                               />
                               <div
-                                className={`p-3.5 rounded-xl text-center space-y-1 shadow-sm transition-all border ${
-                                  dispatchTier === 'emergency'
-                                    ? 'bg-error-container text-on-error-container border-error ring-2 ring-error/20'
-                                    : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
-                                }`}
+                                className={`p-3.5 rounded-xl text-center space-y-1 shadow-sm transition-all border ${dispatchTier === 'emergency'
+                                  ? 'bg-error-container text-on-error-container border-error ring-2 ring-error/20'
+                                  : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
+                                  }`}
                               >
                                 <span className="material-symbols-outlined text-error text-[24px]">
                                   crisis_alert
@@ -1033,11 +1023,10 @@ export default function BookAppointment() {
                                 onChange={() => setDispatchTier('morning')}
                               />
                               <div
-                                className={`p-3.5 rounded-xl text-center space-y-1 shadow-sm transition-all border ${
-                                  dispatchTier === 'morning'
-                                    ? 'bg-surface-tinted text-primary border-primary ring-2 ring-primary/20'
-                                    : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
-                                }`}
+                                className={`p-3.5 rounded-xl text-center space-y-1 shadow-sm transition-all border ${dispatchTier === 'morning'
+                                  ? 'bg-surface-tinted text-primary border-primary ring-2 ring-primary/20'
+                                  : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
+                                  }`}
                               >
                                 <span className="material-symbols-outlined text-primary text-[24px]">
                                   wb_twilight
@@ -1061,11 +1050,10 @@ export default function BookAppointment() {
                                 onChange={() => setDispatchTier('afternoon')}
                               />
                               <div
-                                className={`p-3.5 rounded-xl text-center space-y-1 shadow-sm transition-all border ${
-                                  dispatchTier === 'afternoon'
-                                    ? 'bg-surface-tinted text-primary border-primary ring-2 ring-primary/20'
-                                    : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
-                                }`}
+                                className={`p-3.5 rounded-xl text-center space-y-1 shadow-sm transition-all border ${dispatchTier === 'afternoon'
+                                  ? 'bg-surface-tinted text-primary border-primary ring-2 ring-primary/20'
+                                  : 'bg-surface-subtle text-on-surface border-border-hairline hover:bg-surface-container-low'
+                                  }`}
                               >
                                 <span className="material-symbols-outlined text-primary text-[24px]">
                                   wb_sunny
@@ -1259,8 +1247,8 @@ export default function BookAppointment() {
                                 {submitting
                                   ? 'Transmitting Ticket...'
                                   : appointmentType === 'farm_visit'
-                                  ? 'Submit & Dispatch Squad'
-                                  : 'Confirm Office Appointment'}
+                                    ? 'Submit & Dispatch Squad'
+                                    : 'Confirm Office Appointment'}
                               </span>
                               <span className="material-symbols-outlined text-[18px]">check</span>
                             </button>
@@ -1349,7 +1337,7 @@ export default function BookAppointment() {
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-[#25D366] text-[24px]">chat</span>
                     <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold text-base">
-                      Instant Tele-Triage
+                      Chat with us
                     </h3>
                   </div>
                   <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed text-xs">
@@ -1370,43 +1358,6 @@ export default function BookAppointment() {
                   </div>
                 </div>
 
-                {/* SLA Response Matrix */}
-                <div className="p-space-lg rounded-2xl bg-surface-clinical shadow-sm space-y-3.5 border border-border-hairline">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary text-[22px]">timer</span>
-                    <h3 className="font-headline-sm text-on-surface font-bold text-base">
-                      Dispatch Response Times (SLA)
-                    </h3>
-                  </div>
-                  <div className="space-y-2.5">
-                    <div className="p-3 rounded-xl bg-surface-subtle space-y-1 border border-border-hairline">
-                      <div className="flex items-center justify-between">
-                        <span className="font-label-md text-on-surface font-bold text-xs">
-                          Urban &amp; Semi-Urban Zones
-                        </span>
-                        <span className="font-label-sm text-primary font-bold px-2 py-0.5 rounded-full bg-surface-tinted text-[10px]">
-                          &lt; 60 Mins
-                        </span>
-                      </div>
-                      <p className="font-body-sm text-on-surface-variant text-[11px]">
-                        Nairobi Periphery, Nakuru Town, Naivasha, Limuru, Eldoret Central.
-                      </p>
-                    </div>
-                    <div className="p-3 rounded-xl bg-surface-subtle space-y-1 border border-border-hairline">
-                      <div className="flex items-center justify-between">
-                        <span className="font-label-md text-on-surface font-bold text-xs">
-                          Agricultural Corridors
-                        </span>
-                        <span className="font-label-sm text-secondary font-bold px-2 py-0.5 rounded-full bg-surface-container-low text-[10px]">
-                          Twice Daily
-                        </span>
-                      </div>
-                      <p className="font-body-sm text-on-surface-variant text-[11px]">
-                        Kinangop, Ol Kalou, Rongai, Subukia, Maragua, Nandi plateau sweeps.
-                      </p>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Field Preparation Protocol */}
                 <div className="p-space-lg rounded-2xl bg-surface-clinical shadow-sm space-y-3 border border-border-hairline">
