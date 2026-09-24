@@ -10,7 +10,7 @@ export default function Home() {
   const { blocks, services, collaborations, settings } = useContent();
 
   const heroBlock = blocks['home_hero'] || {
-    badge: 'KENYA VETERINARY BOARD ACCREDITED',
+    badge: 'ANIHEAL VETSPACE SOLUTIONS LTD',
     subtitle: 'ACCREDITED KENYA VETERINARY CONSULTANCY',
     title: 'Professional Consultancy You Can Trust',
     body: 'AniHeal veterinary consultancy works on providing sustainable animal related solutions in fields of veterinary medicine, One Health, animal husbandry and animal welfare.',
@@ -316,7 +316,7 @@ export default function Home() {
                   {/* Primary Brand Badge */}
                   <div className="bg-surface-clinical rounded-xl p-space-md shadow-sm flex flex-col items-center justify-center text-center">
                     <img
-                      alt="AniHeal Veterinary Solutions Official Emblem"
+                      alt="AniHeal Vetspace solutions Official Emblem"
                       className="w-full max-w-[280px] h-auto object-contain"
                       src={heroBlock.metadata?.heroImage || '/logo.png'}
                       onError={(e) => {

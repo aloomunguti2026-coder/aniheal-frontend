@@ -11,14 +11,14 @@ export default function AdminContentHome() {
 
   // 1. Top Bar & Hero Section
   const [topBar, setTopBar] = useState({
-    badge: 'KENYA VETERINARY BOARD ACCREDITED',
+    badge: 'ANIHEAL VETSPACE SLTNS LTD',
     licenseText: 'Practice License KVB/PR/2025/0842',
     oneHealthText: 'One Health Alliance Member',
     dispatchText: '24/7 Mobile Triage Response',
   });
 
   const [hero, setHero] = useState({
-    badge: 'KENYA VETERINARY BOARD ACCREDITED',
+    badge: 'ANIHEAL VETSPACE SLTNS LTD',
     subtitle: 'ACCREDITED KENYA VETERINARY CONSULTANCY',
     title: 'Professional Consultancy You Can Trust',
     body: 'AniHeal veterinary consultancy works on providing sustainable animal related solutions in fields of veterinary medicine, One Health, animal husbandry and animal welfare.',
@@ -149,7 +149,7 @@ export default function AdminContentHome() {
         // Top bar
         if (b.home_top_bar) {
           setTopBar({
-            badge: b.home_top_bar.badge || 'KENYA VETERINARY BOARD ACCREDITED',
+            badge: b.home_top_bar.badge || 'ANIHEAL VETSPACE SLTNS LTD',
             licenseText: b.home_top_bar.metadata?.licenseText || 'Practice License KVB/PR/2025/0842',
             oneHealthText: b.home_top_bar.metadata?.oneHealthText || 'One Health Alliance Member',
             dispatchText: b.home_top_bar.metadata?.dispatchText || '24/7 Mobile Triage Response',
@@ -760,20 +760,18 @@ export default function AdminContentHome() {
                       {hero.socialAccounts?.map((account, idx) => (
                         <div
                           key={idx}
-                          className={`p-3.5 rounded-xl border transition-all flex flex-col md:flex-row items-start md:items-center gap-3 ${
-                            account.enabled && account.url
+                          className={`p-3.5 rounded-xl border transition-all flex flex-col md:flex-row items-start md:items-center gap-3 ${account.enabled && account.url
                               ? 'bg-surface-subtle border-border-hairline'
                               : 'bg-surface-subtle/50 border-border-hairline/60 opacity-75'
-                          }`}
+                            }`}
                         >
                           {/* Icon Badge & Platform Selector */}
                           <div className="flex items-center gap-2.5 min-w-[175px]">
                             <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                                account.enabled && account.url
+                              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${account.enabled && account.url
                                   ? 'bg-primary text-on-primary shadow-sm'
                                   : 'bg-surface-container text-outline'
-                              }`}
+                                }`}
                             >
                               <SocialIcon platform={account.platform} className="w-4 h-4" />
                             </div>

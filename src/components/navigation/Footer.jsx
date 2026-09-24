@@ -6,7 +6,7 @@ import SocialIcon from '../common/SocialIcon';
 export default function Footer() {
   const { settings, services: dbServices, hubs: dbHubs } = useContent();
 
-  const siteName = settings?.siteName || 'AniHeal Veterinary Solutions';
+  const siteName = settings?.siteName || 'AniHeal Vetspace solutions';
   const licenseNumber = settings?.licenseNumber || 'KVB/PR/2025/0842';
   const licenseDescription =
     settings?.licenseDescription ||
@@ -31,8 +31,8 @@ export default function Footer() {
     typeof settings?.operatingHours === 'string'
       ? settings.operatingHours
       : settings?.operatingHours?.emergency
-      ? `${settings.operatingHours.weekday || 'Mon–Sat 07:00–18:00'} | ${settings.operatingHours.emergency}`
-      : '24/7 Emergency Response';
+        ? `${settings.operatingHours.weekday || 'Mon–Sat 07:00–18:00'} | ${settings.operatingHours.emergency}`
+        : '24/7 Emergency Response';
 
   const publishedServices = Array.isArray(dbServices)
     ? dbServices.filter((s) => s.isPublished !== false)
@@ -45,9 +45,9 @@ export default function Footer() {
   const hubsSummary =
     publishedHubs.length > 0
       ? publishedHubs
-          .map((h) => h.name.replace(/Ambulatory|Hub|Station|Depot|Center/gi, '').trim())
-          .filter(Boolean)
-          .join(' • ')
+        .map((h) => h.name.replace(/Ambulatory|Hub|Station|Depot|Center/gi, '').trim())
+        .filter(Boolean)
+        .join(' • ')
       : settings?.regionalHubsSummary || 'Nakuru • Eldoret • Nyeri • Kilifi';
 
   return (

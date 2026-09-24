@@ -18,10 +18,16 @@ export default function AdminLogin() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cooldown, setCooldown] = useState(0);
 
-  const { login, verifyOtp, sendOtp, changePassword } = useAuth();
+  const { login, verifyOtp, sendOtp, changePassword, sessionExpiredMessage } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/admin';
+
+  useEffect(() => {
+    if (sessionExpiredMessage) {
+      setErrorMsg(sessionExpiredMessage);
+    }
+  }, [sessionExpiredMessage]);
 
   useEffect(() => {
     let timer;

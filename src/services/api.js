@@ -1,7 +1,7 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 export async function request(endpoint, options = {}) {
-  const token = localStorage.getItem('auth_token');
+  const token = sessionStorage.getItem('auth_token');
   const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -36,6 +36,12 @@ export async function request(endpoint, options = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
+    if (response.status === 401 && token) {
+      // Clear expired session and broadcast session expiration
+      sessionStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_user');
+      window.dispatchEvent(new CustomEvent('aniheal:session-expired'));
+    }
     const error = new Error(data?.message || 'API request failed');
     error.status = response.status;
     error.data = data;

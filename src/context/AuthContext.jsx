@@ -3,17 +3,89 @@ import api from '../services/api';
 
 const AuthContext = createContext(null);
 
+const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes of inactivity
+
 export function AuthProvider({ children }) {
+  // Purge any legacy localStorage tokens on initialize to ensure no persistent credentials remain on device
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+  }
+
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('auth_user');
+    const saved = sessionStorage.getItem('auth_user');
     try {
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
     }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('auth_token') || null);
+  const [token, setToken] = useState(() => sessionStorage.getItem('auth_token') || null);
   const [loading, setLoading] = useState(false);
+  const [sessionExpiredMessage, setSessionExpiredMessage] = useState('');
+
+  // Logout helper
+  const logout = async (reason) => {
+    try {
+      if (token) {
+        await api.post('/auth/logout', {});
+      }
+    } catch {
+      // Ignore network failure on logout
+    } finally {
+      setUser(null);
+      setToken(null);
+      sessionStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
+      if (reason === 'inactivity') {
+        setSessionExpiredMessage('Your session timed out after 15 minutes of inactivity. Please re-authenticate with OTP.');
+      }
+    }
+  };
+
+  // Inactivity session timeout listener
+  useEffect(() => {
+    if (!token || !user) return;
+
+    let timeoutId;
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        logout('inactivity');
+      }, INACTIVITY_TIMEOUT_MS);
+    };
+
+    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+    
+    // Throttle event listeners so they don't trigger every millisecond
+    let lastActivityTime = Date.now();
+    const handleActivity = () => {
+      const now = Date.now();
+      if (now - lastActivityTime > 3000) { // Check every 3 seconds of continuous motion
+        lastActivityTime = now;
+        resetTimer();
+      }
+    };
+
+    resetTimer();
+    activityEvents.forEach((event) => window.addEventListener(event, handleActivity, { passive: true }));
+
+    // Global session expired event from API interceptor (e.g. 401 token expired)
+    const handleSessionExpired = () => {
+      setUser(null);
+      setToken(null);
+      setSessionExpiredMessage('Your 15-minute session token has expired. Please verify your identity with OTP.');
+    };
+    window.addEventListener('aniheal:session-expired', handleSessionExpired);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      activityEvents.forEach((event) => window.removeEventListener(event, handleActivity));
+      window.removeEventListener('aniheal:session-expired', handleSessionExpired);
+    };
+  }, [token, user]);
 
   /**
    * Request 6-digit Email OTP via Resend
@@ -48,6 +120,7 @@ export function AuthProvider({ children }) {
    */
   const login = async (email, password) => {
     setLoading(true);
+    setSessionExpiredMessage('');
     try {
       const response = await api.post('/auth/login', { email, password });
       if (response.success) {
@@ -64,8 +137,8 @@ export function AuthProvider({ children }) {
           const { token: authToken, user: userData, mustChangePassword } = response.data;
           setToken(authToken);
           setUser(userData);
-          localStorage.setItem('auth_token', authToken);
-          localStorage.setItem('auth_user', JSON.stringify(userData));
+          sessionStorage.setItem('auth_token', authToken);
+          sessionStorage.setItem('auth_user', JSON.stringify(userData));
           return {
             success: true,
             user: userData,
@@ -89,14 +162,15 @@ export function AuthProvider({ children }) {
    */
   const verifyOtp = async (email, otp) => {
     setLoading(true);
+    setSessionExpiredMessage('');
     try {
       const response = await api.post('/auth/verify-otp', { email, otp });
       if (response.success && response.data) {
         const { token: authToken, user: userData, mustChangePassword } = response.data;
         setToken(authToken);
         setUser(userData);
-        localStorage.setItem('auth_token', authToken);
-        localStorage.setItem('auth_user', JSON.stringify(userData));
+        sessionStorage.setItem('auth_token', authToken);
+        sessionStorage.setItem('auth_user', JSON.stringify(userData));
         return {
           success: true,
           user: userData,
@@ -127,11 +201,11 @@ export function AuthProvider({ children }) {
       if (response.success) {
         if (response.data?.user) {
           setUser(response.data.user);
-          localStorage.setItem('auth_user', JSON.stringify(response.data.user));
+          sessionStorage.setItem('auth_user', JSON.stringify(response.data.user));
         } else if (user) {
           const updatedUser = { ...user, mustChangePassword: false };
           setUser(updatedUser);
-          localStorage.setItem('auth_user', JSON.stringify(updatedUser));
+          sessionStorage.setItem('auth_user', JSON.stringify(updatedUser));
         }
         return {
           success: true,
@@ -146,21 +220,6 @@ export function AuthProvider({ children }) {
       };
     } finally {
       setLoading(false);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      if (token) {
-        await api.post('/auth/logout', {});
-      }
-    } catch {
-      // Ignore network failure on logout
-    } finally {
-      setUser(null);
-      setToken(null);
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
     }
   };
 
@@ -181,6 +240,8 @@ export function AuthProvider({ children }) {
         isAuthenticated: !!token && !!user,
         isSuperAdmin: user?.role === 'superadmin' || user?.role === 'admin',
         loading,
+        sessionExpiredMessage,
+        setSessionExpiredMessage,
         sendOtp,
         verifyOtp,
         login,

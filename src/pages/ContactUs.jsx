@@ -147,20 +147,15 @@ export default function ContactUs() {
               <div className="flex items-center gap-2">
                 <span className="inline-flex h-2.5 w-2.5 rounded-full bg-primary animate-ping"></span>
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
-                  Live Status: Field Units Operational
+                  ANIHEAL VETSPACE SOLUTIONS LTD
                 </span>
                 <span className="text-on-surface-variant text-[12px] hidden sm:inline font-medium">
-                  • Real-time GPS-directed fleet in Nairobi, Nakuru, Eldoret &amp; Nyeri basins
                 </span>
               </div>
               <div className="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm">
-                <span className="flex items-center gap-1 font-medium">
-                  <span className="material-symbols-outlined text-[16px] text-primary">verified_user</span>
-                  KVB Registered Fleet #VET-MOB-449
-                </span>
                 <span className="flex items-center gap-1 font-semibold text-primary">
                   <span className="material-symbols-outlined text-[16px]">timer</span>
-                  Average Dispatch: &lt; 28 Mins
+                  Average Respond: &lt; 2hrs
                 </span>
               </div>
             </div>
@@ -176,7 +171,7 @@ export default function ContactUs() {
                     <span>KVB-CERTIFIED CLINICAL AGRO-VET DISPATCH</span>
                   </div>
                   <h1 className="font-display-lg text-display-lg text-on-background tracking-tight font-extrabold leading-tight">
-                    Contact AniHeal Veterinary Solutions
+                    Contact AniHeal Vetspace solutions
                   </h1>
                   <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
                     24/7 Field Ambulatory Response across Central Kenya, Rift Valley, and Nationwide

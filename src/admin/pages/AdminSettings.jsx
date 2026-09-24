@@ -5,7 +5,7 @@ import SocialIcon from '../../components/common/SocialIcon';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
-    siteName: 'AniHeal Veterinary Solutions',
+    siteName: 'AniHeal Vetspace solutions',
     tagline: 'Veterinary Solutions',
     licenseNumber: 'KVB/PR/2025/0842',
     licenseDescription: '',
@@ -19,7 +19,7 @@ export default function AdminSettings() {
     mpesaTillName: 'AniHeal Agro-Vet Ltd',
     whatsappNumber: '254700264432',
     headquartersAddress: 'Veterinary Complex, Kabete Rd, Nairobi, Kenya',
-    metaTitle: 'AniHeal Veterinary Solutions | KVB Accredited',
+    metaTitle: 'AniHeal Vetspace solutions',
     metaDescription: '',
     notificationEmails: {
       triageAlertEmail: 'hello.aniheal@gmail.com',

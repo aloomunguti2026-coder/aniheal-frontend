@@ -37,7 +37,7 @@ export default function AdminMedia() {
 
     setUploading(true);
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = sessionStorage.getItem('auth_token');
       const response = await fetch(`${API_BASE_URL}/media/upload`, {
         method: 'POST',
         headers: {
