@@ -117,7 +117,7 @@ export default function Services() {
     <div className="bg-surface font-body-md text-on-surface antialiased">
       <Navbar />
 
-      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-320px)]">
+      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)] animate-fade-in">
         <div className="flex flex-col w-full">
           {/* SECTION: SERVICES INTRO & DIAGNOSTIC OVERVIEW */}
           <section className="relative w-full overflow-hidden bg-surface-container-lowest py-space-xl lg:py-space-2xl border-b border-border-hairline">

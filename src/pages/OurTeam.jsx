@@ -11,18 +11,28 @@ const DEFAULT_SPECIALIST_IMAGE =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAwEQECb8OurVoi2GFDxSPomx5mCzT1SPE2x6JKkK4uwMPyk36iit-a7RG1-Qt28yyNu-iiQqN-C7zWmf3jnNf0ERgucQupyrUKISH80Ov4HXHZIZ1n_zBZ-92rZqr7TzQ8xM7i9pZ5pwvilXPSndralMnY9aBrtKJpQj5YltnY8A1pq5x4ghVeQtwzFyr516MZ_UDD5uXEpxDhp_g8eq4EK23Ye7UCLLacU8LqbbPAq2La-_VWujuo';
 
 export default function OurTeam() {
-  const { team: dbTeam, hubs: dbHubs, research: dbResearch, settings, loading } = useContent();
+  const { team: dbTeam, hubs: dbHubs, blocks, settings, loading } = useContent();
   const [activeFilter, setActiveFilter] = useState('all');
 
   const emergencyPhone = settings?.emergencyPhone || settings?.hotlinePhone || settings?.primaryPhone || '+254 700 264 432';
 
+  const customCategories = blocks?.['team_categories']?.metadata?.categories;
+  const categoriesList = Array.isArray(customCategories) && customCategories.length > 0
+    ? customCategories
+    : [
+        { value: 'leadership', label: 'Clinical Leadership' },
+        { value: 'field-surgery', label: 'Surgery & Triage' },
+        { value: 'one-health', label: 'One Health & Lab' },
+        { value: 'theriogenology', label: 'Genomics & Breeding' },
+        { value: 'diagnostics', label: 'Diagnostics & Pathology' },
+      ];
+
   const filterTabs = [
     { id: 'all', label: 'All Specialists' },
-    { id: 'leadership', label: 'Clinical Leadership' },
-    { id: 'field-surgery', label: 'Surgery & Triage' },
-    { id: 'one-health', label: 'One Health & Lab' },
-    { id: 'theriogenology', label: 'Genomics & Breeding' },
-    { id: 'diagnostics', label: 'Diagnostics & Pathology' },
+    ...categoriesList.map((c) => ({
+      id: c.value || c.id || c.slug,
+      label: c.label || c.name || c.title,
+    })),
   ];
 
   // Team list directly derived from live database
@@ -66,7 +76,7 @@ export default function OurTeam() {
     <div className="bg-surface font-body-md text-body-md text-on-surface antialiased">
       <Navbar />
 
-      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-320px)]">
+      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)] animate-fade-in">
         <div className="flex flex-col w-full">
           {/* Sub-Header & Clinical Badging Strip */}
           <section className="w-full bg-surface-tinted py-space-xl px-margin-mobile lg:px-margin border-b border-border-hairline">
@@ -79,7 +89,7 @@ export default function OurTeam() {
                   </span>
                 </div>
                 <h1 className="font-display-lg text-display-lg text-on-surface tracking-tight leading-tight font-extrabold">
-                  Our Licensed Veterinarians &amp; Epidemiologists
+                  Our Licensed Veterinarians &amp; Experts
                 </h1>
                 <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
                   Accredited by the Kenya Veterinary Board (KVB). Delivering high-tier veterinary medicine,
@@ -98,7 +108,7 @@ export default function OurTeam() {
                   </span>
                 </div>
                 <div className="flex flex-col px-4 bg-surface-container-low/60 rounded-lg py-1 border border-border-hairline">
-                  <span className="font-headline-lg text-headline-lg text-primary font-bold">100%</span>
+                  <span className="font-headline-lg text-headline-lg text-primary font-bold"></span>
                   <span className="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">
                     KVB Licensed
                   </span>
@@ -203,10 +213,12 @@ export default function OurTeam() {
 
                     <div className="lg:col-span-7 flex flex-col justify-center space-y-4">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-semibold border border-border-accent">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>{' '}
-                          {directorMember.specialtyTag || directorMember.directorSpecialty || 'Lead Large-Herd Clinician'}
-                        </span>
+                        {directorMember.specialtyTag && !directorMember.specialtyTag.toLowerCase().includes('field surgery & ambulatory triage') && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-semibold border border-border-accent">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>{' '}
+                            {directorMember.specialtyTag}
+                          </span>
+                        )}
                         {directorMember.experience && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-medium">
                             {directorMember.experience}
@@ -234,7 +246,7 @@ export default function OurTeam() {
                             Specialty
                           </span>
                           <span className="font-body-sm text-body-sm text-on-surface">
-                            {directorMember.directorSpecialty || directorMember.specialtyTag || 'Herd Health & Ambulatory Surgery'}
+                            {directorMember.directorSpecialty || 'Herd Health & Production Care'}
                           </span>
                         </div>
                         <div className="bg-surface-tinted p-3 rounded-lg border border-border-hairline">
@@ -306,9 +318,11 @@ export default function OurTeam() {
                         </div>
 
                         <div>
-                          <div className="inline-block px-2 py-0.5 rounded bg-surface-tinted text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider mb-1">
-                            {spec.specialtyTag || 'Clinical Specialist'}
-                          </div>
+                          {spec.specialtyTag && !spec.specialtyTag.toLowerCase().includes('field surgery & ambulatory triage') && (
+                            <div className="inline-block px-2 py-0.5 rounded bg-surface-tinted text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider mb-1">
+                              {spec.specialtyTag}
+                            </div>
+                          )}
                           <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
                             {spec.name}
                           </h3>
@@ -433,13 +447,6 @@ export default function OurTeam() {
                               </span>
                             </div>
 
-                            <div className="flex justify-between py-1 bg-surface-subtle px-2.5 rounded-lg border border-border-hairline">
-                              <span className="text-outline">Response Radius:</span>
-                              <span className="font-bold text-primary">
-                                {hub.responseRadiusKm || 100} KM Max
-                              </span>
-                            </div>
-
                             {hub.phone && (
                               <div className="flex justify-between py-1 bg-surface-subtle px-2.5 rounded-lg border border-border-hairline">
                                 <span className="text-outline">Direct Helpline:</span>
@@ -448,17 +455,6 @@ export default function OurTeam() {
                                 </span>
                               </div>
                             )}
-
-                            <div className="flex justify-between py-1 bg-surface-subtle px-2.5 rounded-lg border border-border-hairline">
-                              <span className="text-outline">Clinician / Squad:</span>
-                              <span className="font-semibold text-on-surface text-right truncate max-w-[170px]">
-                                {hub.leadOfficer
-                                  ? hub.leadOfficer
-                                  : Array.isArray(hub.fleetEquipment) && hub.fleetEquipment.length > 0
-                                    ? hub.fleetEquipment.join(', ')
-                                    : 'Active Ambulatory Squad'}
-                              </span>
-                            </div>
                           </div>
                         </div>
 
@@ -486,117 +482,6 @@ export default function OurTeam() {
                   </p>
                 </div>
               )}
-            </div>
-          </section>
-
-          {/* Clinical Quality & KVB Governance Framework */}
-          <section className="w-full bg-surface-clinical py-space-2xl px-margin-mobile lg:px-margin border-t border-border-hairline">
-            <div className="max-w-[1280px] mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
-                <div className="lg:col-span-4 space-y-4">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold border border-border-accent">
-                    <span className="material-symbols-outlined text-[16px] text-kvb-gold">
-                      verified_user
-                    </span>
-                    <span>Accreditation Framework</span>
-                  </div>
-                  <h2 className="font-headline-xl text-headline-xl text-on-surface font-bold leading-tight">
-                    Institutional Standards &amp; KVB Oversight
-                  </h2>
-                  <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                    Every veterinarian and paraprofessional deployed by AniHeal is individually indexed
-                    in the official registry of the Kenya Veterinary Board. Our practitioners fulfill
-                    mandatory continuous medical points (CPD) annually.
-                  </p>
-                  <div className="p-space-md rounded-xl bg-surface-subtle space-y-3 border border-border-hairline">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-primary text-[28px]">shield</span>
-                      <div>
-                        <span className="font-label-md text-label-md text-on-surface font-semibold block">
-                          Cap 366 Compliance
-                        </span>
-                        <span className="font-body-sm text-body-sm text-on-surface-variant">
-                          Veterinary Surgeons and Para-Professionals Act
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-primary text-[28px]">chips</span>
-                      <div>
-                        <span className="font-label-md text-label-md text-on-surface font-semibold block">
-                          Biosafety Level II+ Protocols
-                        </span>
-                        <span className="font-body-sm text-body-sm text-on-surface-variant">
-                          Certified disposal and field sterilization units
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Research Publications & CPD Badges */}
-                <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-space-md">
-                  {Array.isArray(dbResearch) && dbResearch.length > 0 ? (
-                    dbResearch.map((res, idx) => (
-                      <div
-                        key={res._id || idx}
-                        className="bg-surface-tinted p-space-md rounded-xl space-y-3 border border-border-accent"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-secondary font-label-sm text-label-sm uppercase font-bold tracking-wider">
-                            {res.tag || 'Research Output'}
-                          </span>
-                          <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
-                            {res.year || 2025} Peer-Reviewed
-                          </span>
-                        </div>
-                        <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                          {res.title}
-                        </h3>
-                        <p className="font-body-sm text-body-sm text-on-surface-variant">
-                          {res.authors || res.summary}
-                        </p>
-                        <div className="flex items-center gap-2 text-primary font-label-sm text-label-sm font-semibold">
-                          <span className="material-symbols-outlined text-[16px]">menu_book</span>
-                          <span>{res.journal || 'AniHeal Clinical Bulletin'}</span>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-span-full bg-surface-tinted p-space-lg rounded-xl text-center border border-border-accent/40 space-y-2">
-                      <span className="material-symbols-outlined text-primary text-[32px]">biotech</span>
-                      <p className="font-label-md text-label-md font-bold text-on-surface">
-                        Continuous Professional Development &amp; Research
-                      </p>
-                      <p className="text-body-sm text-on-surface-variant max-w-md mx-auto">
-                        Official veterinary clinical trial publications, One Health epidemiology reports, and peer-reviewed journals will be cataloged here.
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="bg-surface-container p-space-md rounded-xl space-y-2 border border-border-hairline">
-                    <div className="flex items-center gap-2 text-primary font-headline-sm text-headline-sm font-bold">
-                      <span className="material-symbols-outlined">workspace_premium</span>
-                      <span>Continuous CPD Mandate</span>
-                    </div>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      100% of our clinical personnel have met the 40+ annual CPD points mandated by KVB for
-                      current year license renewals.
-                    </p>
-                  </div>
-
-                  <div className="bg-surface-container p-space-md rounded-xl space-y-2 border border-border-hairline">
-                    <div className="flex items-center gap-2 text-primary font-headline-sm text-headline-sm font-bold">
-                      <span className="material-symbols-outlined">health_and_safety</span>
-                      <span>Pharmacovigilance Strictness</span>
-                    </div>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Veterinary medicines administered by AniHeal teams originate exclusively from
-                      certified cold-chain suppliers with trace batch certificates.
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </section>
 

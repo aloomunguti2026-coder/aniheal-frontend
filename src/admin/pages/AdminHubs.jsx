@@ -41,9 +41,7 @@ export default function AdminHubs() {
     subtitle: '',
     address: '',
     phone: '+254 700 ANIHEAL',
-    leadOfficer: '',
     coverageAreasText: '',
-    responseRadiusKm: 100,
     fleetEquipmentText: '',
     zone: 'Zone 1: Rift Valley Cluster',
     zoneDescription: '',
@@ -145,9 +143,7 @@ export default function AdminHubs() {
       subtitle: hub.subtitle || '',
       address: hub.address || '',
       phone: hub.phone || '+254 700 ANIHEAL',
-      leadOfficer: hub.leadOfficer || '',
       coverageAreasText: Array.isArray(hub.coverageAreas) ? hub.coverageAreas.join(', ') : '',
-      responseRadiusKm: hub.responseRadiusKm || 100,
       fleetEquipmentText: Array.isArray(hub.fleetEquipment) ? hub.fleetEquipment.join(', ') : '',
       zone: hub.zone || '',
       zoneDescription: hub.zoneDescription || '',
@@ -199,7 +195,6 @@ export default function AdminHubs() {
 
       const payload = {
         ...formData,
-        responseRadiusKm: Number(formData.responseRadiusKm) || 0,
         sortOrder: Number(formData.sortOrder) || 0,
         coverageAreas: formData.coverageAreasText
           ? formData.coverageAreasText.split(',').map((s) => s.trim()).filter(Boolean)
@@ -240,8 +235,7 @@ export default function AdminHubs() {
       !search.trim() ||
       (h.name && h.name.toLowerCase().includes(search.toLowerCase())) ||
       (h.address && h.address.toLowerCase().includes(search.toLowerCase())) ||
-      (h.zone && h.zone.toLowerCase().includes(search.toLowerCase())) ||
-      (h.leadOfficer && h.leadOfficer.toLowerCase().includes(search.toLowerCase()));
+      (h.zone && h.zone.toLowerCase().includes(search.toLowerCase()));
 
     const matchesType =
       selectedType === 'All' || h.stationType === selectedType;
@@ -422,18 +416,6 @@ export default function AdminHubs() {
                   <div className="flex items-center justify-between pt-1 border-t border-border-hairline text-outline">
                     <span>Helpline:</span>
                     <span className="font-bold text-on-surface">{hub.phone || '+254 700 ANIHEAL'}</span>
-                  </div>
-
-                  {hub.leadOfficer && (
-                    <div className="flex items-center justify-between text-outline">
-                      <span>Lead Clinician:</span>
-                      <span className="font-semibold text-on-surface">{hub.leadOfficer}</span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between text-outline">
-                    <span>Response Radius:</span>
-                    <span className="font-bold text-primary">{hub.responseRadiusKm || 100} KM</span>
                   </div>
                 </div>
 
@@ -763,17 +745,6 @@ export default function AdminHubs() {
                     placeholder="e.g., Zone 1: Rift Valley Cluster"
                   />
                 </div>
-                <div>
-                  <label className="block font-bold text-on-surface mb-1">
-                    Response Radius (KM)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.responseRadiusKm}
-                    onChange={(e) => setFormData({ ...formData, responseRadiusKm: e.target.value })}
-                    className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline focus:bg-surface-clinical focus:border-primary"
-                  />
-                </div>
               </div>
 
               <div>
@@ -799,35 +770,21 @@ export default function AdminHubs() {
                   value={formData.zoneDescription}
                   onChange={(e) => setFormData({ ...formData, zoneDescription: e.target.value })}
                   className="w-full p-3 rounded-xl bg-surface-subtle border border-border-hairline focus:bg-surface-clinical focus:border-primary"
-                  placeholder="e.g., Coordinated by 6 Lead Paravets and 3 Veterinary Surgeons specializing in intensive dairy cattle..."
+                  placeholder="e.g., Coordinated by Lead Paravets and Veterinary Surgeons specializing in intensive livestock care..."
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-on-surface mb-1">
-                    Contact Helpline / Phone
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline focus:bg-surface-clinical focus:border-primary"
-                    placeholder="+254 700 ANIHEAL"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-on-surface mb-1">
-                    Lead Clinician / Officer
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.leadOfficer}
-                    onChange={(e) => setFormData({ ...formData, leadOfficer: e.target.value })}
-                    className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline focus:bg-surface-clinical focus:border-primary"
-                    placeholder="e.g., Dr. Dennis Kipchumba"
-                  />
-                </div>
+              <div>
+                <label className="block font-bold text-on-surface mb-1">
+                  Contact Helpline / Phone
+                </label>
+                <input
+                  type="text"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline focus:bg-surface-clinical focus:border-primary"
+                  placeholder="+254 700 ANIHEAL"
+                />
               </div>
 
               <div>

@@ -3,7 +3,7 @@ import api, { API_BASE_URL } from '../../services/api';
 import { notifyContentUpdated } from '../../services/eventBus';
 import { useConfirm } from '../../context/ConfirmContext';
 
-const CATEGORY_OPTIONS = [
+const DEFAULT_CATEGORIES = [
   { value: 'leadership', label: 'Clinical Leadership' },
   { value: 'field-surgery', label: 'Surgery & Triage' },
   { value: 'one-health', label: 'One Health & Lab' },
@@ -24,6 +24,12 @@ export default function AdminTeam() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
+  // Discipline Categories Management
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategoryLabel, setNewCategoryLabel] = useState('');
+  const [savingCategories, setSavingCategories] = useState(false);
+
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -34,7 +40,7 @@ export default function AdminTeam() {
     name: '',
     title: '',
     roleTag: 'Specialist',
-    specialtyTag: 'Field Surgery',
+    specialtyTag: '',
     kvbLicense: 'KVB: 0000-VS',
     image: '',
     bio: '',
@@ -53,11 +59,88 @@ export default function AdminTeam() {
 
   useEffect(() => {
     fetchTeam();
+    fetchCategories();
   }, []);
 
   const showToast = (message, type = 'success') => {
     setFeedback({ message, type });
     setTimeout(() => setFeedback(null), 4000);
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/admin/content-blocks');
+      if (res.success && Array.isArray(res.data)) {
+        const block = res.data.find((b) => b.key === 'team_categories');
+        if (block?.metadata?.categories && Array.isArray(block.metadata.categories) && block.metadata.categories.length > 0) {
+          setCategories(block.metadata.categories);
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch custom team categories from server:', err);
+    }
+  };
+
+  const handleSaveCategories = async (updatedList) => {
+    try {
+      setSavingCategories(true);
+      const res = await api.put('/admin/content-blocks/team_categories', {
+        section: 'team',
+        title: 'Team Discipline Categories',
+        metadata: {
+          categories: updatedList,
+        },
+      });
+
+      if (res && (res.success || res.status === 200 || res.data)) {
+        setCategories(updatedList);
+        notifyContentUpdated({ resource: 'team_categories', action: 'update' });
+        showToast('Discipline categories updated and synced with live portal!');
+      } else {
+        throw new Error(res.message || 'Failed to save categories');
+      }
+    } catch (err) {
+      console.error('Error saving discipline categories:', err);
+      showToast('Error saving categories: ' + (err.message || 'Server error'), 'error');
+    } finally {
+      setSavingCategories(false);
+    }
+  };
+
+  const handleAddCategory = async (e) => {
+    e.preventDefault();
+    if (!newCategoryLabel.trim()) return;
+
+    const slug = newCategoryLabel
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (categories.some((c) => c.value === slug)) {
+      showToast(`A category with identifier "${slug}" already exists.`, 'error');
+      return;
+    }
+
+    const newCat = { value: slug, label: newCategoryLabel.trim() };
+    const updated = [...categories, newCat];
+    await handleSaveCategories(updated);
+    setNewCategoryLabel('');
+  };
+
+  const handleDeleteCategory = async (catValue, catLabel) => {
+    const isConfirmed = await confirm({
+      title: 'Delete Discipline Category',
+      message: `Are you sure you want to remove the category "${catLabel}"? Specialists tagged with this category will remain in the database.`,
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
+    const updated = categories.filter((c) => c.value !== catValue);
+    await handleSaveCategories(updated);
   };
 
   const fetchTeam = async () => {
@@ -79,9 +162,9 @@ export default function AdminTeam() {
     setEditingMember(null);
     setFormData({
       name: '',
-      title: 'BVM, MSc Veterinary Surgery (UoN)',
+      title: 'BVM, MSc Veterinary Medicine (UoN)',
       roleTag: 'Specialist',
-      specialtyTag: 'Field Surgery & Ambulatory Triage',
+      specialtyTag: '',
       kvbLicense: 'KVB: 1248-VS',
       image: DEFAULT_IMAGE,
       bio: 'Licensed veterinary surgeon specializing in ambulatory triage, emergency surgical intervention, and herd healthcare protocols across Kenya.',
@@ -332,6 +415,18 @@ export default function AdminTeam() {
 
         <div className="flex items-center gap-3">
           <button
+            type="button"
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold transition-all cursor-pointer border border-border-hairline shadow-sm"
+            title="Add, remove or rename specialty discipline categories"
+          >
+            <span className="material-symbols-outlined text-[18px] text-primary">category</span>
+            <span>Discipline Categories</span>
+            <span className="ml-0.5 px-2 py-0.5 rounded-full bg-surface-subtle text-primary font-bold text-xs">
+              {categories.length}
+            </span>
+          </button>
+          <button
             onClick={fetchTeam}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold transition-all cursor-pointer"
             title="Refresh from server"
@@ -421,7 +516,7 @@ export default function AdminTeam() {
           >
             All Categories ({team.length})
           </button>
-          {CATEGORY_OPTIONS.map((opt) => {
+          {categories.map((opt) => {
             const count = team.filter((m) =>
               Array.isArray(m.category) ? m.category.includes(opt.value) : m.category === opt.value
             ).length;
@@ -678,7 +773,7 @@ export default function AdminTeam() {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md text-on-surface focus:bg-surface-clinical focus:border-primary focus:outline-none cursor-pointer"
                   >
-                    {CATEGORY_OPTIONS.map((opt) => (
+                    {categories.map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
@@ -722,7 +817,7 @@ export default function AdminTeam() {
                     value={formData.specialtyTag}
                     onChange={(e) => setFormData({ ...formData, specialtyTag: e.target.value })}
                     className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md text-on-surface focus:bg-surface-clinical focus:border-primary focus:outline-none"
-                    placeholder="e.g. Field Surgery &amp; Orthopedics"
+                    placeholder="e.g. Diagnostics &amp; Veterinary Care"
                   />
                 </div>
 
@@ -948,6 +1043,127 @@ export default function AdminTeam() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Discipline Categories Manager Modal */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+          <div className="bg-surface-clinical rounded-3xl max-w-xl w-full border border-border-hairline shadow-2xl overflow-hidden flex flex-col my-8">
+            {/* Modal Header */}
+            <div className="px-6 py-5 border-b border-border-hairline flex items-center justify-between bg-surface-subtle/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-[24px]">category</span>
+                </div>
+                <div>
+                  <h2 className="font-headline-md font-bold text-on-surface">
+                    Discipline Categories
+                  </h2>
+                  <p className="text-xs text-on-surface-variant">
+                    Add or remove discipline filter categories used on the public Our Team page.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCategoryModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Add New Category Form */}
+              <form onSubmit={handleAddCategory} className="space-y-3 bg-surface-subtle p-4 rounded-2xl border border-border-hairline">
+                <label className="block text-xs font-bold uppercase tracking-wider text-primary">
+                  Add New Discipline Category
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    required
+                    value={newCategoryLabel}
+                    onChange={(e) => setNewCategoryLabel(e.target.value)}
+                    placeholder="e.g. Avian Medicine & Poultry Health"
+                    className="flex-1 h-11 px-4 rounded-xl bg-surface-clinical border border-border-hairline text-body-md text-on-surface focus:border-primary focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={savingCategories || !newCategoryLabel.trim()}
+                    className="inline-flex items-center gap-1.5 px-5 h-11 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-sm hover:bg-primary/90 transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                    <span>{savingCategories ? 'Adding...' : 'Add'}</span>
+                  </button>
+                </div>
+              </form>
+
+              {/* Existing Categories List */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                    Configured Categories ({categories.length})
+                  </span>
+                  <span className="text-xs text-outline">
+                    Stored in MongoDB content blocks
+                  </span>
+                </div>
+
+                <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
+                  {categories.map((cat) => {
+                    const assignedCount = team.filter((m) =>
+                      Array.isArray(m.category) ? m.category.includes(cat.value) : m.category === cat.value
+                    ).length;
+
+                    return (
+                      <div
+                        key={cat.value}
+                        className="flex items-center justify-between p-3.5 rounded-xl bg-surface-subtle border border-border-hairline hover:border-primary/40 transition-colors"
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-label-md font-bold text-on-surface text-sm">
+                            {cat.label}
+                          </span>
+                          <span className="text-xs font-mono text-outline">
+                            ID: {cat.value}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <span className="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-xs font-semibold">
+                            {assignedCount} {assignedCount === 1 ? 'specialist' : 'specialists'}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={savingCategories}
+                            onClick={() => handleDeleteCategory(cat.value, cat.label)}
+                            className="w-8 h-8 rounded-lg bg-error/10 text-error hover:bg-error hover:text-on-error flex items-center justify-center transition-colors cursor-pointer"
+                            title={`Delete ${cat.label}`}
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-border-hairline flex items-center justify-end bg-surface-subtle/30">
+              <button
+                type="button"
+                onClick={() => setIsCategoryModalOpen(false)}
+                className="px-6 py-2 rounded-full bg-primary text-on-primary font-bold text-sm shadow-sm hover:bg-primary/90 transition-all cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       )}

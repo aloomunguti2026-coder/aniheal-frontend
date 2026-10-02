@@ -31,8 +31,6 @@ export default function AdminContentHome() {
     fieldTriageStatus: 'Active Mobile Units',
     fieldTriageSquads: 'Central & Rift Valley Squads',
     fieldTriageDesc: 'Diagnostics, Ultrasound & Vaccine Dispensary',
-    kvbVerifiedText: 'KVB Verified Clinical Practice',
-    kvbLicenseTag: 'ACC/2025',
     metrics: [
       { label: 'Accredited Practice', value: 'KVB' },
       { label: 'One Health Focused', value: '100%' },
@@ -173,8 +171,6 @@ export default function AdminContentHome() {
             fieldTriageStatus: m.fieldTriageStatus || 'Active Mobile Units',
             fieldTriageSquads: m.fieldTriageSquads || 'Central & Rift Valley Squads',
             fieldTriageDesc: m.fieldTriageDesc || 'Diagnostics, Ultrasound & Vaccine Dispensary',
-            kvbVerifiedText: m.kvbVerifiedText || 'KVB Verified Clinical Practice',
-            kvbLicenseTag: m.kvbLicenseTag || 'ACC/2025',
             metrics:
               Array.isArray(m.metrics) && m.metrics.length > 0
                 ? m.metrics
@@ -321,8 +317,6 @@ export default function AdminContentHome() {
             fieldTriageStatus: hero.fieldTriageStatus,
             fieldTriageSquads: hero.fieldTriageSquads,
             fieldTriageDesc: hero.fieldTriageDesc,
-            kvbVerifiedText: hero.kvbVerifiedText,
-            kvbLicenseTag: hero.kvbLicenseTag,
             showSocialPresence: hero.showSocialPresence,
             socialLabel: hero.socialLabel,
             socialAccounts: hero.socialAccounts,

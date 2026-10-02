@@ -7,7 +7,7 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('hello.aniheal@gmail.com');
   const [password, setPassword] = useState('password123');
   const [otp, setOtp] = useState('');
-  
+
   // Password change state
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -174,12 +174,12 @@ export default function AdminLogin() {
               AniHeal
             </span>
             <span className="font-label-sm text-label-sm text-secondary uppercase tracking-widest font-semibold block mt-1">
-              Staff Clinical Portal
+              Admin Dashboard
             </span>
           </div>
         </Link>
         <h2 className="mt-6 font-headline-xl text-headline-xl font-bold text-on-surface">
-          {step === 'credentials' && 'Staff Portal Login'}
+          {step === 'credentials' && 'Admin Portal Login'}
           {step === 'otp' && 'Two-Factor Authentication'}
           {step === 'change_password' && 'Set Permanent Password'}
         </h2>
@@ -196,27 +196,24 @@ export default function AdminLogin() {
           {/* Progress Indicator */}
           <div className="flex items-center justify-between pb-2 border-b border-border-hairline">
             <div className="flex items-center gap-2">
-              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step === 'credentials' ? 'bg-primary text-on-primary' : 'bg-secondary-container text-on-secondary-container'
-              }`}>
+              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step === 'credentials' ? 'bg-primary text-on-primary' : 'bg-secondary-container text-on-secondary-container'
+                }`}>
                 1
               </span>
               <span className="text-xs font-semibold text-on-surface">Password</span>
             </div>
             <div className="w-6 h-px bg-border-hairline"></div>
             <div className="flex items-center gap-2">
-              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step === 'otp' ? 'bg-primary text-on-primary' : (step === 'change_password' ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-subtle text-outline')
-              }`}>
+              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step === 'otp' ? 'bg-primary text-on-primary' : (step === 'change_password' ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-subtle text-outline')
+                }`}>
                 2
               </span>
               <span className="text-xs font-semibold text-on-surface">Email OTP</span>
             </div>
             <div className="w-6 h-px bg-border-hairline"></div>
             <div className="flex items-center gap-2">
-              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step === 'change_password' ? 'bg-primary text-on-primary' : 'bg-surface-subtle text-outline'
-              }`}>
+              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step === 'change_password' ? 'bg-primary text-on-primary' : 'bg-surface-subtle text-outline'
+                }`}>
                 3
               </span>
               <span className="text-xs font-semibold text-on-surface">Security</span>

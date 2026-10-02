@@ -10,8 +10,6 @@ export default function Home() {
   const { blocks, services, collaborations, settings } = useContent();
 
   const heroBlock = blocks['home_hero'] || {
-    badge: 'ANIHEAL VETSPACE SOLUTIONS LTD',
-    subtitle: 'ACCREDITED KENYA VETERINARY CONSULTANCY',
     title: 'Professional Consultancy You Can Trust',
     body: 'AniHeal veterinary consultancy works on providing sustainable animal related solutions in fields of veterinary medicine, One Health, animal husbandry and animal welfare.',
     metadata: {
@@ -27,11 +25,6 @@ export default function Home() {
       secondaryCtaLink: '/services',
       heroImage: '/logo.png',
       heroTagline: 'Healthy Animals • Healthy People • Healthy Planet',
-      fieldTriageStatus: 'Active Mobile Units',
-      fieldTriageSquads: 'Central & Rift Valley Squads',
-      fieldTriageDesc: 'Diagnostics, Ultrasound & Vaccine Dispensary',
-      kvbVerifiedText: 'KVB Verified Clinical Practice',
-      kvbLicenseTag: 'ACC/2025',
     },
   };
 
@@ -199,10 +192,6 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-margin-mobile lg:px-gutter grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center relative z-10">
               {/* Left Column: Copy & CTAs */}
               <div className="lg:col-span-7 flex flex-col items-start gap-space-lg">
-                <div className="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm uppercase tracking-wider font-bold">
-                  <span className="material-symbols-outlined text-[16px]">health_and_safety</span>
-                  {heroBlock.badge || heroBlock.subtitle || 'ACCREDITED KENYA VETERINARY CONSULTANCY'}
-                </div>
                 <h1 className="font-display-lg text-display-lg text-primary tracking-tight font-extrabold">
                   {heroBlock.title || 'Professional Consultancy You Can Trust'}
                 </h1>
@@ -328,49 +317,6 @@ export default function Home() {
                       <span className="w-2 h-2 rounded-full bg-primary"></span>
                       {heroBlock.metadata?.heroTagline || 'Healthy Animals • Healthy People • Healthy Planet'}
                     </div>
-                  </div>
-
-                  {/* Clinical Diagnostic Snapshot Card */}
-                  <div className="mt-space-md bg-surface-clinical rounded-xl p-space-md shadow-sm border border-border-hairline">
-                    <div className="flex items-center justify-between mb-space-xs">
-                      <span className="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">
-                        Field Triage Status
-                      </span>
-                      <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary-container text-on-secondary-fixed-variant font-semibold">
-                        {heroBlock.metadata?.fieldTriageStatus || 'Active Mobile Units'}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-space-md">
-                      <div className="w-10 h-10 rounded-full bg-surface-tinted flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-primary text-[22px]">
-                          ambulance
-                        </span>
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-label-md text-label-md text-on-surface font-semibold truncate">
-                          {heroBlock.metadata?.fieldTriageSquads || 'Central & Rift Valley Squads'}
-                        </span>
-                        <span className="font-body-sm text-body-sm text-on-surface-variant">
-                          {heroBlock.metadata?.fieldTriageDesc || 'Diagnostics, Ultrasound & Vaccine Dispensary'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* KVB Official Certification Seal Strip */}
-                  <div className="mt-space-sm p-space-sm rounded-lg bg-surface-tinted flex items-center justify-between border border-border-hairline">
-                    <div className="flex items-center gap-space-xs">
-                      <span className="material-symbols-outlined text-kvb-gold text-[20px]">
-                        military_tech
-                      </span>
-                      <span className="font-label-sm text-label-sm text-on-surface font-bold">
-                        {heroBlock.metadata?.kvbVerifiedText || 'KVB Verified Clinical Practice'}
-                      </span>
-                    </div>
-                    <span className="font-label-sm text-label-sm text-primary font-bold">
-                      {heroBlock.metadata?.kvbLicenseTag ||
-                        (settings?.licenseNumber ? settings.licenseNumber.split('/').pop() : 'ACC/2025')}
-                    </span>
                   </div>
                 </div>
               </div>

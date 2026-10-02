@@ -34,17 +34,30 @@ const AdminMedia = lazy(() => import('../admin/pages/AdminMedia'));
 const AdminSettings = lazy(() => import('../admin/pages/AdminSettings'));
 const AdminUsers = lazy(() => import('../admin/pages/AdminUsers'));
 const AdminAuditLogs = lazy(() => import('../admin/pages/AdminAuditLogs'));
+import ScrollToTop from '../components/common/ScrollToTop';
+import ScrollProgressBar from '../components/common/ScrollProgressBar';
+import ScrollToTopButton from '../components/common/ScrollToTopButton';
 
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[50vh] py-12">
-    <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+  <div className="flex flex-col items-center justify-center min-h-[85vh] py-20 space-y-4 animate-fade-in">
+    <div className="relative flex items-center justify-center">
+      <div className="w-12 h-12 border-3 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      <img src="/logo.png" alt="AniHeal" className="w-5 h-5 object-contain absolute opacity-80" />
+    </div>
+    <span className="font-label-sm text-xs uppercase tracking-widest text-primary font-bold">
+      AniHeal Vetspace
+    </span>
   </div>
 );
 
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
+    <>
+      <ScrollToTop />
+      <ScrollProgressBar />
+      <ScrollToTopButton />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
         {/* Public Client Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/services" element={<Services />} />
@@ -102,5 +115,6 @@ export default function AppRoutes() {
         <Route path="*" element={<Home />} />
       </Routes>
     </Suspense>
+    </>
   );
 }

@@ -139,7 +139,7 @@ export default function ContactUs() {
     <div className="bg-surface font-body-md text-body-md text-on-surface antialiased">
       <Navbar />
 
-      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-320px)]">
+      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)] animate-fade-in">
         <div className="flex flex-col w-full">
           {/* Top Emergency Ticker & Dispatch Availability */}
           <section className="w-full bg-surface-container-high py-2.5 px-margin-mobile lg:px-margin border-b border-border-hairline">
@@ -578,7 +578,7 @@ export default function ContactUs() {
                               <span className="material-symbols-outlined text-[16px]">call</span> {hub.phone || phone}
                             </a>
                             <span className="text-outline text-[13px]">
-                              {hub.leadOfficer ? `Station Lead: ${hub.leadOfficer}` : (Array.isArray(hub.coverageAreas) && hub.coverageAreas.length > 0 ? `Covers: ${hub.coverageAreas.join(', ')}` : 'Ambulatory Dispatch Ready')}
+                              {Array.isArray(hub.coverageAreas) && hub.coverageAreas.length > 0 ? `Covers: ${hub.coverageAreas.join(', ')}` : 'Ambulatory Dispatch Ready'}
                             </span>
                           </div>
                         </div>

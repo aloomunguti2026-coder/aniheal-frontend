@@ -7,10 +7,6 @@ export default function Footer() {
   const { settings, services: dbServices, hubs: dbHubs } = useContent();
 
   const siteName = settings?.siteName || 'AniHeal Vetspace solutions';
-  const licenseNumber = settings?.licenseNumber || 'KVB/PR/2025/0842';
-  const licenseDescription =
-    settings?.licenseDescription ||
-    `Regulated Veterinary Practice License No. ${licenseNumber}. Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.`;
   const aboutText =
     settings?.metaDescription ||
     'AniHeal is an accredited agro-veterinary enterprise advancing clinical diagnostics, preventative medicine, and precision livestock production across Kenya. Guided by the One Health framework, we safeguard animal welfare, human wellbeing, and ecosystem sustainability.';
@@ -68,18 +64,6 @@ export default function Footer() {
           <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
             {aboutText}
           </p>
-          <div className="p-space-md rounded-xl bg-surface-tinted">
-            <div className="flex items-center gap-space-xs mb-1">
-              <span className="material-symbols-outlined text-primary text-[20px]">verified</span>
-              <span className="font-label-md text-label-md text-primary font-bold">
-                Kenya Veterinary Board (KVB) Certified
-              </span>
-            </div>
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              {licenseDescription}
-            </p>
-          </div>
-
           {/* Footer Social Links */}
           {(() => {
             const sLinks = settings?.socialLinks || {};

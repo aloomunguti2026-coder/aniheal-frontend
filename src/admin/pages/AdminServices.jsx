@@ -194,11 +194,7 @@ export default function AdminServices() {
       description: 'Detail the veterinary scope, procedures, and disease targets...',
       compliance: 'Formal WHO & WOAH One Health Guidelines Adherent',
       bookingCTA: 'Schedule Clinical Triage',
-      features: [
-        { icon: 'check_circle', title: 'Diagnostic Step 1', desc: 'Field diagnostic validation' },
-        { icon: 'check_circle', title: 'Diagnostic Step 2', desc: 'Therapeutic intervention' },
-        { icon: 'check_circle', title: 'Diagnostic Step 3', desc: 'Post-treatment herd audit' },
-      ],
+      features: [],
       sortOrder: services.length + 1,
       isPublished: true,
     });
@@ -220,10 +216,7 @@ export default function AdminServices() {
       description: srv.description || '',
       compliance: srv.compliance || '',
       bookingCTA: srv.bookingCTA || 'Schedule Clinical Triage',
-      features:
-        Array.isArray(srv.features) && srv.features.length > 0
-          ? srv.features
-          : [{ icon: 'check_circle', title: '', desc: '' }],
+      features: Array.isArray(srv.features) ? srv.features : [],
       sortOrder: typeof srv.sortOrder === 'number' ? srv.sortOrder : 0,
       isPublished: srv.isPublished !== false,
     });
@@ -318,10 +311,16 @@ export default function AdminServices() {
   };
 
   const removeFeatureRow = (index) => {
-    if (formData.features.length <= 1) return;
     setFormData({
       ...formData,
       features: formData.features.filter((_, i) => i !== index),
+    });
+  };
+
+  const clearAllFeatures = () => {
+    setFormData({
+      ...formData,
+      features: [],
     });
   };
 
@@ -329,8 +328,17 @@ export default function AdminServices() {
     e.preventDefault();
     setSaving(true);
 
+    const cleanedFeatures = (formData.features || [])
+      .filter((f) => f && f.title && f.title.trim() !== '')
+      .map((f) => ({
+        icon: f.icon?.trim() || 'check_circle',
+        title: f.title.trim(),
+        desc: f.desc?.trim() || '',
+      }));
+
     const payload = {
       ...formData,
+      features: cleanedFeatures,
       category: [formData.category],
       sortOrder: Number(formData.sortOrder) || 0,
     };
@@ -1330,60 +1338,89 @@ export default function AdminServices() {
                 <div className="flex items-center justify-between">
                   <label className="font-headline-sm text-headline-sm font-bold text-on-surface text-sm">
                     Diagnostic Steps &amp; Sub-Protocol Features
+                    {formData.features?.length > 0 && (
+                      <span className="ml-2 text-xs font-normal text-on-surface-variant">
+                        ({formData.features.length})
+                      </span>
+                    )}
                   </label>
-                  <button
-                    type="button"
-                    onClick={addFeatureRow}
-                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">add</span> Add Step
-                  </button>
-                </div>
-
-                {formData.features.map((feat, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-surface-subtle rounded-xl border border-border-hairline grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
-                  >
-                    <div className="sm:col-span-3">
-                      <input
-                        type="text"
-                        value={feat.icon}
-                        onChange={(e) => handleFeatureChange(idx, 'icon', e.target.value)}
-                        placeholder="Icon (e.g. biotech)"
-                        className="w-full h-9 px-2.5 rounded-lg bg-surface-clinical border border-border-hairline text-xs font-mono focus:border-primary focus:outline-none"
-                      />
-                    </div>
-                    <div className="sm:col-span-4">
-                      <input
-                        type="text"
-                        value={feat.title}
-                        onChange={(e) => handleFeatureChange(idx, 'title', e.target.value)}
-                        placeholder="Step Title"
-                        className="w-full h-9 px-2.5 rounded-lg bg-surface-clinical border border-border-hairline text-xs font-semibold focus:border-primary focus:outline-none"
-                      />
-                    </div>
-                    <div className="sm:col-span-4">
-                      <input
-                        type="text"
-                        value={feat.desc}
-                        onChange={(e) => handleFeatureChange(idx, 'desc', e.target.value)}
-                        placeholder="Step Description"
-                        className="w-full h-9 px-2.5 rounded-lg bg-surface-clinical border border-border-hairline text-xs focus:border-primary focus:outline-none"
-                      />
-                    </div>
-                    <div className="sm:col-span-1 text-right">
+                  <div className="flex items-center gap-3">
+                    {formData.features?.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => removeFeatureRow(idx)}
-                        className="text-error hover:text-red-700 p-1 cursor-pointer"
-                        title="Remove Step"
+                        onClick={clearAllFeatures}
+                        className="text-xs font-semibold text-error hover:underline flex items-center gap-1 cursor-pointer"
                       >
-                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                        <span className="material-symbols-outlined text-[15px]">delete_sweep</span> Delete All Steps
                       </button>
-                    </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={addFeatureRow}
+                      className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">add</span> Add Step
+                    </button>
                   </div>
-                ))}
+                </div>
+
+                {formData.features?.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-surface-subtle border border-dashed border-border-hairline text-center text-on-surface-variant text-xs space-y-1">
+                    <p>No diagnostic steps or sub-protocol features configured for this service.</p>
+                    <button
+                      type="button"
+                      onClick={addFeatureRow}
+                      className="font-bold text-primary hover:underline inline-flex items-center gap-0.5 cursor-pointer mt-1"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">add</span> Add Step
+                    </button>
+                  </div>
+                ) : (
+                  formData.features.map((feat, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 bg-surface-subtle rounded-xl border border-border-hairline grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
+                    >
+                      <div className="sm:col-span-3">
+                        <input
+                          type="text"
+                          value={feat.icon}
+                          onChange={(e) => handleFeatureChange(idx, 'icon', e.target.value)}
+                          placeholder="Icon (e.g. biotech)"
+                          className="w-full h-9 px-2.5 rounded-lg bg-surface-clinical border border-border-hairline text-xs font-mono focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                      <div className="sm:col-span-4">
+                        <input
+                          type="text"
+                          value={feat.title}
+                          onChange={(e) => handleFeatureChange(idx, 'title', e.target.value)}
+                          placeholder="Step Title"
+                          className="w-full h-9 px-2.5 rounded-lg bg-surface-clinical border border-border-hairline text-xs font-semibold focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                      <div className="sm:col-span-4">
+                        <input
+                          type="text"
+                          value={feat.desc}
+                          onChange={(e) => handleFeatureChange(idx, 'desc', e.target.value)}
+                          placeholder="Step Description"
+                          className="w-full h-9 px-2.5 rounded-lg bg-surface-clinical border border-border-hairline text-xs focus:border-primary focus:outline-none"
+                        />
+                      </div>
+                      <div className="sm:col-span-1 text-right">
+                        <button
+                          type="button"
+                          onClick={() => removeFeatureRow(idx)}
+                          className="text-error hover:text-red-700 p-1 cursor-pointer"
+                          title="Remove Step"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Status & Ordering */}

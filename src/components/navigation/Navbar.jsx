@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useContent } from '../../hooks/useContent';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const location = useLocation();
   const { services: dbServices } = useContent();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 15);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isHome = location.pathname === '/';
   const isServicesActive =
@@ -32,7 +42,13 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-surface-clinical/95 backdrop-blur-md shadow-[0_1px_8px_rgba(20,83,45,0.05)] border-b border-border-hairline">
+    <header
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-surface-clinical/95 backdrop-blur-md shadow-md shadow-emerald-950/5 border-b border-border-hairline'
+          : 'bg-surface-clinical/90 backdrop-blur-sm border-b border-border-hairline/60'
+      }`}
+    >
       {/* Main Navigation Bar */}
       <div className="h-20 max-w-[1360px] mx-auto px-margin-mobile lg:px-margin flex items-center justify-between gap-space-md">
         {/* Brand Logo */}
