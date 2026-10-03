@@ -1,8 +1,6 @@
-# AniHeal Vetspace Solutions Robots.txt
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /admin
 
-# Sitemap location
 Sitemap: https://aniheal.co.ke/sitemap.xml
