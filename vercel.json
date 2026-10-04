@@ -1,8 +1,7 @@
 {
-  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/((?!.*\\.(?:xml|txt|png|jpg|jpeg|svg|webp|ico|json|js|css|woff|woff2)).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
@@ -39,3 +38,4 @@
     }
   ]
 }
+
