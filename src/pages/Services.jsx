@@ -414,7 +414,7 @@ export default function Services() {
           <section className="w-full bg-surface py-space-2xl">
             <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin">
               <div className="bg-surface-clinical rounded-2xl p-8 lg:p-12 shadow-sm border border-border-hairline">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                   <div className="lg:col-span-6">
                     <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
                       {labBlock?.subtitle || 'Laboratory Precision'}
@@ -422,129 +422,58 @@ export default function Services() {
                     <h2 className="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1 mb-4 font-bold">
                       {labBlock?.title || 'Diagnostics Built on Evidence, Not Guesswork'}
                     </h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-6">
+                    <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
                       {labBlock?.body ||
                         'Our clinicians use mobile diagnostic benches calibrated against international WOAH reference limits. We preserve therapeutic efficacy by conducting antimicrobial sensitivity testing (AST) before prescribing broad-spectrum antibiotics, curbing local antimicrobial resistance.'}
                     </p>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between font-label-md text-label-md mb-1">
-                          <span className="text-on-surface font-semibold">
-                            {labMeta.metric1Label || 'Reproductive First-Service Conception Rate (FTAI)'}
-                          </span>
-                          <span className="text-primary font-bold">{labMeta.metric1Value || '68.4%'}</span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full transition-all duration-500"
-                            style={{ width: labMeta.metric1Value || '68.4%' }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between font-label-md text-label-md mb-1">
-                          <span className="text-on-surface font-semibold">
-                            {labMeta.metric2Label || 'Mastitis Recovery without Quarter Blindness'}
-                          </span>
-                          <span className="text-primary font-bold">{labMeta.metric2Value || '94.1%'}</span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                          <div
-                            className="h-full bg-secondary rounded-full transition-all duration-500"
-                            style={{ width: labMeta.metric2Value || '94.1%' }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between font-label-md text-label-md mb-1">
-                          <span className="text-on-surface font-semibold">
-                            {labMeta.metric3Label || 'Cold Chain Vaccine Viability Score'}
-                          </span>
-                          <span className="text-primary font-bold">{labMeta.metric3Value || '99.8%'}</span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
-                          <div
-                            className="h-full bg-primary-container rounded-full transition-all duration-500"
-                            style={{ width: labMeta.metric3Value || '99.8%' }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="lg:col-span-6 flex flex-col gap-4">
-                    {/* Inline Mini Diagnostic Graphic: Somatic Cell Trends */}
-                    <div className="p-6 rounded-xl bg-surface-subtle border border-border-hairline">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            {labMeta.chartTitle || 'Herd Somatic Cell Curve (SCC)'}
-                          </h3>
-                          <p className="font-body-sm text-body-sm text-on-surface-variant">
-                            {labMeta.chartSubtitle || 'Post AniHeal Nutrition & Sanitization Protocol (cells/mL × 1,000)'}
-                          </p>
-                        </div>
-                        <span className="px-2.5 py-1 rounded-full bg-surface-tinted text-primary font-label-sm text-label-sm font-bold border border-border-accent">
-                          {labMeta.chartBadge || '-48% Drop'}
+                  <div className="lg:col-span-6 space-y-5 bg-surface-subtle p-6 lg:p-8 rounded-2xl border border-border-hairline">
+                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold mb-2">
+                      Diagnostic Precision & Laboratory Metrics
+                    </h3>
+                    <div>
+                      <div className="flex justify-between font-label-md text-label-md mb-1.5">
+                        <span className="text-on-surface font-semibold">
+                          {labMeta.metric1Label || 'Reproductive First-Service Conception Rate (FTAI)'}
                         </span>
+                        <span className="text-primary font-bold">{labMeta.metric1Value || '68.4%'}</span>
                       </div>
-                      {/* Bar Chart Representation */}
-                      <div className="w-full h-36 flex items-end gap-3 pt-4">
-                        <div className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full bg-outline-variant/40 rounded-t h-28"></div>
-                          <span className="font-label-sm text-label-sm text-on-surface-variant">
-                            Wk 1
-                          </span>
-                        </div>
-                        <div className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full bg-outline-variant/60 rounded-t h-24"></div>
-                          <span className="font-label-sm text-label-sm text-on-surface-variant">
-                            Wk 2
-                          </span>
-                        </div>
-                        <div className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full bg-secondary/70 rounded-t h-16"></div>
-                          <span className="font-label-sm text-label-sm text-on-surface-variant">
-                            Wk 4
-                          </span>
-                        </div>
-                        <div className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full bg-primary rounded-t h-10"></div>
-                          <span className="font-label-sm text-label-sm text-primary font-semibold">
-                            Wk 8
-                          </span>
-                        </div>
-                        <div className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full bg-primary rounded-t h-8"></div>
-                          <span className="font-label-sm text-label-sm text-primary font-bold">
-                            Wk 12
-                          </span>
-                        </div>
+                      <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all duration-500"
+                          style={{ width: labMeta.metric1Value || '68.4%' }}
+                        ></div>
                       </div>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant mt-3 text-center">
-                        Measured across 42 commercial herds in Nakuru, Kiambu, and Uasin Gishu.
-                      </p>
                     </div>
-
-                    <Link
-                      to="/appointment-booking"
-                      className="p-4 rounded-xl bg-surface-tinted flex items-center justify-between border border-border-accent hover:bg-secondary-container/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-primary text-[28px]">
-                          biotech
+                    <div>
+                      <div className="flex justify-between font-label-md text-label-md mb-1.5">
+                        <span className="text-on-surface font-semibold">
+                          {labMeta.metric2Label || 'Mastitis Recovery without Quarter Blindness'}
                         </span>
-                        <div>
-                          <p className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                            Field Molecular PCR
-                          </p>
-                          <p className="font-body-sm text-body-sm text-on-surface-variant">
-                            Targeted DNA identification for foot-and-mouth strain categorization
-                          </p>
-                        </div>
+                        <span className="text-primary font-bold">{labMeta.metric2Value || '94.1%'}</span>
                       </div>
-                      <span className="material-symbols-outlined text-primary">arrow_forward</span>
-                    </Link>
+                      <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+                        <div
+                          className="h-full bg-secondary rounded-full transition-all duration-500"
+                          style={{ width: labMeta.metric2Value || '94.1%' }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-label-md text-label-md mb-1.5">
+                        <span className="text-on-surface font-semibold">
+                          {labMeta.metric3Label || 'Cold Chain Vaccine Viability Score'}
+                        </span>
+                        <span className="text-primary font-bold">{labMeta.metric3Value || '99.8%'}</span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+                        <div
+                          className="h-full bg-primary-container rounded-full transition-all duration-500"
+                          style={{ width: labMeta.metric3Value || '99.8%' }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
