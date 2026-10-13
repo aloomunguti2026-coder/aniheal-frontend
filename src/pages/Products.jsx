@@ -36,7 +36,7 @@ export default function Products() {
     mpesaPaymentType === 'paybill'
       ? `Paybill ${mpesaPaybill} (Acc: ${mpesaAccount})`
       : mpesaPaymentType === 'both'
-      ? `Till ${mpesaTill} / Paybill ${mpesaPaybill}`
+      ? `Till ${mpesaTill} / Paybill ${mpesaPaybill} (Acc: ${mpesaAccount})`
       : `Till ${mpesaTill}`;
 
   const categories = [

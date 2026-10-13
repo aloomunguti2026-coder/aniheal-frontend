@@ -158,9 +158,9 @@ export default function AdminProductSales() {
           </div>
           <p className="text-label-sm text-secondary font-medium">
             {settings?.mpesaPaymentType === 'paybill'
-              ? `Paybill: ${settings?.mpesaPaybill || '894022'}`
+              ? `Paybill: ${settings?.mpesaPaybill || '894022'} • Acc: ${settings?.mpesaAccount || 'ANIHEAL'}`
               : settings?.mpesaPaymentType === 'both'
-              ? `Till: ${settings?.mpesaTill || '894022'} • Paybill: ${settings?.mpesaPaybill || '894022'}`
+              ? `Till: ${settings?.mpesaTill || '894022'} • Paybill: ${settings?.mpesaPaybill || '894022'} (Acc: ${settings?.mpesaAccount || 'ANIHEAL'})`
               : `Till No: ${settings?.mpesaTill || '894022'}`}
           </p>
         </div>

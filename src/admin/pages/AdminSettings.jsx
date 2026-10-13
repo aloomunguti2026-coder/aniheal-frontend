@@ -658,20 +658,40 @@ export default function AdminSettings() {
                     ? 'Direct Till & Paybill Billing'
                     : 'Direct Till & Farm Billing'}
                 </span>
-                <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
-                  {settings.mpesaPaymentType === 'paybill'
-                    ? `M-Pesa Paybill: ${settings.mpesaPaybill || '894022'}`
-                    : settings.mpesaPaymentType === 'both'
-                    ? `Till: ${settings.mpesaTill || '894022'} • Paybill: ${settings.mpesaPaybill || '894022'}`
-                    : `M-Pesa Buy Goods: ${settings.mpesaTill || '894022'}`}
-                </span>
-                <span className="font-body-sm text-body-sm text-on-surface-variant block mt-0.5">
-                  {settings.mpesaPaymentType === 'paybill'
-                    ? `Account No: ${settings.mpesaAccount || 'ANIHEAL'} • ${settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}`
-                    : settings.mpesaPaymentType === 'both'
-                    ? `Acc: ${settings.mpesaAccount || 'ANIHEAL'} • Official: ${settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}`
-                    : `Official Name: ${settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}`}
-                </span>
+                {settings.mpesaPaymentType === 'paybill' ? (
+                  <div className="space-y-0.5 mt-0.5">
+                    <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
+                      Paybill No: {settings.mpesaPaybill || '894022'}
+                    </span>
+                    <span className="font-headline-sm text-headline-sm text-primary block font-bold">
+                      Account No: {settings.mpesaAccount || 'ANIHEAL'}
+                    </span>
+                    <span className="font-body-sm text-body-sm text-on-surface-variant block mt-1">
+                      Official Name: {settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}
+                    </span>
+                  </div>
+                ) : settings.mpesaPaymentType === 'both' ? (
+                  <div className="space-y-0.5 mt-0.5">
+                    <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
+                      Till: {settings.mpesaTill || '894022'} • Paybill: {settings.mpesaPaybill || '894022'}
+                    </span>
+                    <span className="font-body-md text-body-md text-primary block font-bold">
+                      Account No: {settings.mpesaAccount || 'ANIHEAL'}
+                    </span>
+                    <span className="font-body-sm text-body-sm text-on-surface-variant block mt-1">
+                      Official Name: {settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="space-y-0.5 mt-0.5">
+                    <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
+                      M-Pesa Buy Goods: {settings.mpesaTill || '894022'}
+                    </span>
+                    <span className="font-body-sm text-body-sm text-on-surface-variant block mt-1">
+                      Official Name: {settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -267,69 +267,73 @@ export default function ContactUs() {
                   <div className="min-w-0 flex-1">
                     {mpesaPaymentType === 'paybill' ? (
                       <>
-                        <div className="flex items-center justify-between gap-1">
+                        <div className="flex items-center justify-between gap-1 mb-1">
                           <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold">
                             Direct Paybill &amp; Farm Billing
                           </span>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(mpesaPaybill, 'paybill')}
-                            className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5"
-                            title="Copy Paybill Number"
-                          >
-                            <span className="material-symbols-outlined text-[14px]">content_copy</span>
-                            <span>{copiedType === 'paybill' ? 'Copied!' : 'Copy'}</span>
-                          </button>
                         </div>
-                        <span className="font-headline-sm text-headline-sm text-on-surface block font-bold truncate">
-                          M-Pesa Paybill: {mpesaPaybill}
-                        </span>
-                        <div className="font-body-sm text-body-sm text-on-surface-variant mt-0.5 space-y-0.5">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span>
-                              Account No: <strong className="text-on-surface font-semibold">{mpesaAccount}</strong>
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(mpesaAccount, 'account')}
-                              className="text-[11px] text-primary hover:underline"
-                              title="Copy Account Number"
-                            >
-                              {copiedType === 'account' ? '✓ Copied' : '(copy)'}
-                            </button>
-                          </div>
-                          <span className="block truncate">Official Name: {mpesaTillName}</span>
-                        </div>
-                      </>
-                    ) : mpesaPaymentType === 'both' ? (
-                      <>
-                        <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold">
-                          Direct Till &amp; Paybill Billing
-                        </span>
-                        <div className="space-y-1 mt-0.5">
-                          <div className="flex items-center justify-between text-body-md font-bold text-on-surface">
-                            <span>Till: {mpesaTill}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(mpesaTill, 'till')}
-                              className="text-[11px] font-normal text-primary hover:underline flex items-center gap-0.5"
-                            >
-                              <span className="material-symbols-outlined text-[13px]">content_copy</span>
-                              <span>{copiedType === 'till' ? 'Copied' : 'Copy'}</span>
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between text-body-sm text-on-surface font-semibold">
-                            <span className="truncate">
-                              Paybill: {mpesaPaybill}{' '}
-                              <span className="font-normal text-on-surface-variant">(Acc: {mpesaAccount})</span>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                              Paybill No: {mpesaPaybill}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleCopy(mpesaPaybill, 'paybill')}
-                              className="text-[11px] font-normal text-primary hover:underline flex items-center gap-0.5 ml-1"
+                              className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5 shrink-0 bg-primary/10 px-2 py-0.5 rounded"
+                              title="Copy Paybill Number"
                             >
                               <span className="material-symbols-outlined text-[13px]">content_copy</span>
-                              <span>{copiedType === 'paybill' ? 'Copied' : 'Copy'}</span>
+                              <span>{copiedType === 'paybill' ? 'Copied!' : 'Copy Paybill'}</span>
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-headline-sm text-headline-sm text-primary font-bold">
+                              Account No: {mpesaAccount}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(mpesaAccount, 'account')}
+                              className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5 shrink-0 bg-primary/10 px-2 py-0.5 rounded"
+                              title="Copy Account Number"
+                            >
+                              <span className="material-symbols-outlined text-[13px]">content_copy</span>
+                              <span>{copiedType === 'account' ? 'Copied!' : 'Copy Acc No'}</span>
+                            </button>
+                          </div>
+                          <span className="font-body-sm text-body-sm text-on-surface-variant block mt-1 truncate">
+                            Official Name: {mpesaTillName}
+                          </span>
+                        </div>
+                      </>
+                    ) : mpesaPaymentType === 'both' ? (
+                      <>
+                        <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold mb-1">
+                          Direct Till &amp; Paybill Billing
+                        </span>
+                        <div className="space-y-1.5 mt-0.5">
+                          <div className="flex items-center justify-between text-body-md font-bold text-on-surface">
+                            <span>Till No: {mpesaTill}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(mpesaTill, 'till')}
+                              className="text-[11px] font-normal text-primary hover:underline flex items-center gap-0.5 bg-primary/10 px-2 py-0.5 rounded"
+                              title="Copy Till Number"
+                            >
+                              <span className="material-symbols-outlined text-[13px]">content_copy</span>
+                              <span>{copiedType === 'till' ? 'Copied' : 'Copy Till'}</span>
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between text-body-md font-bold text-on-surface">
+                            <span>Paybill: {mpesaPaybill} • Acc: {mpesaAccount}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(mpesaPaybill, 'paybill')}
+                              className="text-[11px] font-normal text-primary hover:underline flex items-center gap-0.5 bg-primary/10 px-2 py-0.5 rounded ml-1"
+                              title="Copy Paybill Number"
+                            >
+                              <span className="material-symbols-outlined text-[13px]">content_copy</span>
+                              <span>{copiedType === 'paybill' ? 'Copied' : 'Copy Paybill'}</span>
                             </button>
                           </div>
                           <span className="font-body-xs text-body-xs text-on-surface-variant block truncate">
@@ -346,11 +350,11 @@ export default function ContactUs() {
                           <button
                             type="button"
                             onClick={() => handleCopy(mpesaTill, 'till')}
-                            className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5"
+                            className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5 shrink-0 bg-primary/10 px-2 py-0.5 rounded"
                             title="Copy Till Number"
                           >
-                            <span className="material-symbols-outlined text-[14px]">content_copy</span>
-                            <span>{copiedType === 'till' ? 'Copied!' : 'Copy'}</span>
+                            <span className="material-symbols-outlined text-[13px]">content_copy</span>
+                            <span>{copiedType === 'till' ? 'Copied!' : 'Copy Till'}</span>
                           </button>
                         </div>
                         <span className="font-headline-sm text-headline-sm text-on-surface block font-bold truncate">
