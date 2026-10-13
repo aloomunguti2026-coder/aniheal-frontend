@@ -47,6 +47,21 @@ export default function ContactUs() {
   const phone = settings?.primaryPhone || '+254 700 264 432';
   const emergencyPhone = settings?.emergencyPhone || settings?.hotlinePhone || settings?.primaryPhone || '+254 700 264 432';
 
+  const mpesaPaymentType = settings?.mpesaPaymentType || 'buygoods';
+  const mpesaTill = settings?.mpesaTill || '894022';
+  const mpesaPaybill = settings?.mpesaPaybill || '894022';
+  const mpesaAccount = settings?.mpesaAccount || 'ANIHEAL';
+  const mpesaTillName = settings?.mpesaTillName || 'AniHeal Agro-Vet Ltd';
+
+  const [copiedType, setCopiedType] = useState(null);
+  const handleCopy = (text, type) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+    }
+    setCopiedType(type);
+    setTimeout(() => setCopiedType(null), 2500);
+  };
+
   const defaultFaqs = [
     {
       q: "What are AniHeal's emergency ambulatory response timeframes?",
@@ -54,7 +69,12 @@ export default function ContactUs() {
     },
     {
       q: 'What payment methods are supported for field procedures and diagnostics?',
-      a: 'We accept instant settlement via Safaricom M-Pesa Buy Goods Till 894022 (AniHeal Agro-Vet Ltd) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.',
+      a:
+        mpesaPaymentType === 'paybill'
+          ? `We accept instant settlement via Safaricom M-Pesa Paybill ${mpesaPaybill} (Account: ${mpesaAccount}, Official Name: ${mpesaTillName}) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.`
+          : mpesaPaymentType === 'both'
+          ? `We accept instant settlement via Safaricom M-Pesa Buy Goods Till ${mpesaTill} or Paybill ${mpesaPaybill} (Account: ${mpesaAccount}, Official Name: ${mpesaTillName}) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.`
+          : `We accept instant settlement via Safaricom M-Pesa Buy Goods Till ${mpesaTill} (${mpesaTillName}) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.`,
     },
     {
       q: 'What biosecurity protocols do AniHeal clinicians follow upon entering a farm?',
@@ -241,19 +261,106 @@ export default function ContactUs() {
                 </div>
 
                 <div className="p-5 rounded-xl bg-surface-clinical shadow-sm flex items-start gap-3.5 border border-border-hairline">
-                  <div className="p-2.5 rounded-lg bg-surface-tinted text-kvb-gold">
+                  <div className="p-2.5 rounded-lg bg-surface-tinted text-kvb-gold shrink-0">
                     <span className="material-symbols-outlined text-[24px]">payments</span>
                   </div>
-                  <div>
-                    <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold">
-                      Direct Till &amp; Farm Billing
-                    </span>
-                    <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
-                      M-Pesa Buy Goods: 894022
-                    </span>
-                    <span className="font-body-sm text-body-sm text-on-surface-variant block mt-0.5">
-                      Official Name: AniHeal Agro-Vet Ltd
-                    </span>
+                  <div className="min-w-0 flex-1">
+                    {mpesaPaymentType === 'paybill' ? (
+                      <>
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold">
+                            Direct Paybill &amp; Farm Billing
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(mpesaPaybill, 'paybill')}
+                            className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5"
+                            title="Copy Paybill Number"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                            <span>{copiedType === 'paybill' ? 'Copied!' : 'Copy'}</span>
+                          </button>
+                        </div>
+                        <span className="font-headline-sm text-headline-sm text-on-surface block font-bold truncate">
+                          M-Pesa Paybill: {mpesaPaybill}
+                        </span>
+                        <div className="font-body-sm text-body-sm text-on-surface-variant mt-0.5 space-y-0.5">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span>
+                              Account No: <strong className="text-on-surface font-semibold">{mpesaAccount}</strong>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(mpesaAccount, 'account')}
+                              className="text-[11px] text-primary hover:underline"
+                              title="Copy Account Number"
+                            >
+                              {copiedType === 'account' ? '✓ Copied' : '(copy)'}
+                            </button>
+                          </div>
+                          <span className="block truncate">Official Name: {mpesaTillName}</span>
+                        </div>
+                      </>
+                    ) : mpesaPaymentType === 'both' ? (
+                      <>
+                        <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold">
+                          Direct Till &amp; Paybill Billing
+                        </span>
+                        <div className="space-y-1 mt-0.5">
+                          <div className="flex items-center justify-between text-body-md font-bold text-on-surface">
+                            <span>Till: {mpesaTill}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(mpesaTill, 'till')}
+                              className="text-[11px] font-normal text-primary hover:underline flex items-center gap-0.5"
+                            >
+                              <span className="material-symbols-outlined text-[13px]">content_copy</span>
+                              <span>{copiedType === 'till' ? 'Copied' : 'Copy'}</span>
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between text-body-sm text-on-surface font-semibold">
+                            <span className="truncate">
+                              Paybill: {mpesaPaybill}{' '}
+                              <span className="font-normal text-on-surface-variant">(Acc: {mpesaAccount})</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(mpesaPaybill, 'paybill')}
+                              className="text-[11px] font-normal text-primary hover:underline flex items-center gap-0.5 ml-1"
+                            >
+                              <span className="material-symbols-outlined text-[13px]">content_copy</span>
+                              <span>{copiedType === 'paybill' ? 'Copied' : 'Copy'}</span>
+                            </button>
+                          </div>
+                          <span className="font-body-xs text-body-xs text-on-surface-variant block truncate">
+                            Official Name: {mpesaTillName}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold">
+                            Direct Till &amp; Farm Billing
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(mpesaTill, 'till')}
+                            className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5"
+                            title="Copy Till Number"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                            <span>{copiedType === 'till' ? 'Copied!' : 'Copy'}</span>
+                          </button>
+                        </div>
+                        <span className="font-headline-sm text-headline-sm text-on-surface block font-bold truncate">
+                          M-Pesa Buy Goods: {mpesaTill}
+                        </span>
+                        <span className="font-body-sm text-body-sm text-on-surface-variant block mt-0.5 truncate">
+                          Official Name: {mpesaTillName}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

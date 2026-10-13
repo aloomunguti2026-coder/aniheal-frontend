@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import productService from '../services/productService';
+import { useContent } from '../hooks/useContent';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
 
 export default function Products() {
+  const { settings } = useContent();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,6 +27,17 @@ export default function Products() {
   const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(null);
   const [orderError, setOrderError] = useState('');
+
+  const mpesaPaymentType = settings?.mpesaPaymentType || 'buygoods';
+  const mpesaTill = settings?.mpesaTill || '894022';
+  const mpesaPaybill = settings?.mpesaPaybill || '894022';
+  const mpesaAccount = settings?.mpesaAccount || 'ANIHEAL';
+  const mpesaSummary =
+    mpesaPaymentType === 'paybill'
+      ? `Paybill ${mpesaPaybill} (Acc: ${mpesaAccount})`
+      : mpesaPaymentType === 'both'
+      ? `Till ${mpesaTill} / Paybill ${mpesaPaybill}`
+      : `Till ${mpesaTill}`;
 
   const categories = [
     { id: 'all', label: 'All Products', icon: 'inventory_2' },
@@ -155,7 +168,7 @@ export default function Products() {
               {/* Payment Methods Info Badge */}
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-clinical border border-border-hairline text-label-sm font-label-sm text-secondary">
                 <span className="material-symbols-outlined text-primary text-[18px]">payments</span>
-                <span>Accepted: M-Pesa Till <strong>894022</strong> • Cash on Farm Delivery • Bank Transfer</span>
+                <span>Accepted: M-Pesa <strong>{mpesaSummary}</strong> • Cash on Farm Delivery • Bank Transfer</span>
               </div>
             </div>
 
@@ -325,7 +338,7 @@ export default function Products() {
                 <div className="p-4 rounded-xl bg-surface-tinted text-label-sm text-left space-y-1">
                   <div><strong>Product:</strong> {orderModalProduct.name}</div>
                   <div><strong>Total Amount:</strong> KES {Number(orderSuccess.totalAmount).toLocaleString()}</div>
-                  <div><strong>Payment Option:</strong> Pay via M-Pesa Till 894022 or Cash on Farm Delivery</div>
+                  <div><strong>Payment Option:</strong> Pay via M-Pesa {mpesaSummary} or Cash on Farm Delivery</div>
                 </div>
                 <button
                   onClick={() => setOrderModalProduct(null)}

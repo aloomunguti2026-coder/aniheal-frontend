@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import productService from '../../services/productService';
+import api from '../../services/api';
 
 export default function AdminProductSales() {
+  const [settings, setSettings] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [payments, setPayments] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -30,15 +32,17 @@ export default function AdminProductSales() {
     try {
       setLoading(true);
       setError('');
-      const [analyticsRes, paymentsRes, ordersRes] = await Promise.all([
+      const [analyticsRes, paymentsRes, ordersRes, settingsRes] = await Promise.all([
         productService.getPaymentAnalytics(),
         productService.getPayments(),
         productService.getOrders(),
+        api.get('/public/settings').catch(() => null),
       ]);
 
       if (analyticsRes.success) setAnalytics(analyticsRes.data);
       if (paymentsRes.success) setPayments(paymentsRes.data?.payments || []);
       if (ordersRes.success) setOrders(ordersRes.data?.orders || []);
+      if (settingsRes?.data) setSettings(settingsRes.data);
     } catch (err) {
       console.error(err);
       setError('Failed to load sales and payment records.');
@@ -152,7 +156,13 @@ export default function AdminProductSales() {
               analytics?.paymentMethodBreakdown?.find((b) => b._id === 'mpesa')?.totalAmount || 0
             ).toLocaleString()}
           </div>
-          <p className="text-label-sm text-secondary font-medium">Till No: 894022</p>
+          <p className="text-label-sm text-secondary font-medium">
+            {settings?.mpesaPaymentType === 'paybill'
+              ? `Paybill: ${settings?.mpesaPaybill || '894022'}`
+              : settings?.mpesaPaymentType === 'both'
+              ? `Till: ${settings?.mpesaTill || '894022'} • Paybill: ${settings?.mpesaPaybill || '894022'}`
+              : `Till No: ${settings?.mpesaTill || '894022'}`}
+          </p>
         </div>
 
         <div className="p-6 rounded-2xl bg-surface-clinical border border-border-hairline shadow-sm space-y-2">

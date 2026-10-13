@@ -15,7 +15,10 @@ export default function AdminSettings() {
     primaryEmail: 'clinical@aniheal.co.ke',
     infoEmail: 'info@aniheal.co.ke',
     careersEmail: 'careers@aniheal.co.ke',
+    mpesaPaymentType: 'buygoods',
     mpesaTill: '894022',
+    mpesaPaybill: '894022',
+    mpesaAccount: 'ANIHEAL',
     mpesaTillName: 'AniHeal Agro-Vet Ltd',
     whatsappNumber: '254700264432',
     headquartersAddress: 'Veterinary Complex, Kabete Rd, Nairobi, Kenya',
@@ -418,40 +421,258 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        {/* Billing & M-Pesa Till Box */}
-        <div className="bg-surface-clinical rounded-2xl p-6 shadow-sm border border-border-hairline space-y-4">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-border-hairline">
-            <span className="material-symbols-outlined text-primary text-[24px]">payments</span>
-            <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
-              M-Pesa Buy Goods &amp; Settlements
-            </h2>
+        {/* Billing & M-Pesa Till / Paybill Settlement Box */}
+        <div className="bg-surface-clinical rounded-2xl p-6 shadow-sm border border-border-hairline space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-border-hairline">
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-primary text-[26px]">payments</span>
+              <div>
+                <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
+                  M-Pesa Payment &amp; Farm Billing Channels
+                </h2>
+                <p className="text-body-sm text-on-surface-variant">
+                  Configure whether farm clients settle invoices via Buy Goods Till, Paybill, or both.
+                </p>
+              </div>
+            </div>
+            <span className="px-3 py-1 rounded-full text-label-sm font-semibold bg-primary/10 text-primary border border-primary/20 w-fit">
+              Active: {settings.mpesaPaymentType === 'paybill' ? 'Paybill Mode' : settings.mpesaPaymentType === 'both' ? 'Till + Paybill' : 'Buy Goods Till'}
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-label-md text-label-md text-on-surface font-semibold mb-1">
-                M-Pesa Buy Goods Till Number
-              </label>
+          {/* Payment Method Selector */}
+          <div>
+            <label className="block font-label-md text-label-md text-on-surface font-semibold mb-2">
+              Select Settlement Channel Display Mode *
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setSettings((prev) => ({ ...prev, mpesaPaymentType: 'buygoods' }))}
+                className={`p-4 rounded-xl border text-left transition-all ${
+                  (settings.mpesaPaymentType || 'buygoods') === 'buygoods'
+                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20 text-on-surface'
+                    : 'border-border-hairline bg-surface-subtle text-on-surface-variant hover:border-primary/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[20px]">store</span>
+                    <span className="font-label-md font-bold text-on-surface">Buy Goods Till</span>
+                  </div>
+                  <input
+                    type="radio"
+                    name="mpesaPaymentType"
+                    value="buygoods"
+                    checked={(settings.mpesaPaymentType || 'buygoods') === 'buygoods'}
+                    onChange={handleChange}
+                    className="accent-primary"
+                  />
+                </div>
+                <p className="text-body-xs text-on-surface-variant">
+                  Clients enter Till Number only. Standard for direct ambulatory field visits &amp; Agro-Vet counter.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSettings((prev) => ({ ...prev, mpesaPaymentType: 'paybill' }))}
+                className={`p-4 rounded-xl border text-left transition-all ${
+                  settings.mpesaPaymentType === 'paybill'
+                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20 text-on-surface'
+                    : 'border-border-hairline bg-surface-subtle text-on-surface-variant hover:border-primary/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[20px]">receipt_long</span>
+                    <span className="font-label-md font-bold text-on-surface">M-Pesa Paybill</span>
+                  </div>
+                  <input
+                    type="radio"
+                    name="mpesaPaymentType"
+                    value="paybill"
+                    checked={settings.mpesaPaymentType === 'paybill'}
+                    onChange={handleChange}
+                    className="accent-primary"
+                  />
+                </div>
+                <p className="text-body-xs text-on-surface-variant">
+                  Clients enter Paybill Business Number and designated Account Number. Ideal for corporate farm accounts.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSettings((prev) => ({ ...prev, mpesaPaymentType: 'both' }))}
+                className={`p-4 rounded-xl border text-left transition-all ${
+                  settings.mpesaPaymentType === 'both'
+                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20 text-on-surface'
+                    : 'border-border-hairline bg-surface-subtle text-on-surface-variant hover:border-primary/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[20px]">account_balance_wallet</span>
+                    <span className="font-label-md font-bold text-on-surface">Both (Till &amp; Paybill)</span>
+                  </div>
+                  <input
+                    type="radio"
+                    name="mpesaPaymentType"
+                    value="both"
+                    checked={settings.mpesaPaymentType === 'both'}
+                    onChange={handleChange}
+                    className="accent-primary"
+                  />
+                </div>
+                <p className="text-body-xs text-on-surface-variant">
+                  Displays both Buy Goods Till number and Paybill number side by side across public contact portals.
+                </p>
+              </button>
+            </div>
+          </div>
+
+          {/* Form Fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+            {/* Till Number */}
+            <div
+              className={`p-4 rounded-xl border transition-all ${
+                settings.mpesaPaymentType === 'paybill'
+                  ? 'bg-surface-subtle/50 border-border-hairline opacity-75'
+                  : 'bg-surface-subtle border-primary/30 ring-1 ring-primary/20'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <label className="block font-label-md text-label-md text-on-surface font-semibold">
+                  Buy Goods Till No. *
+                </label>
+                <span className="text-[10px] uppercase font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                  Till
+                </span>
+              </div>
               <input
                 type="text"
                 name="mpesaTill"
-                value={settings.mpesaTill}
+                value={settings.mpesaTill || ''}
                 onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md font-mono font-bold focus:bg-surface-clinical focus:border-primary"
+                placeholder="894022"
+                className="w-full h-11 px-4 rounded-xl bg-surface-clinical border border-border-hairline text-body-md font-mono font-bold focus:border-primary"
               />
+              <span className="text-[11px] text-outline mt-1 block">
+                5 or 6 digit Safaricom Till number
+              </span>
             </div>
 
-            <div>
+            {/* Paybill Number */}
+            <div
+              className={`p-4 rounded-xl border transition-all ${
+                (settings.mpesaPaymentType || 'buygoods') === 'buygoods'
+                  ? 'bg-surface-subtle/50 border-border-hairline opacity-75'
+                  : 'bg-surface-subtle border-primary/30 ring-1 ring-primary/20'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <label className="block font-label-md text-label-md text-on-surface font-semibold">
+                  M-Pesa Paybill Number *
+                </label>
+                <span className="text-[10px] uppercase font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                  Paybill
+                </span>
+              </div>
+              <input
+                type="text"
+                name="mpesaPaybill"
+                value={settings.mpesaPaybill || ''}
+                onChange={handleChange}
+                placeholder="894022"
+                className="w-full h-11 px-4 rounded-xl bg-surface-clinical border border-border-hairline text-body-md font-mono font-bold focus:border-primary"
+              />
+              <span className="text-[11px] text-outline mt-1 block">
+                Business Number entered in Paybill
+              </span>
+            </div>
+
+            {/* Account Number */}
+            <div
+              className={`p-4 rounded-xl border transition-all ${
+                (settings.mpesaPaymentType || 'buygoods') === 'buygoods'
+                  ? 'bg-surface-subtle/50 border-border-hairline opacity-75'
+                  : 'bg-surface-subtle border-primary/30 ring-1 ring-primary/20'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <label className="block font-label-md text-label-md text-on-surface font-semibold">
+                  Paybill Account Number *
+                </label>
+                <span className="text-[10px] uppercase font-bold text-secondary bg-surface-tinted px-1.5 py-0.5 rounded">
+                  Account No
+                </span>
+              </div>
+              <input
+                type="text"
+                name="mpesaAccount"
+                value={settings.mpesaAccount || ''}
+                onChange={handleChange}
+                placeholder="ANIHEAL"
+                className="w-full h-11 px-4 rounded-xl bg-surface-clinical border border-border-hairline text-body-md font-semibold focus:border-primary"
+              />
+              <span className="text-[11px] text-outline mt-1 block">
+                Account reference (e.g. ANIHEAL or Farm Name)
+              </span>
+            </div>
+
+            {/* Official Registered Business Name (Used for both) */}
+            <div className="sm:col-span-2 lg:col-span-3 p-4 rounded-xl bg-surface-subtle border border-border-hairline">
               <label className="block font-label-md text-label-md text-on-surface font-semibold mb-1">
-                Official Account Name
+                Official Registered Business / Merchant Name *
               </label>
               <input
                 type="text"
                 name="mpesaTillName"
-                value={settings.mpesaTillName}
+                value={settings.mpesaTillName || ''}
                 onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-surface-subtle border border-border-hairline text-body-md font-semibold focus:bg-surface-clinical focus:border-primary"
+                placeholder="AniHeal Agro-Vet Ltd"
+                className="w-full h-11 px-4 rounded-xl bg-surface-clinical border border-border-hairline text-body-md font-semibold focus:border-primary"
               />
+              <span className="text-[11px] text-outline mt-1 block">
+                The official business name confirmed on customer M-Pesa prompt (e.g., AniHeal Agro-Vet Ltd)
+              </span>
+            </div>
+          </div>
+
+          {/* Real-time Preview Banner */}
+          <div className="p-4 rounded-xl bg-surface-tinted border border-border-accent/40 space-y-2">
+            <div className="flex items-center gap-2 text-primary font-semibold text-label-sm uppercase tracking-wider">
+              <span className="material-symbols-outlined text-[18px]">visibility</span>
+              <span>Live Public Preview (As rendered on Contact Us &amp; Billing Ribbons):</span>
+            </div>
+            <div className="p-4 rounded-xl bg-surface-clinical shadow-sm border border-border-hairline flex items-start gap-3.5 max-w-md">
+              <div className="p-2.5 rounded-lg bg-surface-tinted text-kvb-gold">
+                <span className="material-symbols-outlined text-[24px]">payments</span>
+              </div>
+              <div>
+                <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-bold">
+                  {settings.mpesaPaymentType === 'paybill'
+                    ? 'Direct Paybill & Farm Billing'
+                    : settings.mpesaPaymentType === 'both'
+                    ? 'Direct Till & Paybill Billing'
+                    : 'Direct Till & Farm Billing'}
+                </span>
+                <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
+                  {settings.mpesaPaymentType === 'paybill'
+                    ? `M-Pesa Paybill: ${settings.mpesaPaybill || '894022'}`
+                    : settings.mpesaPaymentType === 'both'
+                    ? `Till: ${settings.mpesaTill || '894022'} • Paybill: ${settings.mpesaPaybill || '894022'}`
+                    : `M-Pesa Buy Goods: ${settings.mpesaTill || '894022'}`}
+                </span>
+                <span className="font-body-sm text-body-sm text-on-surface-variant block mt-0.5">
+                  {settings.mpesaPaymentType === 'paybill'
+                    ? `Account No: ${settings.mpesaAccount || 'ANIHEAL'} • ${settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}`
+                    : settings.mpesaPaymentType === 'both'
+                    ? `Acc: ${settings.mpesaAccount || 'ANIHEAL'} • Official: ${settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}`
+                    : `Official Name: ${settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}`}
+                </span>
+              </div>
             </div>
           </div>
         </div>
