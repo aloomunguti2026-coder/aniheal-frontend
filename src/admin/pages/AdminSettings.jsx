@@ -17,8 +17,8 @@ export default function AdminSettings() {
     careersEmail: 'careers@aniheal.co.ke',
     mpesaPaymentType: 'buygoods',
     mpesaTill: '894022',
-    mpesaPaybill: '894022',
-    mpesaAccount: 'ANIHEAL',
+    mpesaPaybill: '522533',
+    mpesaAccount: '81510310',
     mpesaTillName: 'AniHeal Agro-Vet Ltd',
     whatsappNumber: '254700264432',
     headquartersAddress: 'Veterinary Complex, Kabete Rd, Nairobi, Kenya',
@@ -584,11 +584,11 @@ export default function AdminSettings() {
                 name="mpesaPaybill"
                 value={settings.mpesaPaybill || ''}
                 onChange={handleChange}
-                placeholder="894022"
+                placeholder="522533"
                 className="w-full h-11 px-4 rounded-xl bg-surface-clinical border border-border-hairline text-body-md font-mono font-bold focus:border-primary"
               />
               <span className="text-[11px] text-outline mt-1 block">
-                Business Number entered in Paybill
+                Business Number entered in Paybill (e.g. 522533)
               </span>
             </div>
 
@@ -613,11 +613,11 @@ export default function AdminSettings() {
                 name="mpesaAccount"
                 value={settings.mpesaAccount || ''}
                 onChange={handleChange}
-                placeholder="ANIHEAL"
+                placeholder="81510310"
                 className="w-full h-11 px-4 rounded-xl bg-surface-clinical border border-border-hairline text-body-md font-semibold focus:border-primary"
               />
               <span className="text-[11px] text-outline mt-1 block">
-                Account reference (e.g. ANIHEAL or Farm Name)
+                Account reference (e.g. 81510310)
               </span>
             </div>
 
@@ -661,10 +661,10 @@ export default function AdminSettings() {
                 {settings.mpesaPaymentType === 'paybill' ? (
                   <div className="space-y-0.5 mt-0.5">
                     <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
-                      Paybill No: {settings.mpesaPaybill || '894022'}
+                      Paybill No: {settings.mpesaPaybill || '522533'}
                     </span>
                     <span className="font-headline-sm text-headline-sm text-primary block font-bold">
-                      Account No: {settings.mpesaAccount || 'ANIHEAL'}
+                      Account No: {settings.mpesaAccount || '81510310'}
                     </span>
                     <span className="font-body-sm text-body-sm text-on-surface-variant block mt-1">
                       Official Name: {settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}
@@ -673,10 +673,10 @@ export default function AdminSettings() {
                 ) : settings.mpesaPaymentType === 'both' ? (
                   <div className="space-y-0.5 mt-0.5">
                     <span className="font-headline-sm text-headline-sm text-on-surface block font-bold">
-                      Till: {settings.mpesaTill || '894022'} • Paybill: {settings.mpesaPaybill || '894022'}
+                      Till: {settings.mpesaTill || '894022'} • Paybill: {settings.mpesaPaybill || '522533'}
                     </span>
                     <span className="font-body-md text-body-md text-primary block font-bold">
-                      Account No: {settings.mpesaAccount || 'ANIHEAL'}
+                      Account No: {settings.mpesaAccount || '81510310'}
                     </span>
                     <span className="font-body-sm text-body-sm text-on-surface-variant block mt-1">
                       Official Name: {settings.mpesaTillName || 'AniHeal Agro-Vet Ltd'}

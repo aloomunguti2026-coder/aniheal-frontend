@@ -30,8 +30,8 @@ export default function Products() {
 
   const mpesaPaymentType = settings?.mpesaPaymentType || 'buygoods';
   const mpesaTill = settings?.mpesaTill || '894022';
-  const mpesaPaybill = settings?.mpesaPaybill || '894022';
-  const mpesaAccount = settings?.mpesaAccount || 'ANIHEAL';
+  const mpesaPaybill = settings?.mpesaPaybill || '522533';
+  const mpesaAccount = settings?.mpesaAccount || '81510310';
   const mpesaSummary =
     mpesaPaymentType === 'paybill'
       ? `Paybill ${mpesaPaybill} (Acc: ${mpesaAccount})`

@@ -49,8 +49,8 @@ export default function ContactUs() {
 
   const mpesaPaymentType = settings?.mpesaPaymentType || 'buygoods';
   const mpesaTill = settings?.mpesaTill || '894022';
-  const mpesaPaybill = settings?.mpesaPaybill || '894022';
-  const mpesaAccount = settings?.mpesaAccount || 'ANIHEAL';
+  const mpesaPaybill = settings?.mpesaPaybill || '522533';
+  const mpesaAccount = settings?.mpesaAccount || '81510310';
   const mpesaTillName = settings?.mpesaTillName || 'AniHeal Agro-Vet Ltd';
 
   const [copiedType, setCopiedType] = useState(null);
