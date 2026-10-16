@@ -6,9 +6,11 @@ import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
 
 export default function Products() {
-  const { settings } = useContent();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { settings, products: dbProducts } = useContent();
+  const [products, setProducts] = useState(() =>
+    Array.isArray(dbProducts) && dbProducts.length > 0 ? dbProducts : []
+  );
+  const [loading, setLoading] = useState(() => !(Array.isArray(dbProducts) && dbProducts.length > 0));
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,12 +65,14 @@ export default function Products() {
       const res = await productService.getProducts(params);
       if (res.success) {
         setProducts(res.data || []);
-      } else {
+      } else if (products.length === 0) {
         setError('Unable to load company products.');
       }
     } catch (err) {
       console.error('Error fetching products:', err);
-      setError('Unable to reach AniHeal product service.');
+      if (products.length === 0) {
+        setError('Unable to reach AniHeal product service.');
+      }
     } finally {
       setLoading(false);
     }

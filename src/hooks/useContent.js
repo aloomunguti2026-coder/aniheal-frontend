@@ -1,10 +1,21 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { API_BASE_URL } from '../services/api';
 import { subscribeToContentUpdates } from '../services/eventBus';
+import defaultContent from '../data/defaultContent.json';
 
 const CACHE_KEY = 'aniheal_persisted_content_v3';
 
+export const ContentContext = createContext(null);
+
+export function ContentProvider({ value, children }) {
+  return React.createElement(ContentContext.Provider, { value }, children);
+}
+
 const loadCache = () => {
+  if (typeof window === 'undefined') return null;
+  if (window.__ANIHEAL_INITIAL_CONTENT__) {
+    return window.__ANIHEAL_INITIAL_CONTENT__;
+  }
   try {
     const raw = localStorage.getItem(CACHE_KEY);
     if (raw) {
@@ -17,6 +28,7 @@ const loadCache = () => {
 };
 
 const saveCache = (content) => {
+  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(content));
   } catch (e) {
@@ -25,28 +37,41 @@ const saveCache = (content) => {
 };
 
 export function useContent() {
+  const contextValue = useContext(ContentContext);
+  if (contextValue) {
+    return {
+      refreshContent: async () => {},
+      ...contextValue,
+    };
+  }
+
   const initialCache = useRef(loadCache()).current;
+  const baseContent = initialCache || defaultContent;
 
   const [data, setData] = useState({
-    settings: initialCache?.settings || null,
-    blocks: initialCache?.blocks || {},
-    services: Array.isArray(initialCache?.services) ? initialCache.services : [],
-    pricing: Array.isArray(initialCache?.pricing) ? initialCache.pricing : [],
-    team: Array.isArray(initialCache?.team) ? initialCache.team : [],
-    hubs: Array.isArray(initialCache?.hubs) ? initialCache.hubs : [],
-    faqs: Array.isArray(initialCache?.faqs) ? initialCache.faqs : [],
-    research: Array.isArray(initialCache?.research) ? initialCache.research : [],
-    collaborations: Array.isArray(initialCache?.collaborations) ? initialCache.collaborations : [],
-    loading: !initialCache,
+    settings: baseContent?.settings || null,
+    blocks: baseContent?.blocks || {},
+    services: Array.isArray(baseContent?.services) ? baseContent.services : [],
+    products: Array.isArray(baseContent?.products) ? baseContent.products : [],
+    pricing: Array.isArray(baseContent?.pricing) ? baseContent.pricing : [],
+    team: Array.isArray(baseContent?.team) ? baseContent.team : [],
+    hubs: Array.isArray(baseContent?.hubs) ? baseContent.hubs : [],
+    faqs: Array.isArray(baseContent?.faqs) ? baseContent.faqs : [],
+    research: Array.isArray(baseContent?.research) ? baseContent.research : [],
+    collaborations: Array.isArray(baseContent?.collaborations) ? baseContent.collaborations : [],
+    loading: false,
     error: null,
   });
 
   const fetchAllContent = useCallback(async () => {
+    if (typeof window === 'undefined') return;
+
     try {
       const [
         settingsRes,
         blocksRes,
         servicesRes,
+        productsRes,
         pricingRes,
         teamRes,
         hubsRes,
@@ -57,6 +82,7 @@ export function useContent() {
         fetch(`${API_BASE_URL}/public/settings`),
         fetch(`${API_BASE_URL}/public/content/all`),
         fetch(`${API_BASE_URL}/public/services`),
+        fetch(`${API_BASE_URL}/products`),
         fetch(`${API_BASE_URL}/public/pricing-plans`),
         fetch(`${API_BASE_URL}/public/team`),
         fetch(`${API_BASE_URL}/public/hubs`),
@@ -82,6 +108,7 @@ export function useContent() {
       const settingsResData = await extractResult(settingsRes);
       const blocksResData = await extractResult(blocksRes);
       const servicesResData = await extractResult(servicesRes);
+      const productsResData = await extractResult(productsRes);
       const pricingResData = await extractResult(pricingRes);
       const teamResData = await extractResult(teamRes);
       const hubsResData = await extractResult(hubsRes);
@@ -114,6 +141,9 @@ export function useContent() {
           services: servicesResData.success
             ? (Array.isArray(servicesResData.data) ? servicesResData.data : [])
             : prev.services,
+          products: productsResData.success
+            ? (Array.isArray(productsResData.data) ? productsResData.data : [])
+            : prev.products,
           pricing: pricingResData.success
             ? (Array.isArray(pricingResData.data) ? pricingResData.data : [])
             : prev.pricing,

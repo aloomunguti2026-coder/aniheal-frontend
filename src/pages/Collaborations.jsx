@@ -3,10 +3,14 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
 import collaborationService from '../services/collaborationService';
+import { useContent } from '../hooks/useContent';
 
 export default function Collaborations() {
-  const [collaborations, setCollaborations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { collaborations: dbCollaborations } = useContent();
+  const [collaborations, setCollaborations] = useState(() =>
+    Array.isArray(dbCollaborations) && dbCollaborations.length > 0 ? dbCollaborations : []
+  );
+  const [loading, setLoading] = useState(() => !(Array.isArray(dbCollaborations) && dbCollaborations.length > 0));
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,10 +49,14 @@ export default function Collaborations() {
       const res = await collaborationService.getCollaborations(params);
       if (res && res.success) {
         setCollaborations(res.data || []);
+      } else if (collaborations.length === 0) {
+        setError('Unable to load collaboration stories. Please try again.');
       }
     } catch (err) {
       console.error('Failed to load collaborations:', err);
-      setError('Unable to load collaboration stories. Please try again.');
+      if (collaborations.length === 0) {
+        setError('Unable to load collaboration stories. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

@@ -7,10 +7,15 @@ import Footer from '../components/navigation/Footer';
 
 export default function ProductDetail() {
   const { slug } = useParams();
-  const { settings } = useContent();
+  const { settings, products } = useContent();
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState(() => {
+    if (products && Array.isArray(products)) {
+      return products.find((p) => p.slug === slug || p._id === slug) || null;
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => !product);
   const [error, setError] = useState('');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -52,12 +57,14 @@ export default function ProductDetail() {
       const res = await productService.getProductBySlug(slug);
       if (res && res.success && res.data) {
         setProduct(res.data);
-      } else {
+      } else if (!product) {
         setError('Veterinary product not found in catalog.');
       }
     } catch (err) {
       console.error('Error fetching product by slug:', err);
-      setError('Unable to load product details. Please verify your connection.');
+      if (!product) {
+        setError('Unable to load product details. Please verify your connection.');
+      }
     } finally {
       setLoading(false);
     }

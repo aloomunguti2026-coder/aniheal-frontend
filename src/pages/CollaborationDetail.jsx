@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import collaborationService from '../services/collaborationService';
+import { useContent } from '../hooks/useContent';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
 
 export default function CollaborationDetail() {
   const { slug } = useParams();
+  const { collaborations } = useContent();
 
-  const [story, setStory] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [story, setStory] = useState(() => {
+    if (collaborations && Array.isArray(collaborations)) {
+      return collaborations.find((c) => c.slug === slug || c._id === slug) || null;
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => !story);
   const [error, setError] = useState('');
 
   // Comment submission state
@@ -31,12 +38,14 @@ export default function CollaborationDetail() {
       const res = await collaborationService.getCollaborationBySlug(slug);
       if (res && res.success && res.data) {
         setStory(res.data);
-      } else {
+      } else if (!story) {
         setError('Collaboration article or research story not found.');
       }
     } catch (err) {
       console.error('Error fetching collaboration details:', err);
-      setError('Unable to load collaboration article. Please verify your connection.');
+      if (!story) {
+        setError('Unable to load collaboration article. Please verify your connection.');
+      }
     } finally {
       setLoading(false);
     }

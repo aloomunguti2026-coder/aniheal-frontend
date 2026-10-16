@@ -1,57 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import serviceService from '../services/serviceService';
+import { useContent } from '../hooks/useContent';
 import Navbar from '../components/navigation/Navbar';
 import Footer from '../components/navigation/Footer';
 
 export default function ServiceDetail() {
   const { slug } = useParams();
-  const [service, setService] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { services } = useContent();
+
+  const [service, setService] = useState(() => {
+    if (services && Array.isArray(services)) {
+      return services.find((s) => s.slug === slug || s._id === slug || s.id === slug) || null;
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => !service);
   const [error, setError] = useState('');
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   useEffect(() => {
     fetchServiceDetail();
-    window.scrollTo(0, 0);
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
   }, [slug]);
+
+  useEffect(() => {
+    if (service && typeof document !== 'undefined') {
+      const prevTitle = document.title;
+      document.title = `${service.title || service.name} | AniHeal Clinical Services Kenya`;
+
+      let metaDesc = document.querySelector('meta[name="description"]');
+      let createdDesc = false;
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        document.head.appendChild(metaDesc);
+        createdDesc = true;
+      }
+      const prevDesc = metaDesc.getAttribute('content');
+      metaDesc.setAttribute(
+        'content',
+        service.description?.slice(0, 155) ||
+          `${service.title || service.name} - KVB accredited clinical protocol with farm dispatch across Kenya.`
+      );
+
+      return () => {
+        document.title = prevTitle;
+        if (createdDesc) {
+          metaDesc.remove();
+        } else if (prevDesc) {
+          metaDesc.setAttribute('content', prevDesc);
+        }
+      };
+    }
+  }, [service]);
 
   const fetchServiceDetail = async () => {
     try {
       setLoading(true);
       setError('');
       const res = await serviceService.getServiceBySlug(slug);
-      if (res.success && res.data) {
+      if (res && res.success && res.data) {
         setService(res.data);
-      } else {
+      } else if (!service) {
         // Fallback to persisted cache if backend returned error
-        const cache = localStorage.getItem('aniheal_persisted_content_v2');
-        if (cache) {
-          const parsed = JSON.parse(cache);
-          const found = (parsed.services || []).find((s) => s.slug === slug || s._id === slug || s.id === slug);
-          if (found) {
-            setService(found);
-            return;
+        if (typeof window !== 'undefined') {
+          const cache = localStorage.getItem('aniheal_persisted_content_v2');
+          if (cache) {
+            try {
+              const parsed = JSON.parse(cache);
+              const found = (parsed.services || []).find((s) => s.slug === slug || s._id === slug || s.id === slug);
+              if (found) {
+                setService(found);
+                return;
+              }
+            } catch (e) {
+              console.warn('Unable to parse cached content:', e);
+            }
           }
         }
         setError('Clinical service protocol not found.');
       }
     } catch (err) {
       console.error('Failed to load service details from network, trying cache:', err);
-      const cache = localStorage.getItem('aniheal_persisted_content_v2');
-      if (cache) {
-        try {
-          const parsed = JSON.parse(cache);
-          const found = (parsed.services || []).find((s) => s.slug === slug || s._id === slug || s.id === slug);
-          if (found) {
-            setService(found);
-            return;
+      if (!service) {
+        if (typeof window !== 'undefined') {
+          const cache = localStorage.getItem('aniheal_persisted_content_v2');
+          if (cache) {
+            try {
+              const parsed = JSON.parse(cache);
+              const found = (parsed.services || []).find((s) => s.slug === slug || s._id === slug || s.id === slug);
+              if (found) {
+                setService(found);
+                return;
+              }
+            } catch (e) {
+              console.warn('Failed to parse cache:', e);
+            }
           }
-        } catch (e) {
-          console.warn('Failed to parse cache:', e);
         }
+        setError('Unable to load clinical service protocol details.');
       }
-      setError('Unable to load clinical service protocol details.');
     } finally {
       setLoading(false);
     }
