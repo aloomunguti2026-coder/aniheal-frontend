@@ -7,10 +7,13 @@ const BookAppointment = lazy(() => import('../pages/BookAppointment'));
 const Services = lazy(() => import('../pages/Services'));
 const ServiceDetail = lazy(() => import('../pages/ServiceDetail'));
 const Products = lazy(() => import('../pages/Products'));
+const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 const AnimalInsurance = lazy(() => import('../pages/AnimalInsurance'));
 const Collaborations = lazy(() => import('../pages/Collaborations'));
+const CollaborationDetail = lazy(() => import('../pages/CollaborationDetail'));
 const OurTeam = lazy(() => import('../pages/OurTeam'));
 const ContactUs = lazy(() => import('../pages/ContactUs'));
+const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Admin Pages & Guards
 const AdminLogin = lazy(() => import('../admin/pages/AdminLogin'));
@@ -64,9 +67,11 @@ export default function AppRoutes() {
         <Route path="/services/:slug" element={<ServiceDetail />} />
         <Route path="/clinical-services" element={<Navigate to="/services" replace />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/products/:slug" element={<ProductDetail />} />
         <Route path="/animal-insurance" element={<AnimalInsurance />} />
         <Route path="/insurance" element={<Navigate to="/animal-insurance" replace />} />
         <Route path="/collaborations" element={<Collaborations />} />
+        <Route path="/collaborations/:slug" element={<CollaborationDetail />} />
         <Route path="/partnerships" element={<Navigate to="/collaborations" replace />} />
         <Route path="/appointment-booking" element={<BookAppointment />} />
         <Route path="/book-appointment" element={<Navigate to="/appointment-booking" replace />} />
@@ -112,7 +117,7 @@ export default function AppRoutes() {
         </Route>
 
         {/* Fallback */}
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
     </>

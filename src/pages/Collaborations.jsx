@@ -230,7 +230,9 @@ export default function Collaborations() {
                       </div>
                     )}
                     <h2 className="font-headline-sm text-[20px] font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                      {item.header}
+                      <Link to={`/collaborations/${item.slug || item._id}`} className="hover:underline">
+                        {item.header}
+                      </Link>
                     </h2>
                     <p className="mt-3 text-body-sm text-on-surface-variant line-clamp-3">
                       {item.summary || (item.content ? item.content.slice(0, 140) + '...' : '')}
@@ -243,13 +245,13 @@ export default function Collaborations() {
                       <span className="material-symbols-outlined text-[16px]">chat_bubble</span>
                       <span>{(item.comments || []).length} comments</span>
                     </div>
-                    <button
-                      onClick={() => handleOpenStory(item)}
+                    <Link
+                      to={`/collaborations/${item.slug || item._id}`}
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-tinted text-primary font-bold text-label-md hover:bg-primary hover:text-on-primary transition-colors"
                     >
                       <span>Read Story</span>
                       <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </article>

@@ -226,7 +226,10 @@ export default function Products() {
                   className="group flex flex-col bg-surface-clinical rounded-2xl border border-border-hairline hover:border-primary/40 hover:shadow-md transition-all overflow-hidden"
                 >
                   {/* Product Image */}
-                  <div className="relative aspect-4/3 bg-surface-tinted/40 overflow-hidden flex items-center justify-center">
+                  <Link
+                    to={`/products/${product.slug || product._id}`}
+                    className="relative aspect-4/3 bg-surface-tinted/40 overflow-hidden flex items-center justify-center block"
+                  >
                     {product.images && product.images.length > 0 && product.images[0]?.url ? (
                       <img
                         src={product.images[0].url}
@@ -251,7 +254,7 @@ export default function Products() {
                         On Order
                       </span>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Content */}
                   <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
@@ -260,7 +263,9 @@ export default function Products() {
                         SKU: {product.sku}
                       </div>
                       <h3 className="font-headline-sm text-lg font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
-                        {product.name}
+                        <Link to={`/products/${product.slug || product._id}`} className="hover:underline">
+                          {product.name}
+                        </Link>
                       </h3>
                       <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
                         {product.description}
@@ -281,21 +286,31 @@ export default function Products() {
                       )}
                     </div>
 
-                    <div className="pt-3 border-t border-border-hairline flex items-center justify-between gap-3">
+                    <div className="pt-3 border-t border-border-hairline flex items-center justify-between gap-2">
                       <div>
                         <span className="text-label-sm text-outline font-medium block">Price</span>
-                        <span className="font-headline-sm text-xl font-bold text-primary">
+                        <span className="font-headline-sm text-lg font-bold text-primary">
                           KES {Number(product.price).toLocaleString()}
                         </span>
                       </div>
 
-                      <button
-                        onClick={() => handleOpenOrder(product)}
-                        className="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-secondary transition-colors shadow-sm flex items-center gap-1.5"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
-                        <span>Order</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/products/${product.slug || product._id}`}
+                          className="px-3 py-2 rounded-xl bg-surface-tinted text-primary font-label-md text-xs font-bold hover:bg-primary hover:text-on-primary transition-colors shadow-xs"
+                          title="View Product Specifications"
+                        >
+                          Details
+                        </Link>
+
+                        <button
+                          onClick={() => handleOpenOrder(product)}
+                          className="px-3.5 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-secondary transition-colors shadow-sm flex items-center gap-1"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">shopping_cart</span>
+                          <span>Order</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
