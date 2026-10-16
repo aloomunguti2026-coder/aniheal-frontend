@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /admin
 
-Sitemap: https://aniheal.co.ke/sitemap.xml
+Sitemap: https://www.aniheal.co.ke/sitemap.xml

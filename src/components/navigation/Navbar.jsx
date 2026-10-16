@@ -22,14 +22,11 @@ export default function Navbar() {
   const isHome = location.pathname === '/';
   const isServicesActive =
     location.pathname.startsWith('/services') ||
-    location.pathname.startsWith('/clinical-services') ||
     location.pathname.startsWith('/products') ||
     location.pathname.startsWith('/animal-insurance') ||
-    location.pathname.startsWith('/insurance') ||
-    location.pathname.startsWith('/collaborations') ||
-    location.pathname.startsWith('/partnerships');
-  const isTeam = location.pathname === '/our-team' || location.pathname === '/team';
-  const isContact = location.pathname === '/contact-us' || location.pathname === '/contact';
+    location.pathname.startsWith('/collaborations');
+  const isTeam = location.pathname === '/our-team';
+  const isContact = location.pathname === '/contact-us';
 
   // Live published Clinical Services from MongoDB
   const publishedServices = Array.isArray(dbServices)

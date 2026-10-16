@@ -1,4 +1,36 @@
 {
+  "redirects": [
+    {
+      "source": "/clinical-services",
+      "destination": "/services",
+      "permanent": true
+    },
+    {
+      "source": "/insurance",
+      "destination": "/animal-insurance",
+      "permanent": true
+    },
+    {
+      "source": "/partnerships",
+      "destination": "/collaborations",
+      "permanent": true
+    },
+    {
+      "source": "/book-appointment",
+      "destination": "/appointment-booking",
+      "permanent": true
+    },
+    {
+      "source": "/team",
+      "destination": "/our-team",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact-us",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Public Pages
 const Home = lazy(() => import('../pages/Home'));
@@ -62,18 +62,18 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/services" element={<Services />} />
         <Route path="/services/:slug" element={<ServiceDetail />} />
-        <Route path="/clinical-services" element={<Services />} />
+        <Route path="/clinical-services" element={<Navigate to="/services" replace />} />
         <Route path="/products" element={<Products />} />
         <Route path="/animal-insurance" element={<AnimalInsurance />} />
-        <Route path="/insurance" element={<AnimalInsurance />} />
+        <Route path="/insurance" element={<Navigate to="/animal-insurance" replace />} />
         <Route path="/collaborations" element={<Collaborations />} />
-        <Route path="/partnerships" element={<Collaborations />} />
+        <Route path="/partnerships" element={<Navigate to="/collaborations" replace />} />
         <Route path="/appointment-booking" element={<BookAppointment />} />
-        <Route path="/book-appointment" element={<BookAppointment />} />
+        <Route path="/book-appointment" element={<Navigate to="/appointment-booking" replace />} />
         <Route path="/our-team" element={<OurTeam />} />
-        <Route path="/team" element={<OurTeam />} />
+        <Route path="/team" element={<Navigate to="/our-team" replace />} />
         <Route path="/contact-us" element={<ContactUs />} />
-        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/contact" element={<Navigate to="/contact-us" replace />} />
 
         {/* Admin Authentication Route */}
         <Route path="/admin/login" element={<AdminLogin />} />
