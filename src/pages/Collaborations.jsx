@@ -292,9 +292,9 @@ export default function Collaborations() {
                     </span>
                   )}
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">
                   {activeStory.header}
-                </h1>
+                </h2>
               </div>
             </div>
 
