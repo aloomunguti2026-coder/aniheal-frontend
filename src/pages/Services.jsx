@@ -53,66 +53,6 @@ export default function Services() {
     return cat.includes(activeFilter.replace('-', '')) || cat.includes(activeFilter);
   });
 
-  const defaultPricing = [
-    {
-      _id: '1',
-      name: 'Basic Farm Retainer',
-      targetSegment: 'Smallholder & Homestead (1-10 head)',
-      price: 'KES 8,500',
-      period: '/ month',
-      description:
-        'Continuous preventative surveillance for small dairy operations and breeding pens (1-10 head).',
-      badge: 'Billed quarterly or annually',
-      isFeatured: false,
-      buttonText: 'Subscribe to Basic',
-      features: [
-        'Monthly herd health & mastitis audits',
-        'Vaccination calendar oversight',
-        'Subsidized ambulatory callout fees',
-        'Direct WhatsApp vet support group',
-      ],
-    },
-    {
-      _id: '2',
-      name: 'Commercial Dairy Protocol',
-      targetSegment: 'Commercial Production (11-100+ head)',
-      price: 'KES 24,000',
-      period: '/ month',
-      description:
-        'Complete herd health, reproductive scheduling, and metabolic surveillance (11-100+ head).',
-      badge: 'Includes bi-weekly on-site surgeon residency',
-      isFeatured: true,
-      buttonText: 'Enroll Commercial Protocol',
-      features: [
-        'Bi-weekly ultrasound reproductive exams',
-        'TMR least-cost nutritional formulation',
-        'Full priority ambulatory response (zero call fee)',
-        'Pre-underwriting insurance certification',
-        'Quarterly farm-worker One Health hygiene training',
-      ],
-    },
-    {
-      _id: '3',
-      name: 'Emergency Ambulatory',
-      targetSegment: 'On-Call Contingency',
-      price: 'KES 5,000',
-      period: '+ mileage',
-      description:
-        'Direct dispatch for non-retainer emergency surgical cases, dystocia, or toxic ingestion.',
-      badge: 'Diagnostic medications billed at cost',
-      isFeatured: false,
-      buttonText: 'Request Emergency Unit',
-      features: [
-        'Rapid mobile field unit mobilization',
-        'Emergency surgical intervention & anesthesia',
-        'Cold-chain antivenom & antitoxin stock',
-        'Official statutory notification if epizootic',
-      ],
-    },
-  ];
-
-  const pricingList = dbPricing && dbPricing.length > 0 ? dbPricing : defaultPricing;
-
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased">
       <Navbar />

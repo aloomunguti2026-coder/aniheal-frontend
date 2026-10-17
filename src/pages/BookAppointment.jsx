@@ -247,54 +247,8 @@ export default function BookAppointment() {
     { id: 'equine', label: 'Equine / Asses', sub: 'Draft & Riding', icon: 'pest_control_rodent' },
   ];
 
-  const defaultServices = [
-    {
-      id: 'acute_treatment',
-      title: 'Sick Animal / Acute Treatment',
-      desc: 'High fever, bloat, downer cow, dystocia, or respiratory distress.',
-      icon: 'vital_signs',
-      iconColor: 'text-error',
-    },
-    {
-      id: 'vaccination',
-      title: 'Routine Herd Vaccination',
-      desc: 'FMD, Anthrax, Blackquarter, Lumpy Skin, Newcastle disease.',
-      icon: 'vaccines',
-      iconColor: 'text-primary',
-    },
-    {
-      id: 'ultrasound_breeding',
-      title: 'Ultrasound / Fertility Check',
-      desc: 'Early pregnancy diagnosis (30d+), ovary profiling, sync protocols.',
-      icon: 'female',
-      iconColor: 'text-secondary',
-    },
-    {
-      id: 'surgery',
-      title: 'Surgical Intervention',
-      desc: 'Field caesarean, dehorning, wound revision, rumenotomy.',
-      icon: 'chips',
-      iconColor: 'text-primary',
-    },
-    {
-      id: 'nutrition_audit',
-      title: 'Feed & Nutrition Audit',
-      desc: 'Silage testing, mineral deficieny analysis, TMR ration balancing.',
-      icon: 'nutrition',
-      iconColor: 'text-primary',
-    },
-    {
-      id: 'post_mortem',
-      title: 'Post-Mortem / Pathology',
-      desc: 'Rapid herd mortality investigation & lab histology sampling.',
-      icon: 'deceased',
-      iconColor: 'text-error',
-    },
-  ];
-
-  const serviceOptions =
-    dbServices && dbServices.length > 0
-      ? dbServices.map((s) => ({
+  const serviceOptions = Array.isArray(dbServices)
+    ? dbServices.map((s) => ({
         id: s.slug || s._id || s.title?.toLowerCase().replace(/\s+/g, '_'),
         title: s.title,
         desc: s.description || s.summary || '',
@@ -306,17 +260,9 @@ export default function BookAppointment() {
               ? 'text-secondary'
               : 'text-primary',
       }))
-      : defaultServices;
+    : [];
 
-  const defaultHubs = [
-    { name: 'Nairobi Central Headquarters & Referral Hub', county: 'Nairobi County', address: 'Veterinary Complex, Kabete Rd, Nairobi', hours: 'Mon–Sat 07:00–18:00 (24/7 Triage)' },
-    { name: 'Nakuru Regional Ambulatory & Clinical Station', county: 'Nakuru County', address: 'George Morara Rd, Nakuru Town', hours: 'Mon–Sat 07:30–17:30' },
-    { name: 'Eldoret North Rift Ambulatory Squad Hub', county: 'Uasin Gishu', address: 'Uganda Rd, Eldoret Central', hours: 'Mon–Sat 07:30–17:30' },
-    { name: 'Nyeri & Mt Kenya Clinical Outreach Center', county: 'Nyeri County', address: 'Kenyatta Way, Nyeri Town', hours: 'Mon–Sat 08:00–17:00' },
-    { name: 'Kilifi Coast Ambulatory Station', county: 'Kilifi County', address: 'Bofa Rd, Kilifi', hours: 'Mon–Fri 08:00–17:00' },
-  ];
-
-  const hubOptions = dbHubs && dbHubs.length > 0 ? dbHubs : defaultHubs;
+  const hubOptions = Array.isArray(dbHubs) ? dbHubs : [];
 
   const stepTitles = [
     { num: 1, label: 'Type & Animals', icon: 'pets' },
@@ -1207,7 +1153,7 @@ export default function BookAppointment() {
                             <div className="p-2.5 rounded-lg bg-surface-clinical border border-border-hairline">
                               <span className="text-outline block text-[10px]">Service:</span>
                               <span className="font-semibold text-on-surface truncate block">
-                                {selectedServiceObj.title}
+                                {selectedServiceObj?.title || 'General Veterinary Consultation'}
                               </span>
                             </div>
                             <div className="p-2.5 rounded-lg bg-surface-clinical border border-border-hairline">

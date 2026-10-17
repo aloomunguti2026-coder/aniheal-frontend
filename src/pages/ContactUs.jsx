@@ -7,26 +7,10 @@ import { API_BASE_URL } from '../services/api';
 export default function ContactUs() {
   const { settings, hubs: dbHubs, faqs: dbFaqs, blocks } = useContent();
 
-  const defaultFleetItems = [
-    {
-      name: 'Mobile Lab Fleet #3',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCdMipf_wHgAU1jJHBgzZ-6Av_FOWhaYTe_R9-pUVcedYopdfsqz05h2pLUvunESqUTs5qQ7PE4qFASeBGVWfVSZvspJFb4JPAt5kk3WO0D9tu2HlST18cJ3ygPKcaYjKN3hJrJ8lyFMrr5ozKgdT1YM4lsEa7ZpWUMDO1_Y_AY42lHfrKIfvOn6JZx30CnGUq2rCrWC_AYy4ozTsbtvRFnM5Bb1gl2r4BcFoGaHWLvSF3AtJW7KU2B',
-    },
-    {
-      name: 'Rift Valley Herd Triage',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAuKHTURKZQOaYcfibAeMONBddKmwPREFD5iGH_CqqzH9tQiNalVh80yYdaD0v6ZSKMqKPTXd_0lYTdqHA5_Cwdky_5a9BRoHxuJSzbVZM74updOwNHCc1AXfrfkW8MxahBdJocfbPQmqZzW6CoJQiaYRUeQWT0LznnWguWv_dvn3UzlMalVH4Xa9Iag7GOCQmDzydia2FrRZvqduy8IrpPc0j6sLiA3Lp11DHLJ1WDkXDuT04mMW0v',
-    },
-  ];
-
   const fleetBlock = blocks?.fleet_vignette;
   const fleetTitle = fleetBlock?.title || 'Ambulatory Fleet In Action';
   const fleetBadge = fleetBlock?.badge || 'Cold Chain + Ultrasound Equipped';
-  const fleetItems =
-    Array.isArray(fleetBlock?.metadata?.items) && fleetBlock.metadata.items.length > 0
-      ? fleetBlock.metadata.items
-      : defaultFleetItems;
+  const fleetItems = Array.isArray(fleetBlock?.metadata?.items) ? fleetBlock.metadata.items : [];
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -62,33 +46,9 @@ export default function ContactUs() {
     setTimeout(() => setCopiedType(null), 2500);
   };
 
-  const defaultFaqs = [
-    {
-      q: "What are AniHeal's emergency ambulatory response timeframes?",
-      a: 'For critical bovine obstetrics (dystocia), acute bloat, or downer cow emergencies within our 45-kilometer radius hubs (Kabete, Nakuru, Eldoret, Nyeri), our dedicated rapid response units dispatch immediately with an average on-farm arrival time between 25 and 45 minutes. For rural smallholdings beyond active radii, we initiate instant WhatsApp Tele-Triage to guide farm managers through primary intervention steps while our vehicle is en route.',
-    },
-    {
-      q: 'What payment methods are supported for field procedures and diagnostics?',
-      a:
-        mpesaPaymentType === 'paybill'
-          ? `We accept instant settlement via Safaricom M-Pesa Paybill ${mpesaPaybill} (Account: ${mpesaAccount}, Official Name: ${mpesaTillName}) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.`
-          : mpesaPaymentType === 'both'
-          ? `We accept instant settlement via Safaricom M-Pesa Buy Goods Till ${mpesaTill} or Paybill ${mpesaPaybill} (Account: ${mpesaAccount}, Official Name: ${mpesaTillName}) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.`
-          : `We accept instant settlement via Safaricom M-Pesa Buy Goods Till ${mpesaTill} (${mpesaTillName}) directly on site. For corporate commercial dairies, agricultural cooperatives, and subscribed enterprises under our Animal Insurance & Subscription retainer, 30-day corporate invoices and direct bank transfers (RTGS/EFT) are standard.`,
-    },
-    {
-      q: 'What biosecurity protocols do AniHeal clinicians follow upon entering a farm?',
-      a: 'In strict compliance with the Kenya Veterinary Board (KVB) and One Health antimicrobial stewardship guidelines, our mobile ambulatory vans feature self-contained disinfection gear. Veterinarians deploy virgin disposable overshoes or autoclave-sanitized gumboots with broad-spectrum Virkon-S foot dips prior to crossing farm perimeter gates. All surgical kits, A.I. guns, and ultrasound probes undergo clinical sterilization between client farm visits to prevent horizontal pathogen transmission (e.g., FMD, Brucellosis, Mastitis).',
-    },
-    {
-      q: 'Can AniHeal assist with cross-border animal health documentation and export certification?',
-      a: 'Yes. Our senior consulting veterinarians liaise directly with County Veterinary Directors and the Directorate of Veterinary Services (DVS) at Kabete. We conduct statutory quarantine screening, serological testing, Brucella/TB profiling, and rabies titer verification to facilitate valid international movement permits for breeding stock and companion animals.',
-    },
-  ];
-
-  const faqsList = dbFaqs && dbFaqs.length > 0
-    ? dbFaqs.map(f => ({ q: f.question, a: f.answer }))
-    : defaultFaqs;
+  const faqsList = Array.isArray(dbFaqs)
+    ? dbFaqs.map((f) => ({ q: f.question, a: f.answer }))
+    : [];
 
   const handleChange = (e) => {
     const { id, value } = e.target;

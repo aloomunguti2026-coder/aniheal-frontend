@@ -46,20 +46,19 @@ export function useContent() {
   }
 
   const initialCache = useRef(loadCache()).current;
-  const baseContent = initialCache || defaultContent;
 
   const [data, setData] = useState({
-    settings: baseContent?.settings || null,
-    blocks: baseContent?.blocks || {},
-    services: Array.isArray(baseContent?.services) ? baseContent.services : [],
-    products: Array.isArray(baseContent?.products) ? baseContent.products : [],
-    pricing: Array.isArray(baseContent?.pricing) ? baseContent.pricing : [],
-    team: Array.isArray(baseContent?.team) ? baseContent.team : [],
-    hubs: Array.isArray(baseContent?.hubs) ? baseContent.hubs : [],
-    faqs: Array.isArray(baseContent?.faqs) ? baseContent.faqs : [],
-    research: Array.isArray(baseContent?.research) ? baseContent.research : [],
-    collaborations: Array.isArray(baseContent?.collaborations) ? baseContent.collaborations : [],
-    loading: false,
+    settings: initialCache?.settings || defaultContent?.settings || null,
+    blocks: initialCache?.blocks || defaultContent?.blocks || {},
+    services: Array.isArray(initialCache?.services) ? initialCache.services : [],
+    products: Array.isArray(initialCache?.products) ? initialCache.products : [],
+    pricing: Array.isArray(initialCache?.pricing) ? initialCache.pricing : [],
+    team: Array.isArray(initialCache?.team) ? initialCache.team : [],
+    hubs: Array.isArray(initialCache?.hubs) ? initialCache.hubs : [],
+    faqs: Array.isArray(initialCache?.faqs) ? initialCache.faqs : [],
+    research: Array.isArray(initialCache?.research) ? initialCache.research : [],
+    collaborations: Array.isArray(initialCache?.collaborations) ? initialCache.collaborations : [],
+    loading: !initialCache,
     error: null,
   });
 

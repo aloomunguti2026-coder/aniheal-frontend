@@ -67,7 +67,7 @@ export default function ServiceDetail() {
       } else if (!service) {
         // Fallback to persisted cache if backend returned error
         if (typeof window !== 'undefined') {
-          const cache = localStorage.getItem('aniheal_persisted_content_v2');
+          const cache = localStorage.getItem('aniheal_persisted_content_v3');
           if (cache) {
             try {
               const parsed = JSON.parse(cache);
@@ -87,7 +87,7 @@ export default function ServiceDetail() {
       console.error('Failed to load service details from network, trying cache:', err);
       if (!service) {
         if (typeof window !== 'undefined') {
-          const cache = localStorage.getItem('aniheal_persisted_content_v2');
+          const cache = localStorage.getItem('aniheal_persisted_content_v3');
           if (cache) {
             try {
               const parsed = JSON.parse(cache);

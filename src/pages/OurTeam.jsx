@@ -115,10 +115,10 @@ export default function OurTeam() {
                 </div>
                 <div className="flex flex-col pl-2">
                   <span className="font-headline-lg text-headline-lg text-primary font-bold">
-                    {teamList.length > 0 ? teamList.length : '47'}
+                    {teamList.length}
                   </span>
                   <span className="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">
-                    {teamList.length > 0 ? 'Active Specialists' : 'Counties Active'}
+                    Active Specialists
                   </span>
                 </div>
               </div>

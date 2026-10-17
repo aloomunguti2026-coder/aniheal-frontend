@@ -55,12 +55,14 @@ async function loadBuildData() {
   console.log(`📡 Checking for live content updates from ${apiBase}...`);
 
   try {
-    const [settingsRes, blocksRes, servicesRes, productsRes, collabsRes] = await Promise.all([
+    const [settingsRes, blocksRes, servicesRes, productsRes, collabsRes, teamRes, hubsRes] = await Promise.all([
       fetchWithTimeout(`${apiBase}/public/settings`),
       fetchWithTimeout(`${apiBase}/public/content/all`),
       fetchWithTimeout(`${apiBase}/public/services`),
       fetchWithTimeout(`${apiBase}/products`),
       fetchWithTimeout(`${apiBase}/collaborations`),
+      fetchWithTimeout(`${apiBase}/public/team`),
+      fetchWithTimeout(`${apiBase}/public/hubs`),
     ]);
 
     let mergedData = { ...fallbackData };
@@ -98,6 +100,14 @@ async function loadBuildData() {
 
     if (collabsRes?.success && Array.isArray(collabsRes.data) && collabsRes.data.length > 0) {
       mergedData.collaborations = collabsRes.data;
+    }
+
+    if (teamRes?.success && Array.isArray(teamRes.data) && teamRes.data.length > 0) {
+      mergedData.team = teamRes.data;
+    }
+
+    if (hubsRes?.success && Array.isArray(hubsRes.data) && hubsRes.data.length > 0) {
+      mergedData.hubs = hubsRes.data;
     }
 
     console.log('✔ Build content compiled successfully.');
