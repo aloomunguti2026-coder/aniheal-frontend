@@ -58,12 +58,26 @@ export function useContent() {
     faqs: Array.isArray(initialCache?.faqs) ? initialCache.faqs : [],
     research: Array.isArray(initialCache?.research) ? initialCache.research : [],
     collaborations: Array.isArray(initialCache?.collaborations) ? initialCache.collaborations : [],
-    loading: !initialCache,
+    loading: !initialCache || !Array.isArray(initialCache?.team) || initialCache.team.length === 0,
     error: null,
   });
 
   const fetchAllContent = useCallback(async () => {
     if (typeof window === 'undefined') return;
+
+    // Fast independent fetch for team members to display instantly without waiting for slower endpoints
+    fetch(`${API_BASE_URL}/public/team`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.success && Array.isArray(json.data) && json.data.length > 0) {
+          setData((prev) => {
+            const next = { ...prev, team: json.data, loading: false };
+            saveCache(next);
+            return next;
+          });
+        }
+      })
+      .catch(() => {});
 
     try {
       const [

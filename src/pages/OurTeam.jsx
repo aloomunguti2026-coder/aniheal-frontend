@@ -357,7 +357,7 @@ export default function OurTeam() {
                   ))}
                 </div>
               ) : (
-                !loading && !showDirector && (
+                !loading && !showDirector && teamList.length > 0 ? (
                   <div className="py-16 text-center bg-surface-clinical rounded-2xl border border-dashed border-border-hairline space-y-3">
                     <span className="material-symbols-outlined text-[48px] text-outline">group_off</span>
                     <h3 className="font-headline-sm font-bold text-on-surface">
@@ -374,7 +374,17 @@ export default function OurTeam() {
                       View All Faculty
                     </button>
                   </div>
-                )
+                ) : !loading && !showDirector && teamList.length === 0 ? (
+                  <div className="py-16 text-center bg-surface-clinical rounded-2xl border border-dashed border-border-hairline space-y-3">
+                    <span className="material-symbols-outlined text-[48px] text-outline">group_off</span>
+                    <h3 className="font-headline-sm font-bold text-on-surface">
+                      No Registered Specialists Available
+                    </h3>
+                    <p className="text-body-sm text-on-surface-variant max-w-md mx-auto">
+                      Our veterinary specialist profiles are currently being updated.
+                    </p>
+                  </div>
+                ) : null
               )}
             </div>
           </section>
